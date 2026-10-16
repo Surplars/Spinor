@@ -100,8 +100,17 @@ ctx(0,0,0,2);ctx(6,0,0,10);
 // Return from prefix execution to the ordinary masked integer stream.
 command(32'h00880457,0,0,0,80'heb0008,0,0,0,3,8'd4,64'h10);
 ctx(16,0,0,64'h0000000400000001);ctx(17,0,0,64'h0000000400000004);
+// Index generation reaches the public wrapper, consumes mask RAM and feeds
+// scalar extraction with exact tail-preserving 32-bit element values.
+command(32'h0100f1d7,0,0,4,80'hec0001,0,4,1,3,8'd4,64'h10);
+ctx(62,1,64'hb,0);ctx(63,1,0,0);
+command(32'h53f82457,0,0,0,80'hec0002,0,0,0,3,8'd4,64'h10);
+ctx(16,0,0,64'h0000000100000000);ctx(17,0,0,64'h0000000200000002);
+command(32'h428021d7,0,0,0,80'hec0003,0,0,1,3,8'd4,64'h10);
+command(32'h5208a457,0,0,0,80'hec0004,0,0,0,3,8'd4,64'h10);
+ctx(16,0,0,64'h0000000100000000);ctx(17,0,0,64'h0000000300000002);
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h2201);monAccess(64'h18,4,0,64'h7ff);
+monAccess(64'h10,4,0,64'h2301);monAccess(64'h18,4,0,64'hfff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});

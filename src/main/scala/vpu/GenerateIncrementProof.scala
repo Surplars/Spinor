@@ -11,7 +11,7 @@ class IncrementProof extends Module {
     val base=Input(UInt(64.W));val index=Input(UInt(8.W));val eewLog2=Input(UInt(2.W))
     val mismatch=Output(Bool())
   })
-  val increments=Seq(32,55,109).map { width =>
+  val increments=Seq(8,32,55,109).map { width =>
     val x=io.bits(width-1,0)
     ParallelIncrement(x,io.enable)=/=(x+io.enable)
   }.reduce(_ || _)

@@ -113,7 +113,7 @@ for length in ([7,8,9,127] if args.smoke else [*range(1,18),63,64,65,127]):
 # Decode must reject all other unary selectors rather than treating them as
 # prefix operations. f3=1 is a reserved FP encoding at this f6.
 config(0,3,128)
-for mode in ([0,4,16,31] if args.smoke else [x for x in range(32) if x not in [1,2,3]]):execute(mode,7,31,1)
+for mode in ([0,4,15,31] if args.smoke else [x for x in range(32) if x not in [1,2,3,16,17]]):execute(mode,7,31,1)
 for mode in [1,2,3]:execute(mode,7,31,1,f3=1)
 # Flush every byte phase, after a private write, and while completion is held.
 config(0,3,128);regs[31]=1<<64;regs[0]=M128;ctx(31,True);ctx(0,True)
