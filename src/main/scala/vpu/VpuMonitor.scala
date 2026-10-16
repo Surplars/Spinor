@@ -47,8 +47,8 @@ class VpuMonitor(base:BigInt=0,counterBits:Int=32) extends Module {
   switch(index) {
     is(0.U) {data:="h4c495348".U} // LISH
     is(1.U) {data:="h00010000".U} // ABI major 1, minor 0
-    is(2.U) {data:="h00003101".U} // M31 + monitor ABI v1; not full RVV
-    is(3.U) {data:="h7ffff".U} // bits 0..17 retained; bit18 integer extension
+    is(2.U) {data:="h00003201".U} // M32 + monitor ABI v1; not full RVV
+    is(3.U) {data:="hfffff".U} // bits 0..18 retained; bit19 narrowing integer shifts
     is(4.U) {data:=Cat(1.U(16.W),32.U(16.W),64.U(16.W),128.U(16.W))}
     is(5.U) {data:=Cat(0.U(24.W),8.U(8.W),512.U(32.W))} // architectural bytes, max LMUL
     is(6.U) {data:=counterBits.U}

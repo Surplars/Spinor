@@ -41,7 +41,11 @@ class IncrementProof extends Module {
   val alignmentMismatch=(alignment=/=(count-1.U).pad(5)) ||
     (VectorConfig.countAlignment(count)=/=alignment)
   val endMismatch=(base & alignment)===0.U && (base+&count)>32.U
-  io.mismatch:=highPartMismatch || overlapMismatch || alignmentMismatch || endMismatch || groupMismatch || increments || (address=/=(io.base+offset.pad(64))) || configMismatch
+  val lmul=io.bits(14,12)
+  val narrowCount=MuxLookup(lmul,1.U(5.W))(Seq(0.U->2.U,1.U->4.U,2.U->8.U))
+  val narrowValid=lmul<=2.U || lmul>=5.U
+  val narrowMismatch=narrowValid && VectorConfig.narrowAlignment(lmul)=/=(narrowCount-1.U)
+  io.mismatch:=narrowMismatch || highPartMismatch || overlapMismatch || alignmentMismatch || endMismatch || groupMismatch || increments || (address=/=(io.base+offset.pad(64))) || configMismatch
 }
 object GenerateIncrementProof extends App {
   val path=Paths.get(args(0));Files.createDirectories(path.getParent)

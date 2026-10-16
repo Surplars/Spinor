@@ -18,6 +18,14 @@ object VectorConfig {
     require(count.getWidth==4) // one-hot 1/2/4/8; caller rejects count=0
     chisel3.util.Cat(0.U(2.W),count(3),count(3,2).orR,count(3,1).orR)
   }
+  // Double-width source groups for narrowing. Valid LMULs 0/1/2 map to
+  // EMUL 2/4/8; fractional LMULs occupy one physical register. The caller
+  // rejects LMUL=m8 and invalid encodings before any source access.
+  def narrowAlignment(lmul:UInt):UInt = {
+    require(lmul.getWidth==3)
+    Mux(lmul(2),0.U(5.W),
+      chisel3.util.Cat(0.U(2.W),lmul(1),lmul(1)||lmul(0),true.B))
+  }
   def alignedGroupsOverlap(a:UInt,aa:UInt,b:UInt,ba:UInt):Bool = {
     val alignment=aa|ba
     (a & ~alignment)===(b & ~alignment)

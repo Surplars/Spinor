@@ -488,3 +488,9 @@ package-m31:
 	$(PYTHON) scripts/package.py --milestone m31
 windows-m31:
 	$(PYTHON) scripts/windows_current_bundle.py
+
+.PHONY: verify-m32 package-m32
+verify-m32:
+	$(PYTHON) scripts/verify_m32.py
+package-m32:
+	$(PYTHON) scripts/package.py --milestone m32
