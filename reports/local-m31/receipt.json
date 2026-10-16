@@ -1,0 +1,179 @@
+{
+  "status": "PASS",
+  "scope": "M31_USER_VIVADO_ROUTED_OOC_DEFINED_INTERNAL_CONSTRAINTS_ONLY",
+  "upload": {
+    "filename": "spinor_results_M31_All_20261016_225847_511_packed_20261016_231416_221_reports_20261016_232507_285.zip",
+    "bytes": 119912,
+    "sha256": "bb2a66e9990197b1a1d24ace3c5b7d1507a47c364adaa507e0da7de6931a5584",
+    "verified_report_entries": 32,
+    "original_output_hash_entries": 77,
+    "omitted_output_entries": 45
+  },
+  "tested_hardware_commit": "2deb1e742e1fdff7bd837a967991c1625d9a51ef",
+  "source_bindings": {
+    "rtl/SpinorVpu.sv": "1a9ff2702f54a8f50e940daff0d408a427bf3eb0e9a52a976fa0f7ff4f0a12f7",
+    "rtl/RamVectorFp.sv": "b58f380a602c614fec905911f3981d9447a47bf5605f730f10faa087c4acfe0b",
+    "tb/integer-extensions.sv": "e6e60f0b148ccc566f9b470be3130d59f3c2e1e4f4293028ad56707ea4a9c4eb",
+    "tb/spinor-integration.sv": "29e120d662461637e2215062221fc4e2db304ed53bd1657c5d1fb9db606ce53b",
+    "run.ps1": "b2d76a181ea6a5837ba733f63f2f2910d25d87226e7eae6dd73595bf501a913e",
+    "run_vivado.tcl": "edc4bc90cf906252a5e0f91a1c3a1001207fe398fd7677f17f512a6561d1c6f8",
+    "RUN_ME_FIRST.txt": "8097be4c451fd991ef3adcbd3d881ee736669de66f2aef33a8cd13e2cc2bd05a"
+  },
+  "tool": "Vivado 2025.1 build 6140274",
+  "part": "xczu15eg-ffvb1156-2-i",
+  "speed_grade": "-2",
+  "design_state": "Routed",
+  "requested_period_ns": 3.333333,
+  "effective_period_ns": 3.333,
+  "placed": {
+    "WNS_ns": 0.502,
+    "TNS_ns": 0.0,
+    "setup_failing": 0,
+    "setup_total": 25582,
+    "WHS_ns": 0.02,
+    "THS_ns": 0.0,
+    "hold_failing": 0,
+    "hold_total": 25582,
+    "WPWS_ns": 1.124,
+    "TPWS_ns": 0.0,
+    "pulse_failing": 0,
+    "pulse_total": 11793
+  },
+  "routed": {
+    "WNS_ns": 0.392,
+    "TNS_ns": 0.0,
+    "setup_failing": 0,
+    "setup_total": 25582,
+    "WHS_ns": 0.009,
+    "THS_ns": 0.0,
+    "hold_failing": 0,
+    "hold_total": 25582,
+    "WPWS_ns": 1.124,
+    "TPWS_ns": 0.0,
+    "pulse_failing": 0,
+    "pulse_total": 11793
+  },
+  "route": {
+    "routable": 21784,
+    "fully_routed": 21784,
+    "routing_errors": 0
+  },
+  "resources": {
+    "LUT_total": 14173,
+    "LUT_logic": 14077,
+    "LUT_memory_including_SRL": 96,
+    "LUTRAM": 42,
+    "SRL": 54,
+    "FF": 11605,
+    "RAMB36": 2,
+    "DSP48E2": 7,
+    "BUFGCE": 0
+  },
+  "check_timing": {
+    "no_clock": 0,
+    "constant_clock": 0,
+    "pulse_width_clock": 0,
+    "unconstrained_internal_endpoints": 0,
+    "no_input_delay": 613,
+    "no_output_delay": 608,
+    "multiple_clock": 0,
+    "generated_clocks": 0,
+    "loops": 0,
+    "partial_input_delay": 0,
+    "partial_output_delay": 0,
+    "latch_loops": 0
+  },
+  "warnings": {
+    "XSIM 43-4099": 98,
+    "Synth 8-6014": 1,
+    "Synth 8-3936": 9,
+    "Synth 8-3917": 26,
+    "Synth 8-7129": 5,
+    "Vivado 12-2489": 2,
+    "Synth 8-6430": 2,
+    "Synth 8-7080": 1,
+    "DRC 23-814": 3,
+    "Timing 38-242": 2,
+    "Route 35-198": 100,
+    "Route 35-197": 1
+  },
+  "simulation": {
+    "extensions": [
+      "PASS integer-extensions commands=884 cycles=129796"
+    ],
+    "integration": [
+      "PASS monitored-mmio reads=7504 accepted=313 completed=304 faults=50 stops=6",
+      "PASS vector-memory commands=119 requests=783 responses=783 cycles=18774"
+    ]
+  },
+  "critical_setup": {
+    "source": "vpu/vpu/rf/storage_ext/Memory_reg_0/CLKARDCLK",
+    "destination": "vpu/vpu/stagedData_reg[115]/D",
+    "data_delay_ns": 2.876,
+    "logic_levels": 6
+  },
+  "critical_hold": {
+    "source": "vpu/vpu/lane/queue/enq_ptr_value_reg[1]/C",
+    "destination": "vpu/vpu/lane/queue/ram_ext/Memory_reg_0_7_0_13/RAMA/WADR1",
+    "data_delay_ns": 0.133,
+    "logic_levels": 0
+  },
+  "DSP_reported_nonempty_export_rows": {
+    "vpu-vpu-multiplier-product_reg.txt": 65,
+    "vpu-vpu-unit-partials_p_1_reg.txt": 91,
+    "vpu-vpu-unit-partials_p_2_reg.txt": 91,
+    "vpu-vpu-unit-partials_p_4_reg.txt": 91,
+    "vpu-vpu-unit-partials_p_5_reg.txt": 91,
+    "vpu-vpu-unit-partials_p_6_reg.txt": 91,
+    "vpu-vpu-unit-partials_p_reg.txt": 91
+  },
+  "cloud_conditional_budget_ns": {
+    "SpinorVpu": 3.277,
+    "LishiVpuMemory": 3.141
+  },
+  "passes_300MHz_current_OOC_constraints": true,
+  "passes_300MHz_actual_SoC_clock_and_IO": null,
+  "passes_500MHz": null,
+  "real_clock_source_constrained": false,
+  "host_IO_delays_constrained": false,
+  "post_route_SDF_simulation": false,
+  "DCP_EDIF_and_DSP_arc_tables_received": false,
+  "report_sha256": {
+    "clock.xdc": "346e4d963022e777ad1a1ebcbcc2c8462aaa6ed3df9c4899aa9fd0a38f656c0d",
+    "clockInfo.txt": "969c3744b541eb6187cc00381d4253cb036c12d277515aeac0f97c9d3afe64dc",
+    "clocks.rpt": "8fbb829d8f81b95b799672197ab88527157133e8b31448b75afc295d0aa7b7b7",
+    "constraints.xdc": "28a1affd94661c9a2e68d993ee59977d41914cc7edea96e9a357902b717673f5",
+    "dfx_runtime.txt": "cacdebd91f0daddb5afe2dae8ecffdd299a2f55691437515fbbea83dbcbecb46",
+    "dsp-configurations.txt": "95d983420a3a4af1dfad1b42256cbeb4141456736b9eee77759e627b47516c36",
+    "dsp-export-coverage.txt": "d0ef118e7a22e23fd56bb3779e2989c40d42bc401c0654885c2e6e891b25707e",
+    "hold_paths.rpt": "e6e98b8cb7ac4882e04e36c311f34392d9fee3047f1542b3036a8c86cc42e2b5",
+    "route_status.rpt": "41bb5a6eb4b2d993ef52f090d289701295de81ab88d851b9b2787105e8fbccb3",
+    "run-inputs.json": "21eeef53d9bddf2a66d59a75dcc41ed02a5428b69dea72d12b45340f68ab389b",
+    "run-summary.txt": "cac422e391e1b0f31cdda3bcc23c1c0e5d406021f02da323612f49e160a635d2",
+    "setup_paths.rpt": "a215a0c2e553a6601cc9decb10bd4a55d3dd7ac707abb7c48d544d6e9386c51b",
+    "timing_placed.rpt": "c14fb85726231a1e9de42cccd050d7fbbf2badad280c1d3485a84827de2dd06e",
+    "timing_routed.rpt": "2510717518bdabf60b8897b0182b3a021dfc394a57821dc05fa232e9802a6216",
+    "tool-version.txt": "7f91516d0fdfb58360305226563b0dadc3e48984c90b4cd958824fdd24e67a21",
+    "utilization_hierarchical.rpt": "797c6e70ca1eba9805c625c9a4ea901f6abf1ea2c0efe773214f2b79825d5696",
+    "utilization_routed.rpt": "1f283c54709b7bc97ae03a3620d932253ac9467ecb3febe11fc6690d4821e26c",
+    "utilization_synth.rpt": "34f0b5c6844a1cf4796fef23ced0e19e7fab92cb50cb71fdbbd470be11161d96",
+    "vivado.jou": "d9b4e853c2107927ad381ec462c0fcbd0a340446ae5445765397c8adbfb3a373",
+    "vivado.log": "6d913b8fa299dd38dd894cc9e2889cbc3cbbe5b57cc81a4183fa8a5248d6052a",
+    "simulation/extensions/result.txt": "229e423a6200287931a2ba2c18bb902a29b35330da318b0d4a51c4680e543282",
+    "simulation/extensions/simulation-logs.txt": "85da13f27270b672bfb1926992afc19765f2537442555a5aec99c4008a7c57da",
+    "simulation/extensions/project/spinor_extensions.sim/sim_1/behav/xsim/compile.log": "e929570843548e100fdf139d3be22cf678dc155e69e9e47a98de482f53fd70db",
+    "simulation/extensions/project/spinor_extensions.sim/sim_1/behav/xsim/elaborate.log": "70ea20c9bb0f8e6e46927f5b2c8595a2e38211f6ab1c75d6a7af3e293abe0194",
+    "simulation/extensions/project/spinor_extensions.sim/sim_1/behav/xsim/simulate.log": "877a8d74ffe739370cd945bedf7b876eebb7640a71ffb1ea17e3419790fe2476",
+    "simulation/extensions/project/spinor_extensions.sim/sim_1/behav/xsim/xvlog.log": "e929570843548e100fdf139d3be22cf678dc155e69e9e47a98de482f53fd70db",
+    "simulation/integration/result.txt": "670cc94900cbf28bedf0ecfbe5672bc312054bbe0d2e0253dfff5fc32a9247bc",
+    "simulation/integration/simulation-logs.txt": "4223d1c5f208b73c8f7cab3522f804beb5e3f0af73ff7971e426e208f3d51ce7",
+    "simulation/integration/project/spinor_integration.sim/sim_1/behav/xsim/compile.log": "7fe89a8d1939662bd3deb56bccfd28606bc1ced4f6910b5182736a768dd52ac8",
+    "simulation/integration/project/spinor_integration.sim/sim_1/behav/xsim/elaborate.log": "5aa0cc77a126dcbbdd59820b2511237074a325cefa946d69e7c12e048b1f3b08",
+    "simulation/integration/project/spinor_integration.sim/sim_1/behav/xsim/simulate.log": "5021699b891bb311f94429d148243a7afa608eb0154a48b7195c366b014d2914",
+    "simulation/integration/project/spinor_integration.sim/sim_1/behav/xsim/xvlog.log": "7fe89a8d1939662bd3deb56bccfd28606bc1ced4f6910b5182736a768dd52ac8"
+  },
+  "input_sha256": {
+    "scripts/review_local_m31.py": "6340c4990ab3992c1ac519b832c298d381f6f276b970961322c7441e03701435",
+    "reports/m31/receipt.json": "4470d210080c9d5922be14a81e8d4d4669fb48b3405077e974115080fa58e202"
+  }
+}

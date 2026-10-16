@@ -1,7 +1,7 @@
 # 砺矢 · Spinor VPU
 
 目标器件 `xczu15eg-ffvb1156-2-i`；采用 **Mill 1.1.7 / Scala 2.13.18 / Chisel 7.16.0**。
-300 MHz 为基线设计目标，500 MHz 为候选目标。M5 已有满足 3.333 ns 已约束内部时序的本地 OOC 结果；当前 M31 尚未经过 Vivado 实现验证。
+300 MHz 为基线设计目标，500 MHz 为候选目标。M31 已完成 Vivado 2025.1 独立 OOC 实现：3.333ns 下 setup +0.392ns、hold +0.009ns；实际时钟源和宿主 IO 延迟尚待约束。见 [本地报告](reports/local-m31/evaluation.md)。
 
 **当前是含整数与部分浮点的向量原型，不是完整 RVV，尚未接入 Orbital CPU。**
 尚未实现完整 V / Zvfhmin / Zvbb / Zvkt；不能向软件发布 `misa.V` 或 RVA23 合规声明。
@@ -9,8 +9,8 @@
 仅物理普通 RAM、单事务，访存采用逐元素提交和延迟停止；不支持 MMIO/分页/PMP/一致性，尚未接入 Orbital CPU。
 **访存期间 flush 必须等待 Completion/status，不能按算术指令立即丢弃 token。** 见 [M10 合同](docs/m10-memory.md)。
 已加入 [M8 的 220 组性能对照](archive/m8/reports/performance.md)，并检查输出结果。
-M31交付前强制检查两个顶层的固定100ps/段云端条件预算均≤3.333ns；物理300MHz仍未验证。
-最新结果和输入散列见 [M31 报告](reports/m31/evaluation.md)；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 是物理基线。
+M31交付前强制检查两个顶层的固定100ps/段云端条件预算均≤3.333ns；最新本地 Vivado 的已约束内部路径也满足约300MHz，完整SoC时钟/接口尚未签核。
+最新本地结果和输入散列见 [M31 本地报告](reports/local-m31/evaluation.md)，原 [M31 云端报告](reports/m31/evaluation.md) 保留交付时的状态；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 保留为早期物理基线。
 命名与设计方向见 [项目介绍](docs/lishi.md)。
 M4 原始报告保存在 [归档](archive/m4/reports/evaluation.md)。后续本地 Vivado 的 M4 OOC 结果及其时钟限制另记录在 M5 报告中。
 前一版浮点基线保存在 [M3](archive/m3/reports/evaluation.md)。
