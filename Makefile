@@ -1,3 +1,9 @@
+.PHONY: verify-m27 package-m27
+verify-m27:
+	$(PYTHON) scripts/verify_m27.py
+package-m27:
+	$(PYTHON) scripts/package.py --milestone m27
+
 .PHONY: verify-m26 package-m26
 verify-m26:
 	$(PYTHON) scripts/verify_m26.py

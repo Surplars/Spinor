@@ -141,8 +141,23 @@ command(32'h33840c57,0,0,0,80'hee0005,1,0,0,3,8'd4,64'h10);
 command(32'h33880857,0,0,0,80'hee0006,1,0,0,3,8'd4,64'h10);
 command(32'h3382c857,64'hffffffffffffffff,0,0,80'hee0007,0,0,0,3,8'd4,64'h10);
 ctx(32,0,0,0);ctx(33,0,0,0);
+// Stable RAM compaction through the public interface, preserving packed tail.
+ctx(16,1,64'h0000002200000011,0);ctx(17,1,64'h0000004400000033,0);
+ctx(6,1,64'ha,0);ctx(7,1,0,0);
+ctx(32,1,64'hdeadbeefcafebabe,0);ctx(33,1,64'habcdef0123456789,0);
+cancel(32'h5e81a857,18,1'b0);
+ctx(32,0,0,64'hdeadbeefcafebabe);ctx(33,0,0,64'habcdef0123456789);
+command(32'h5e81a857,0,0,0,80'hef0001,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,64'h0000004400000022);ctx(33,0,0,64'habcdef0123456789);
+command(32'h5e81a457,0,0,0,80'hef0002,1,0,0,3,8'd4,64'h10);
+command(32'h5e882857,0,0,0,80'hef0003,1,0,0,3,8'd4,64'h10);
+command(32'h5e842857,0,0,0,80'hef0004,1,0,0,3,8'd4,64'h10);
+command(32'h5c81a857,0,0,0,80'hef0005,1,0,0,3,8'd4,64'h10);
+// Resume ordinary integer execution after dense-target addressing.
+command(32'h02804457,1,0,0,80'hef0006,0,0,0,3,8'd4,64'h10);
+ctx(16,0,0,64'h0000002300000012);ctx(17,0,0,64'h0000004500000034);
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h2601);monAccess(64'h18,4,0,64'h3fff);
+monAccess(64'h10,4,0,64'h2701);monAccess(64'h18,4,0,64'h7fff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});

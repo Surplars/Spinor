@@ -22,7 +22,22 @@ class IncrementProof extends Module {
   val fractionalReference=t(2,0)<=3.U || (t(2,0)>=5.U && t(5,3)<=(t(2,0)-5.U))
   val configMismatch=(VectorConfig.fractionalLegal(t)=/=fractionalReference) ||
     (VectorConfig.belowLimit(io.base,io.bits(7,0))=/=(io.base<io.bits(7,0).pad(64)))
-  io.mismatch:=increments || (address=/=(io.base+offset.pad(64))) || configMismatch
+  val groupLog=io.eewLog2
+  val count=(1.U(4.W)<<groupLog)(3,0)
+  val alignment=VectorConfig.groupAlignment(groupLog)
+  val base=io.bits(4,0);val address5=io.bits(9,5)
+  val groupMismatch=(base & alignment)===0.U &&
+    (VectorConfig.alignedGroupContains(address5,base,alignment)=/=(address5>=base && address5<(base+&count)))
+  val logB=io.bits(11,10)
+  val countB=(1.U(4.W)<<logB)(3,0);val alignB=VectorConfig.groupAlignment(logB)
+  val aligned=(base & alignment)===0.U && (address5 & alignB)===0.U
+  val overlapMismatch=aligned &&
+    (VectorConfig.alignedGroupsOverlap(base,alignment,address5,alignB)=/=
+      (base<(address5+&countB) && address5<(base+&count)))
+  val alignmentMismatch=(alignment=/=(count-1.U).pad(5)) ||
+    (VectorConfig.countAlignment(count)=/=alignment)
+  val endMismatch=(base & alignment)===0.U && (base+&count)>32.U
+  io.mismatch:=overlapMismatch || alignmentMismatch || endMismatch || groupMismatch || increments || (address=/=(io.base+offset.pad(64))) || configMismatch
 }
 object GenerateIncrementProof extends App {
   val path=Paths.get(args(0));Files.createDirectories(path.getParent)

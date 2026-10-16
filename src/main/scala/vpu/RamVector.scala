@@ -88,7 +88,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val scalarMove=RegInit(0.U(2.W)) // 0 ordinary, 1 vmv.x.s, 2 vmv.s.x
   val maskScalar=RegInit(false.B) // vcpop.m / vfirst.m, no vector destination
   val maskPrefix=RegInit(false.B) // vmsbf.m / vmsof.m / vmsif.m
-  val indexGenerate=RegInit(0.U(2.W)) // 1 viota.m, 2 vid.v; reuse scalarResult as 8-bit prefix count
+  val indexGenerate=RegInit(0.U(2.W)) // 1 viota.m, 2 vid.v, 3 vcompress.vm; scalarResult holds prefix count
   val gatherCached=RegInit(false.B) // scalar-index splat reuses the existing b operand
   val gather=RegInit(0.U(2.W)) // 1 vrgather, 2 vrgatherei16
   val slide=RegInit(false.B)
@@ -157,8 +157,9 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val scalarWriteEncoding=mulVX && f6===0x10.U && vm && vs2===0.U
   val maskScalarEncoding=mulVV && f6===0x10.U && (vs1===16.U || vs1===17.U)
   val maskPrefixEncoding=mulVV && f6===0x14.U && vs1>=1.U && vs1<=3.U
-  val indexGenerateEncoding=Mux(mulVV && f6===0x14.U,
-    Mux(vs1===16.U,1.U(2.W),Mux(vs1===17.U && vs2===0.U,2.U(2.W),0.U(2.W))),0.U(2.W))
+  val compressEncoding=mulVV && f6===0x17.U
+  val indexGenerateEncoding=Mux(compressEncoding,3.U(2.W),Mux(mulVV && f6===0x14.U,
+    Mux(vs1===16.U,1.U(2.W),Mux(vs1===17.U && vs2===0.U,2.U(2.W),0.U(2.W))),0.U(2.W)))
   val slideEncoding=(f6===0x0e.U || f6===0x0f.U) && (vx || vi || mulVX)
   val gatherEncoding=Mux(f6===0x0c.U && (vv || vx || vi),1.U(2.W),
     Mux(f6===0x0e.U && vv,2.U(2.W),0.U(2.W)))
@@ -231,7 +232,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(scalarReadEncoding || scalarWriteEncoding) {supported:=true.B;decodedOp:=Op.move.U}
   when(maskScalarEncoding) {supported:=true.B;decodedOp:=Op.move.U}
   when(maskPrefixEncoding) {supported:=true.B;decodedOp:=Op.move.U;decodedMask:=true.B}
-  when(indexGenerateEncoding=/=0.U) {supported:=true.B;decodedOp:=Op.move.U}
+  when(indexGenerateEncoding=/=0.U) {supported:= !compressEncoding || vm;decodedOp:=Op.move.U}
   when(slideEncoding) {supported:=true.B;decodedOp:=Op.move.U}
   when(gatherEncoding=/=0.U) {supported:=true.B;decodedOp:=Op.move.U}
   val producesMask=Mux(fpSupported,fpMask,decodedMask)
@@ -267,35 +268,36 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   }
   val groupLog = Mux(vtype(2,0) <= 3.U,vtype(1,0),0.U(2.W))
   val groupCount = (1.U(4.W)<<groupLog)(3,0)
-  val alignment = (groupCount-1.U).pad(5)
-  val sourceGroupEnd2 = vs2+&groupCount
-  val sourceGroupEnd1 = vs1+&groupCount
+  val alignment = VectorConfig.groupAlignment(groupLog)
   // Mask destinations have EEW=1: overlap may only use the lowest register
   // of a wider source group (generic narrowing-overlap rule).
-  val badMaskOverlap = selectedMask && !selectedMaskLogic && !selectedMaskPrefix && ((vd > vs2 && vd < sourceGroupEnd2) ||
-    (vectorSource1 && vd > vs1 && vd < sourceGroupEnd1))
+  val badMaskOverlap = selectedMask && !selectedMaskLogic && !selectedMaskPrefix && ((vd=/=vs2 && VectorConfig.alignedGroupContains(vd,vs2,alignment)) ||
+    (vectorSource1 && vd=/=vs1 && VectorConfig.alignedGroupContains(vd,vs1,alignment)))
   def validateVector(): Unit = {
-    val needsVs2 = selectedFp || selectedOp =/= Op.move.U || selectedSlide || selectedGather=/=0.U
+    val needsVs2 = selectedFp || selectedOp =/= Op.move.U || selectedSlide || selectedGather=/=0.U || selectedIndexGenerate===3.U
     val singleRegister=selectedMaskLogic || selectedScalarMove=/=0.U || selectedMaskScalar || selectedMaskPrefix
     val misaligned = !singleRegister && ((needsVs2 && (vs2&alignment) =/= 0.U) || (vectorSource1 && (vs1&alignment) =/= 0.U) ||
       (!selectedMask && !selectedReduction && (vd&alignment) =/= 0.U))
     val indexCount=Mux(selectedGather===2.U,selectedEi16Count,groupCount)
-    val indexEnd=vs1+&indexCount
+    val indexAlignment=VectorConfig.countAlignment(indexCount)
     val gatherBad=selectedGather=/=0.U && (
-      vd===vs2 || (vv && ((vs1&(indexCount-1.U).pad(5))=/=0.U || indexCount===0.U ||
-        indexEnd>32.U || (vd<indexEnd && vs1<(vd+&groupCount)))) ||
-      (selectedGather===2.U && vtype(4,3)=/=1.U && vs2<indexEnd && vs1<sourceGroupEnd2) ||
+      vd===vs2 || (vv && ((vs1&indexAlignment)=/=0.U || indexCount===0.U ||
+        VectorConfig.alignedGroupsOverlap(vd,alignment,vs1,indexAlignment))) ||
+      (selectedGather===2.U && vtype(4,3)=/=1.U && VectorConfig.alignedGroupsOverlap(vs2,alignment,vs1,indexAlignment)) ||
       (!vm && (vs2===0.U || (vv && vs1===0.U))))
     // Execution mask is an EEW=1 source; a data source cannot read v0 at SEW.
     // Reductions also read the scalar vector seed, unlike unary selectors.
     val badMaskSourceAlias = !vm && ((needsVs2 && vs2===0.U) ||
       ((vectorSource1 || selectedReduction) && vs1===0.U))
+    val compressBad=selectedIndexGenerate===3.U && (
+      vd===vs2 || VectorConfig.alignedGroupContains(vs1,vd,alignment) ||
+      VectorConfig.alignedGroupContains(vs1,vs2,alignment))
     val fpIllegal=selectedFp && (vtype(4,3)<2.U || (frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U))
-    when(vtype(63) || !selectedSupported || fpIllegal || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias ||
+    when(vtype(63) || !selectedSupported || fpIllegal || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias || compressBad ||
       (!vm && !selectedMask && !selectedReduction && !selectedMaskScalar && vd === 0.U) ||
-      ((selectedReduction || selectedMaskScalar || selectedMaskPrefix || selectedIndexGenerate===1.U) && vstart=/=0.U) ||
+      ((selectedReduction || selectedMaskScalar || selectedMaskPrefix || selectedIndexGenerate===1.U || selectedIndexGenerate===3.U) && vstart=/=0.U) ||
       (selectedMaskPrefix && (vd===vs2 || (!vm && vd===0.U))) ||
-      (selectedIndexGenerate===1.U && vs2>=vd && vs2<(vd+&groupCount)) ||
+      (selectedIndexGenerate===1.U && VectorConfig.alignedGroupContains(vs2,vd,alignment)) ||
       (selectedSlide && !f6(0) && vd===vs2)) {
       illegal := true.B; state := finish
     }.otherwise {
@@ -407,7 +409,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     state := Mux(copyIndex+1.U >= destinationCount,Mux(scalarMove===2.U,reductionWrite,maskRead),copyRead)
   }
   when(state === maskRead) {
-    rf.io.readEnable := true.B; rf.io.readAddress := 0.U; state := maskCapture
+    rf.io.readEnable := true.B; rf.io.readAddress := Mux(indexGenerate===3.U,vs1,0.U); state := maskCapture
   }
   when(state === maskCapture) { mask := rf.io.readData; state := Mux(reduction,reductionSeedRead,dispatch) }
   when(state === dispatch) {
@@ -419,7 +421,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         }).asUInt
         state:=maskByteReadA
       }
-      .elsewhen(!vm && !mask(index(6,0)) && (fp || op =/= Op.merge.U)) { index := ParallelIncrement(index,true.B) }
+      .elsewhen((indexGenerate===3.U && !mask(index(6,0))) || (!vm && !mask(index(6,0)) && (fp || op =/= Op.merge.U))) { index := ParallelIncrement(index,true.B) }
       .otherwise {
         val offset = (index<<sew)(6,0)
         sourceOffset := offset(6,4)
@@ -443,6 +445,15 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       }
   }
   when(state===slideAddress) {
+    when(indexGenerate===3.U) {
+      // Source data was captured first. Independently form its dense target
+      // address from the selected-element count, keeping RAM selection separate.
+      val offset=(scalarResult(7,0)<<sew)(6,0)
+      destination:=(vd+offset(6,4))(4,0)
+      bitOffset:=Cat(offset(3,0),0.U(3.W))
+      byteMask:=(VecInit(Seq(1,3,15,255).map(_.U(16.W)))(sew)<<offset(3,0))(15,0)
+      state:=launch
+    }.otherwise {
     val up= !f6(0)
     val scalarElement=mulVX && Mux(up,index===0.U,a(8,0)===vl.pad(9))
     val zero= !up && (slideHuge || a(8,0)>=nextVl.pad(9))
@@ -458,7 +469,9 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     }.elsewhen(scalarElement || zero) {
       b:=Mux(scalarElement,command.scalar & VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(sew),0.U);state:=launch
     }.otherwise {state:=readA}
+    }
   }
+
   val ramByte=VecInit((0 until 16).map(i=>rf.io.readData(8*i+7,8*i)))(index(6,3))
   val predicateByte=VecInit((0 until 16).map(i=>mask(8*i+7,8*i)))(index(6,3))
   // Preserve the eighth index bit: advancing the last byte must yield 128,
@@ -550,10 +563,10 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         scalarResult:=ParallelIncrement(scalarResult(7,0),ramByte(index(2,0)))
       }
     }
-    when(slide || gather=/=0.U) {b:=value&elementMask}
+    when(slide || gather=/=0.U || indexGenerate===3.U) {b:=value&elementMask}
     when(gather=/=0.U && !vv) {gatherCached:=true.B}
     val fused=fp && fpOp>=FpOp.fma.U && fpOp<=FpOp.fnmadd.U
-    state := Mux(vectorSource1,readB,Mux(fused,readC,launch))
+    state := Mux(indexGenerate===3.U,slideAddress,Mux(vectorSource1,readB,Mux(fused,readC,launch)))
   }
   when(state === readB) {
     rf.io.readEnable := true.B; rf.io.readAddress := (vs1+sourceOffset)(4,0); state := captureB
@@ -580,7 +593,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   lane.io.in.valid := state === launch && !fp && !isMul && !isDiv && !io.flush
   lane.io.in.bits.a := a; lane.io.in.bits.b := b; lane.io.in.bits.sew := sew
   lane.io.in.bits.op := op; lane.io.in.bits.select := mask(index(6,0)); lane.io.in.bits.tag := index
-  streaming := !fp && !comparison && !isMul && !isDiv && !reduction && !maskScalar && scalarMove===0.U
+  streaming := !fp && !comparison && !isMul && !isDiv && !reduction && !maskScalar && scalarMove===0.U && indexGenerate=/=3.U
   val streamActive=state===slideAddress || state===dispatch || state===readA || state===captureA || state===readB || state===captureB || state===launch || state===awaitResult
   lane.io.out.ready := (Mux(streaming,streamActive,state===awaitResult)) && !fp && !isMul && !isDiv && !io.flush
   when(lane.io.in.fire) {
@@ -625,6 +638,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     resultData:=Mux(fp,unit.io.out.bits.data,integerData)
   }
   when(resultFire) {
+    when(indexGenerate===3.U) {scalarResult:=ParallelIncrement(scalarResult(7,0),true.B)}
     when(reduction) {reductionAccumulator:=resultData;index:=ParallelIncrement(index,true.B);state:=dispatch}
       .elsewhen(comparison) { resultBit := resultData(0); state := maskOldRead }
       .otherwise {
