@@ -23,6 +23,7 @@ uint64_t fp_reference(unsigned op,int d,unsigned rm,uint64_t a,uint64_t b,uint64
     softfloat_roundingMode=rm;softfloat_detectTininess=softfloat_tininess_afterRounding;softfloat_exceptionFlags=0;
     uint64_t x=0;
     switch(op) {
+    case 27:x=f64_add(f32_to_f64(a32),b64).v;break;
     case 0:x=d?f64_add(a64,b64).v:f32_add(a32,b32).v;break;
     case 1:x=d?f64_sub(a64,b64).v:f32_sub(a32,b32).v;break;
     case 2:x=d?f64_mul(a64,b64).v:f32_mul(a32,b32).v;break;
@@ -69,6 +70,6 @@ uint64_t fp_reference(unsigned op,int d,unsigned rm,uint64_t a,uint64_t b,uint64
         uint64_t top=d?UINT64_C(0x8000000000000000):UINT64_C(0x80000000);
         x=signedOut?(negative?top:top-1):(negative?0:(d?UINT64_MAX:UINT32_MAX));
     }
-    if(op<=10)x=canonical(x,d);
+    if(op<=10 || op==27)x=canonical(x,d);
     *out_flags=flags();return d?x:(uint32_t)x;
 }

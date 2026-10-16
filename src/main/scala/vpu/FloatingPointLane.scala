@@ -47,6 +47,7 @@ object FpOp {
   val fma=5; val fmsub=6; val fnmsub=7; val fnmadd=8
   val min=9; val max=10; val eq=11; val ne=12; val lt=13; val le=14; val gt=15; val ge=16
   val toUInt=21; val toInt=22; val fromUInt=23; val fromInt=24; val toUIntRtz=25; val toIntRtz=26
+  val widenAdd=27 // internal FP32 A + FP64 B -> FP64; not a standalone ISA conversion
   val sgnj=17; val sgnjn=18; val sgnjx=19; val classify=20
 }
 
@@ -125,12 +126,15 @@ class FloatingPointLane extends Module {
   io.out.valid := state===reply && !io.flush
   io.out.bits := response
   val isDiv=request.op===FpOp.div.U || request.op===FpOp.sqrt.U
-  val isMisc=request.op>=FpOp.min.U
+  val isWideAdd=request.op===FpOp.widenAdd.U
+  val isMisc=request.op>=FpOp.min.U && !isWideAdd
   when(io.in.fire) {
     request:=io.in.bits
     response:=0.U.asTypeOf(new FpResponse)
     response.tag:=io.in.bits.tag
-    val legal=(io.in.bits.rounding<=4.U || io.in.bits.op>=FpOp.toUIntRtz.U && io.in.bits.op<=FpOp.toIntRtz.U) && io.in.bits.op<=FpOp.toIntRtz.U
+    val rtz=io.in.bits.op>=FpOp.toUIntRtz.U && io.in.bits.op<=FpOp.toIntRtz.U
+    val legal=(io.in.bits.rounding<=4.U || rtz) && (io.in.bits.op<=FpOp.toIntRtz.U ||
+      (io.in.bits.op===FpOp.widenAdd.U && io.in.bits.double))
     response.illegal := !legal
     state:=Mux(legal,recode,reply)
   }
@@ -145,16 +149,17 @@ class FloatingPointLane extends Module {
     state:=recodeFinish
   }
   when(state===recodeFinish) {
+    ra:=Mux(request.double && !isWideAdd,IeeeRecode(11,53,request.a,norm64(0)),FpBits.wideRecRaw(raw32(0)))
     when(request.double) {
-      ra:=IeeeRecode(11,53,request.a,norm64(0));rb:=IeeeRecode(11,53,request.b,norm64(1));rc:=IeeeRecode(11,53,request.c,norm64(2))
+      rb:=IeeeRecode(11,53,request.b,norm64(1));rc:=IeeeRecode(11,53,request.c,norm64(2))
     }.otherwise {
-      ra:=FpBits.wideRecRaw(raw32(0));rb:=FpBits.wideRecRaw(raw32(1));rc:=FpBits.wideRecRaw(raw32(2))
+      rb:=FpBits.wideRecRaw(raw32(1));rc:=FpBits.wideRecRaw(raw32(2))
     }
-    state:=Mux(request.op>=FpOp.toUInt.U,convertStart,Mux(isDiv,divLaunch,Mux(isMisc,misc,prepare)))
+    state:=Mux(request.op>=FpOp.toUInt.U && !isWideAdd,convertStart,Mux(isDiv,divLaunch,Mux(isMisc,misc,prepare)))
   }
   val pre=Module(new StagedFmaPre)
   pre.io.start:=state===prepare && !io.flush;pre.io.flush:=io.flush
-  val isAdd=request.op===FpOp.add.U || request.op===FpOp.sub.U
+  val isAdd=request.op===FpOp.add.U || request.op===FpOp.sub.U || isWideAdd
   val isMul=request.op===FpOp.mul.U
   val signedZero=Cat(ra(64)^rb(64),0.U(64.W))
   pre.io.a:=ra

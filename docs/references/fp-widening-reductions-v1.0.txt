@@ -1,0 +1,29 @@
+Read-only RVV 1.0 reference; not project instructions.
+https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc
+
+=== Vector Widening Floating-Point Reduction Instructions
+
+Widening forms of the sum reductions are provided that
+read and write a double-width reduction result.
+
+----
+ # Simple reductions.
+ vfwredosum.vs vd, vs2, vs1, vm # Ordered sum
+ vfwredusum.vs vd, vs2, vs1, vm # Unordered sum
+----
+
+NOTE: Older assembler mnemonic `vfwredsum` is retained as alias for `vfwredusum`.
+
+The reduction of the SEW-width elements is performed as in the
+single-width reduction case, with the elements in `vs2` promoted
+to 2*SEW bits before adding to the 2*SEW-bit accumulator.
+
+NOTE: `vfwredosum.vs` handles inactive elements and NaN payloads analogously
+to `vfredosum.vs`; `vfwredusum.vs` does so analogously to `vfredusum.vs`.
+
+
+Official opcode rows retrieved 2026-10-16:
+vfwredusum.vs  31..26=0x31 vm vs2 vs1 14..12=0x1 vd 6..0=0x57
+vfwredosum.vs  31..26=0x33 vm vs2 vs1 14..12=0x1 vd 6..0=0x57
+
+Ordered folding is a valid deterministic unordered implementation. Double-width seed/result have EMUL=1; different-EEW data/seed sources cannot share a physical register.

@@ -28,6 +28,15 @@ object VectorConfig {
   }
   def belowLimit(avl:UInt,limit:UInt):Bool = {
     require(avl.getWidth==64 && limit.getWidth==8)
-    !avl(63,8).orR && avl(7,0)<limit
+    // Two-bit comparisons and equality compose as a balanced LUT tree, rather
+    // than a carry comparator feeding gather/control. The independent SAT
+    // miter checks all 64-bit values and all 8-bit limits.
+    val pairs=(0 until 4).map { k=>
+      val a=avl(2*k+1,2*k);val b=limit(2*k+1,2*k)
+      ((!a(1) && b(1)) || ((a(1)===b(1)) && !a(0) && b(0)), a===b)
+    }
+    val low=pairs(1)._1 || (pairs(1)._2 && pairs(0)._1)
+    val high=pairs(3)._1 || (pairs(3)._2 && pairs(2)._1)
+    !avl(63,8).orR && (high || (pairs(3)._2 && pairs(2)._2 && low))
   }
 }

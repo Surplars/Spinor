@@ -474,3 +474,9 @@ verify-m29:
 	$(PYTHON) scripts/verify_m29.py
 package-m29:
 	$(PYTHON) scripts/package.py --milestone m29
+
+.PHONY: verify-m30 package-m30
+verify-m30:
+	$(PYTHON) scripts/verify_m30.py
+package-m30:
+	$(PYTHON) scripts/package.py --milestone m30

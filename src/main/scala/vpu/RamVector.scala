@@ -9,7 +9,7 @@ import chisel3.util._
   * LMUL; there are no full-group FF snapshots. Basic integer data operations may overlap elements; other units remain serial.
   * Completing non-faulting arithmetic atomically flips destination versions.
   * Shared FP32/FP64 lane with same-width integer conversions. NOT full RVV: LSU,
-  * widening/narrowing conversions, widening FP reductions and remaining integer groups absent.
+  * widening/narrowing conversions and remaining integer groups absent.
   */
 class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean = false, enableMemoryCommit: Boolean = false) extends Module {
   override def desiredName = if(enableMemoryCommit) (if(chunkBits==16) "RamVectorFpMemory16" else "RamVectorFpMemory") else if(enableFp) (if(chunkBits==16) "RamVectorFp16" else "RamVectorFp") else if (!useRam) "RamVectorFlops" else if (chunkBits==16) "RamVector16" else "RamVector"
@@ -154,7 +154,9 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val integerReductionEncoding=mulVV && f6<=7.U
   val fpReductionEncoding=fpVV && f6(5,3)===0.U && f6(0) // 1/3 sum, 5 min, 7 max
   val wideningReductionEncoding=vv && f6(5,1)===0x18.U // vwredsumu/sum, f6=0x30/31
-  val reductionEncoding=integerReductionEncoding || fpReductionEncoding || wideningReductionEncoding
+  val fpWidenReductionEncoding=fpVV && f6(5,2)===12.U && f6(0) // f6=0x31/33
+  val anyWidenReduction=wideningReductionEncoding || fpWidenReductionEncoding
+  val reductionEncoding=integerReductionEncoding || fpReductionEncoding || anyWidenReduction
   val maskLogicEncoding=mulVV && f6>=0x18.U && f6<=0x1f.U
   val scalarReadEncoding=mulVV && f6===0x10.U && vm && vs1===0.U
   val scalarWriteEncoding=mulVX && f6===0x10.U && vm && vs2===0.U
@@ -180,6 +182,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       fpSupported:=true.B
       fpDecoded:=Mux(f6(2),Mux(f6(1),FpOp.max.U,FpOp.min.U),FpOp.add.U)
     }
+    when(fpWidenReductionEncoding) {fpSupported:=true.B;fpDecoded:=FpOp.widenAdd.U}
     entryFp(0x00,FpOp.add); entryFp(0x02,FpOp.sub)
     entryFp(0x04,FpOp.min); entryFp(0x06,FpOp.max)
     entryFp(0x08,FpOp.sgnj); entryFp(0x09,FpOp.sgnjn); entryFp(0x0a,FpOp.sgnjx)
@@ -300,7 +303,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val compressBad=selectedIndexGenerate===3.U && (
       vd===vs2 || VectorConfig.alignedGroupContains(vs1,vd,alignment) ||
       VectorConfig.alignedGroupContains(vs1,vs2,alignment))
-    val wideningReductionBad=wideningReductionEncoding && (vtype(4,3)===3.U ||
+    val wideningReductionBad=anyWidenReduction && (vtype(4,3)===3.U ||
       VectorConfig.alignedGroupContains(vs1,vs2,alignment))
     val fpIllegal=selectedFp && (vtype(4,3)<2.U || (frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U))
     when(vtype(63) || !selectedSupported || fpIllegal || wideningReductionBad || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias || compressBad ||
@@ -537,7 +540,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val elementMask = VecInit(Seq(8,16,32,64).map(w => ((BigInt(1)<<w)-1).U(64.W)))(sew)
   // Keep source geometry at SEW, but operate and commit the scalar at 2*SEW.
   // Owner instruction is stable until completion/flush; no extra mode register.
-  val arithmeticSew=Mux(wideningReductionEncoding,Cat(sew(1)||sew(0),!sew(0)),sew)
+  val arithmeticSew=Mux(anyWidenReduction,Cat(sew(1)||sew(0),!sew(0)),sew)
   val accumulatorMask=VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(arithmeticSew)
   when(state===scalarRead) {rf.io.readEnable:=true.B;rf.io.readAddress:=vs2;state:=scalarCapture}
   when(state===scalarCapture) {
@@ -644,7 +647,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     unit.io.in.bits.a:=Mux(fpReverse,b,Mux(fpDestMultiply,c,a))
     unit.io.in.bits.b:=Mux(fpReverse,a,b)
     unit.io.in.bits.c:=Mux(fpDestMultiply,a,c)
-    unit.io.in.bits.op:=fpOp; unit.io.in.bits.double:=sew===3.U
+    unit.io.in.bits.op:=fpOp; unit.io.in.bits.double:=arithmeticSew===3.U
     unit.io.in.bits.rounding:=frm; unit.io.in.bits.tag:=index
     unit.io.out.ready:=state===awaitResult && fp && !io.flush
     when(unit.io.in.fire) { state:=awaitResult }
