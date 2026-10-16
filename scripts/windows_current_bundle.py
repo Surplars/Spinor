@@ -6,8 +6,9 @@ from zipfile import ZipFile,ZIP_DEFLATED
 ROOT=Path(__file__).resolve().parents[1]
 sha=lambda b:hashlib.sha256(b).hexdigest()
 def main():
- p=argparse.ArgumentParser();p.add_argument('--output',type=Path,default=ROOT/'spinor-windows-m31.zip');a=p.parse_args()
- files={n:(ROOT/'scripts/windows-current'/n).read_bytes() for n in ['run.ps1','run_vivado.tcl','RUN_ME_FIRST.txt']}
+ p=argparse.ArgumentParser();p.add_argument('--output',type=Path,default=ROOT/'spinor-windows-m31.zip');p.add_argument('--prefix',default='spinor-m31');a=p.parse_args()
+ assert re.fullmatch(r'[A-Za-z0-9_-]+',a.prefix),'Invalid ZIP prefix'
+ files={n:(ROOT/'scripts/windows-current'/n).read_bytes() for n in ['run.ps1','pack_results.ps1','run_vivado.tcl','RUN_ME_FIRST.txt']}
  files.update({f'rtl/{top}.sv':(ROOT/f'build/rtl/{top}.sv').read_bytes() for top in ['SpinorVpu','RamVectorFp']})
  records={}
  for name,stem,rtl in [('extensions','build/integer-extensions/RamVectorFp-smoke-rtl','RamVectorFp'),('integration','build/monitor/integration-spinor/vector-memory-smoke','SpinorVpu')]:
@@ -38,17 +39,17 @@ def main():
   m=re.search(r'/\*={10,}.*?={10,}\*/',src.read_text(),re.S)
   if m and m[0] not in notices:notices.append(m[0])
  files['licenses/HardFloat-source-notices.txt']=('\n\n'.join(notices)+'\n').encode()
- files['provenance.json']=(json.dumps(dict(milestone='M31',top='SpinorVpu',part='xczu15eg-ffvb1156-2-i',
+ files['provenance.json']=(json.dumps(dict(milestone='M31',runner_revision='M31-fix1',top='SpinorVpu',part='xczu15eg-ffvb1156-2-i',
   tests=records,DSP_exporter=manifest,default_period_ns=3.333333,source_builder_sha256=sha(Path(__file__).read_bytes()),
   Vivado_execution='NOT_RUN',Windows_execution='NOT_RUN',post_route_SDF_simulation='NOT_RUN',
   passes_300MHz=None,passes_500MHz=None,clock_scope='OOC, host IO delays and HD.CLK_SRC unspecified'),indent=2)+'\n').encode()
  files['input-sha256.json']=(json.dumps({n:sha(b) for n,b in sorted(files.items())},indent=2)+'\n').encode()
  target=a.output.resolve();target.parent.mkdir(parents=True,exist_ok=True)
  with ZipFile(target,'w',compression=ZIP_DEFLATED) as z:
-  for name,data in sorted(files.items()):z.writestr('spinor-m31/'+name,data)
+  for name,data in sorted(files.items()):z.writestr(a.prefix+'/'+name,data)
  with ZipFile(target) as z:
   assert z.testzip() is None and len(z.namelist())==len(set(z.namelist()))
-  for n,b in files.items():assert z.read('spinor-m31/'+n)==b
+  for n,b in files.items():assert z.read(a.prefix+'/'+n)==b
  target.with_suffix('.zip.sha256').write_text(sha(target.read_bytes())+'  '+target.name+'\n')
  print(target,target.stat().st_size,'bytes',sha(target.read_bytes()))
 if __name__=='__main__':main()

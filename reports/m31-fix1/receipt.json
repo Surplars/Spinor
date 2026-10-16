@@ -1,0 +1,75 @@
+{
+  "status": "PASS",
+  "milestone": "M31-fix1",
+  "scope": "PACKAGING_ONLY_NO_RTL_OR_TIMING_CHANGE",
+  "original_M31_commit": "2deb1e742e1fdff7bd837a967991c1625d9a51ef",
+  "hardware_sources_unchanged": true,
+  "validation": {
+    "status": "PASS",
+    "scope": "LINUX_POWERSHELL_7_5_4_MOCK_LAUNCH_AND_REAL_ZIP_RECOVERY; WINDOWS_5_1_NOT_EXECUTED",
+    "bundle_sha256": "312685cfd4cbe03cb1964ad815e457863daef0ba48a2023b70fc6b62bc8404ef",
+    "hardware_Tcl_TB_unchanged": true,
+    "cases": [
+      {
+        "native_exit": 0,
+        "runner_exit": 0,
+        "repacked_twice": true,
+        "payloads_unchanged": true
+      },
+      {
+        "native_exit": 7,
+        "runner_exit": 1,
+        "repacked_twice": true,
+        "payloads_unchanged": true
+      }
+    ],
+    "input_sha256": {
+      "tests/test_windows_pack_results.py": "9f73241a477a7497ab2215a4145b814322d2ac7418365510c24b7b6dfe9be0e9",
+      "scripts/windows_current_bundle.py": "eb97d1d0b01e5f316236862501fd0dfeaa8e2f0a4a41d759987009ad6e2eab15",
+      "scripts/windows-current/RUN_ME_FIRST.txt": "6b39c0d2368a0f65e1a55c1b57013c822369fc2ac6cefc5a77ed95cfdd8cb2ea",
+      "scripts/windows-current/pack_results.ps1": "ea92bb3a79a50168e04fb546d3dad2fd858f35262cd64361be199040f92c40e9",
+      "scripts/windows-current/run.ps1": "0ed48e23dd241edc4f7bcc541b0051b0e067bba27a4eeb898be656aa66fce43c",
+      "scripts/windows-current/run_vivado.tcl": "edc4bc90cf906252a5e0f91a1c3a1001207fe398fd7677f17f512a6561d1c6f8",
+      "build/windows-m31-fix1-validation/existing-destination-0.log": "315505f40896395c0b53394cb1d70103410176810c219c0d734ce757ce2df3e3",
+      "build/windows-m31-fix1-validation/existing-destination-7.log": "3c3f26791ac04bb0240fe92b091cd7f5ad5740be03cf7bc5bfbdc0e158bfc3f4",
+      "build/windows-m31-fix1-validation/fresh-exit-0.log": "2d5df0ca1f13bc85e10c63c970b0ea9e8848fe9558521113b20d5ad8e02a6496",
+      "build/windows-m31-fix1-validation/fresh-exit-7.log": "01d77e952d1c722ee8656216846d1d4d0150ce6b091eb3e8a70c8785fb2f1571",
+      "build/windows-m31-fix1-validation/inside-destination-0.log": "b9e75b102cc5de287c46afb9781035ae98ee1d17c4a1ee1c03815f26efb84019",
+      "build/windows-m31-fix1-validation/inside-destination-7.log": "b9e75b102cc5de287c46afb9781035ae98ee1d17c4a1ee1c03815f26efb84019",
+      "build/windows-m31-fix1-validation/repack-0-0.log": "740e9ca4b3b82cb45af9e631167d88516cbd62883a949fbf45c5c4526f77ea8a",
+      "build/windows-m31-fix1-validation/repack-0-1.log": "75aaf69aa77813c74990a74759811f6cde7b9614b725abe408afcdbe3dda4928",
+      "build/windows-m31-fix1-validation/repack-7-0.log": "7610d30cecc56bedff48147e2eb9b0cc708599d6a7a710bd8990b1b078674b8f",
+      "build/windows-m31-fix1-validation/repack-7-1.log": "73ac139ad7168303857bb6578f477b0847d61d31586c8d9dca1a99fac273cbe6"
+    }
+  },
+  "Windows_PowerShell_5_1_execution": false,
+  "Vivado_reports_received": false,
+  "passes_300MHz": null,
+  "passes_500MHz": null,
+  "source_sha256": {
+    "scripts/report_windows_fix1.py": "f037f0d7b955866e7f78cce57f487320b6560c5758e74eaa9e0737a375ad6ba5",
+    "scripts/windows_current_bundle.py": "eb97d1d0b01e5f316236862501fd0dfeaa8e2f0a4a41d759987009ad6e2eab15",
+    "tests/test_windows_pack_results.py": "9f73241a477a7497ab2215a4145b814322d2ac7418365510c24b7b6dfe9be0e9",
+    "docs/m31-windows-fix1.md": "44023a552e954147444129f49f13a3263b40d45573d3e5635c4352a375a85131",
+    "scripts/windows-current/RUN_ME_FIRST.txt": "6b39c0d2368a0f65e1a55c1b57013c822369fc2ac6cefc5a77ed95cfdd8cb2ea",
+    "scripts/windows-current/pack_results.ps1": "ea92bb3a79a50168e04fb546d3dad2fd858f35262cd64361be199040f92c40e9",
+    "scripts/windows-current/run.ps1": "0ed48e23dd241edc4f7bcc541b0051b0e067bba27a4eeb898be656aa66fce43c",
+    "scripts/windows-current/run_vivado.tcl": "edc4bc90cf906252a5e0f91a1c3a1001207fe398fd7677f17f512a6561d1c6f8"
+  },
+  "artifact_sha256": {
+    "build/windows-m31-fix1-validation/results.json": "751051114a28447d2af112724c12b50695fefd1149aee515718bf1c679d41864",
+    "spinor-windows-m31-fix1.zip": "312685cfd4cbe03cb1964ad815e457863daef0ba48a2023b70fc6b62bc8404ef",
+    "spinor-windows-m31-fix1.zip.sha256": "aacf610d23a047e15127ad8261db575eaa54ca420d06ee998a5fa207557af0c6",
+    "reports/m31/receipt.json": "4470d210080c9d5922be14a81e8d4d4669fb48b3405077e974115080fa58e202",
+    "build/windows-m31-fix1-validation/existing-destination-0.log": "315505f40896395c0b53394cb1d70103410176810c219c0d734ce757ce2df3e3",
+    "build/windows-m31-fix1-validation/existing-destination-7.log": "3c3f26791ac04bb0240fe92b091cd7f5ad5740be03cf7bc5bfbdc0e158bfc3f4",
+    "build/windows-m31-fix1-validation/fresh-exit-0.log": "2d5df0ca1f13bc85e10c63c970b0ea9e8848fe9558521113b20d5ad8e02a6496",
+    "build/windows-m31-fix1-validation/fresh-exit-7.log": "01d77e952d1c722ee8656216846d1d4d0150ce6b091eb3e8a70c8785fb2f1571",
+    "build/windows-m31-fix1-validation/inside-destination-0.log": "b9e75b102cc5de287c46afb9781035ae98ee1d17c4a1ee1c03815f26efb84019",
+    "build/windows-m31-fix1-validation/inside-destination-7.log": "b9e75b102cc5de287c46afb9781035ae98ee1d17c4a1ee1c03815f26efb84019",
+    "build/windows-m31-fix1-validation/repack-0-0.log": "740e9ca4b3b82cb45af9e631167d88516cbd62883a949fbf45c5c4526f77ea8a",
+    "build/windows-m31-fix1-validation/repack-0-1.log": "75aaf69aa77813c74990a74759811f6cde7b9614b725abe408afcdbe3dda4928",
+    "build/windows-m31-fix1-validation/repack-7-0.log": "7610d30cecc56bedff48147e2eb9b0cc708599d6a7a710bd8990b1b078674b8f",
+    "build/windows-m31-fix1-validation/repack-7-1.log": "73ac139ad7168303857bb6578f477b0847d61d31586c8d9dca1a99fac273cbe6"
+  }
+}

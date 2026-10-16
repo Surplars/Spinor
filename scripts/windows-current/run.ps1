@@ -5,6 +5,9 @@ param(
     [ValidateRange(1,32)][int]$Threads = 4
 )
 $ErrorActionPreference = 'Stop'
+# Fail before a long Vivado run if ZIP support cannot be loaded.
+Add-Type -AssemblyName System.IO.Compression
+Add-Type -AssemblyName System.IO.Compression.FileSystem
 $root = $PSScriptRoot
 $vivado = (Resolve-Path -LiteralPath $VivadoBat -ErrorAction Stop).Path
 if (-not (Test-Path -LiteralPath $vivado -PathType Leaf)) { throw 'Pass the installed vivado.bat path.' }
@@ -37,28 +40,6 @@ try {
 } finally {
     Pop-Location
 }
-# Include nested XSim logs/TBs, WDB and DSP data; omit only tool working caches.
-$files = @(Get-ChildItem -LiteralPath $out -File -Recurse | Where-Object {
-    $_.FullName -notmatch '[\\/]\.Xil[\\/]' -and $_.FullName -notmatch '[\\/]xsim\.dir[\\/]'
-})
-$hashes = [ordered]@{}
-foreach ($file in $files) {
-    $relative = $file.FullName.Substring($out.Length+1).Replace('\','/')
-    $hashes[$relative] = (Get-FileHash -LiteralPath $file.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
-}
-$hashes | ConvertTo-Json -Depth 4 | Set-Content -LiteralPath (Join-Path $out 'output-sha256.json') -Encoding UTF8
-$files += Get-Item -LiteralPath (Join-Path $out 'output-sha256.json')
-$zip = Join-Path $root ("spinor_results_M31_{0}_{1}.zip" -f $Mode,$stamp)
-# ZipArchive streams files, supports >2GB and preserves relative paths.
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-$archive = [System.IO.Compression.ZipFile]::Open($zip,[System.IO.Compression.ZipArchiveMode]::Create)
-try {
-    foreach ($file in $files) {
-        $relative = $file.FullName.Substring($out.Length+1).Replace('\','/')
-        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($archive,$file.FullName,$relative,[System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
-    }
-} finally { $archive.Dispose() }
-Write-Host "Result folder: $out"
-Write-Host "Upload this ZIP: $zip"
+& (Join-Path $root 'pack_results.ps1') -RunDirectory $out
 if ($toolExit -ne 0) { throw "Vivado failed (exit $toolExit); upload the result ZIP for diagnosis." }
 Write-Host 'Flow finished. Check run-summary.txt and timing_routed.rpt; tool success does not mean timing passed.'

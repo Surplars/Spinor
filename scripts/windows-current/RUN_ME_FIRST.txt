@@ -39,3 +39,10 @@ The design is partial RVV with one instruction capacity, not a complete V/RVA23
 implementation. It is not yet integrated with Orbital/Linux. No board .bit is
 produced. DSP export contains nonempty rows, but arc completeness needs review.
 Input hashes and licenses are included. Keep the full extracted package unchanged.
+
+M31-fix1 packaging compatibility update: explicitly loads both Compression
+assemblies for Windows PowerShell 5.1. RTL and Vivado Tcl are unchanged.
+If a previous run finished Vivado but failed to ZIP, do not rerun Vivado.
+Run the standalone pack_results.ps1 with -RunDirectory pointing to that run.
+It refreshes output hashes, excludes caches and avoids a duplicate/self-hashed
+output-sha256.json when repacking. See docs/m31-windows-fix1.md in the repo.
