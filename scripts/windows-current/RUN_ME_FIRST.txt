@@ -1,0 +1,41 @@
+Spinor VPU M31 / Windows + Vivado 2025.1 / xczu15eg-ffvb1156-2-i
+
+1. Fully extract this ZIP to a writable directory, for example D:\surplars\Downloads.
+2. Open PowerShell and enter the extracted spinor-m31 directory.
+3. Run (replace the Vivado path with your installed path):
+
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -VivadoBat "E:\Xilinx\2025.1\Vivado\bin\vivado.bat"
+
+Default -Mode All: first run both XSim self-checks, then synthesize/place/phys_opt/route
+SpinorVpu afresh using 3.333333ns (300MHz). This package requires no Java/Mill/Python.
+Install Vivado's Zynq UltraScale+ device support and a license covering ZU15EG.
+No checkpoint resume parameter: this cannot accidentally evaluate an old M5 design.
+
+Optional separate phases:
+... -Mode Rtl          Functional XSim only (usually faster).
+... -Mode Implement    Fresh implementation only; does NOT reuse the Rtl run.
+... -PeriodNs 2.000000  Separate 500MHz experiment; not the default target.
+... -Threads 4         Adjust host CPU/memory use.
+
+Rtl runs a self-checking packed integer extension oracle and public SpinorVpu
+memory/monitor integration test (also FP, reductions, masks and extensions).
+The generated TB uses an abstract ~10ns tick with drive settling; changing the
+implementation period does NOT turn behavioral simulation into a timing proof.
+Port waveforms are retained in nested simulation directories (.wdb, open in Vivado).
+Cloud replays these exact packaged tests with Icarus. Local XSim/Vivado have NOT
+been executed when this bundle was built. It does not run post-route SDF simulation.
+
+After either success or failure, run.ps1 prints a spinor_results_M31_*.zip path.
+Upload that ZIP; it contains input/output hashes, logs, XSim results/waveforms,
+setup/hold paths, resource reports, matching routed.dcp/routed.edf and DSP arc data.
+Intermediate tool caches are omitted. Large result files are streamed into ZIP.
+
+For timing, inspect run-summary.txt, timing_routed.rpt, setup_paths.rpt,
+hold_paths.rpt, route_status.rpt and constraint coverage. Finishing the Tcl flow
+or obtaining a positive setup slack alone does not establish complete timing.
+This is standalone OOC: host IO delays and HD.CLK_SRC are unspecified; board/CPU
+interfaces and actual SoC clocking need their own constraints and implementation.
+The design is partial RVV with one instruction capacity, not a complete V/RVA23
+implementation. It is not yet integrated with Orbital/Linux. No board .bit is
+produced. DSP export contains nonempty rows, but arc completeness needs review.
+Input hashes and licenses are included. Keep the full extracted package unchanged.

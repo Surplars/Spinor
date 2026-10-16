@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M30）
+# Spinor 指令覆盖矩阵（M31）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -15,7 +15,7 @@
 | 排列/索引生成 | vid.v、viota.m；M24新增整数slideup/down vx/vi、slide1up/down vx；mask、22种SEW/LMUL、除viota外可vstart恢复；M25新增vrgather vv/vx/vi、vrgatherei16 vv；M27新增vcompress.vm | vfslide1等未实现 |
 | 显式mask运算 | 8种mask逻辑.mm、vcpop.m/vfirst.m，M22新增vmsbf/vmsif/vmsof | 8位通路；viota使用独立元素结果路径 |
 | 标量/整组搬运 | M19新增vmv.x.s和vmv.s.x | FP标量搬运及整组寄存器搬运未实现 |
-| 定点/宽窄/进位 | 未实现 | 饱和、平均、clip、宽化/窄化算术及扩展、carry/borrow等 |
+| 定点/宽窄/进位 | M31新增vzext/vsext.vf2/vf4/vf8，源EEW独立寻址，支持mask/vstart与合法高位重叠 | 饱和、平均、clip、宽化/窄化算术、carry/borrow等仍未实现 |
 | 访存 | 单位步长vle/vse，EEW8/16/32/64，独立EMUL、mask、物理故障/停止/vstart前缀 | 无strided/indexed/segments/FOF/whole-register/mask load-store；仅物理普通RAM |
 | CPU/SoC | SpinorVpu顶层、TL物理主端、monitor从端、独立VpuHostBoundary | 尚未接Orbital；需VM/PMP/一致性、精确异常和上下文集成 |
 | Linux监控 | ABI1.0，UIO用户态工具 | 未作真实内核/上板测试；不是计算作业驱动 |

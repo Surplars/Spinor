@@ -195,8 +195,20 @@ command(32'hc6841857,0,0,0,80'hf20003,1,0,0,3,8'd4,64'h10);
 ctx(32,0,0,64'h4025000000000000);
 command(32'h02804457,1,0,0,80'hf20004,0,0,0,3,8'd4,64'h10);
 ctx(16,0,0,64'h400000013f800001);ctx(17,0,0,64'h4080000140400001);
+// Packed e8/e16 sources are extended using their own source address geometry.
+ctx(16,1,64'h0001ffff7fff8000,0);ctx(17,1,0,0);
+cancel(32'h4a83a857,18,1'b0);
+ctx(32,0,0,64'h4025000000000000);ctx(33,0,0,64'habcdef0123456789);
+command(32'h4a832857,0,0,0,80'hf30001,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,64'h00007fff00008000);ctx(33,0,0,64'h000000010000ffff);
+command(32'h4a83a857,0,0,0,80'hf30002,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,64'h00007fffffff8000);ctx(33,0,0,64'h00000001ffffffff);
+// Fractional source may not overlap the destination, including with VL=0.
+command(32'h4b03a857,0,0,0,80'hf30003,1,0,0,3,8'd4,64'h10);
+command(32'h03004457,1,0,0,80'hf30004,0,0,0,3,8'd4,64'h10);
+ctx(16,0,0,64'h00008000ffff8001);ctx(17,0,0,64'h0000000200000000);
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h3001);monAccess(64'h18,4,0,64'h3ffff);
+monAccess(64'h10,4,0,64'h3101);monAccess(64'h18,4,0,64'h7ffff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});

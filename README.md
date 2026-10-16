@@ -1,16 +1,16 @@
 # 砺矢 · Spinor VPU
 
 目标器件 `xczu15eg-ffvb1156-2-i`；采用 **Mill 1.1.7 / Scala 2.13.18 / Chisel 7.16.0**。
-300 MHz 为基线设计目标，500 MHz 为候选目标。M5 已有满足 3.333 ns 已约束内部时序的本地 OOC 结果；当前 M30 尚未经过 Vivado 实现验证。
+300 MHz 为基线设计目标，500 MHz 为候选目标。M5 已有满足 3.333 ns 已约束内部时序的本地 OOC 结果；当前 M31 尚未经过 Vivado 实现验证。
 
 **当前是含整数与部分浮点的向量原型，不是完整 RVV，尚未接入 Orbital CPU。**
 尚未实现完整 V / Zvfhmin / Zvbb / Zvkt；不能向软件发布 `misa.V` 或 RVA23 合规声明。
-命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M30**：新增 `vfwredosum.vs`、`vfwredusum.vs`，FP32源精确提升并与FP64 seed归约，复用现有RAM与共享浮点流水；优化AVL/gather边界比较的组合链。保留FP路径优化、整数归约、标量搬运、独立 `VpuHostBoundary` 与monitor MMIO从端。见 [M30说明](docs/m30-fp-widening-reductions.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
+命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M31**：新增 `vzext/vsext.vf2/vf4/vf8`，源 EEW 独立寻址并复用 RAM/整数流水；提供当前顶层的 Windows XSim 自检及 300MHz 全新 Vivado 实现包。保留FP路径优化、整数归约、标量搬运、独立 `VpuHostBoundary` 与monitor MMIO从端。见 [M31说明和本地命令](docs/m31-integer-extensions.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
 仅物理普通 RAM、单事务，访存采用逐元素提交和延迟停止；不支持 MMIO/分页/PMP/一致性，尚未接入 Orbital CPU。
 **访存期间 flush 必须等待 Completion/status，不能按算术指令立即丢弃 token。** 见 [M10 合同](docs/m10-memory.md)。
 已加入 [M8 的 220 组性能对照](archive/m8/reports/performance.md)，并检查输出结果。
-M30交付前强制检查两个顶层的固定100ps/段云端条件预算均≤3.333ns；物理300MHz仍未验证。
-最新结果和输入散列见 [M30 报告](reports/m30/evaluation.md)；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 是物理基线。
+M31交付前强制检查两个顶层的固定100ps/段云端条件预算均≤3.333ns；物理300MHz仍未验证。
+最新结果和输入散列见 [M31 报告](reports/m31/evaluation.md)；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 是物理基线。
 命名与设计方向见 [项目介绍](docs/lishi.md)。
 M4 原始报告保存在 [归档](archive/m4/reports/evaluation.md)。后续本地 Vivado 的 M4 OOC 结果及其时钟限制另记录在 M5 报告中。
 前一版浮点基线保存在 [M3](archive/m3/reports/evaluation.md)。
@@ -24,8 +24,8 @@ M1/M2 的原始证据保存在 [M1](archive/m1/reports/evaluation.md) / [M2](arc
 git clone https://github.com/Surplars/Spinor.git
 cd Spinor
 make bootstrap
-python3 scripts/verify_m30.py
-python3 scripts/package.py --milestone m30
+python3 scripts/verify_m31.py
+python3 scripts/package.py --milestone m31
 ```
 
 验证入口会准备固定版本 SoftFloat 和 RapidWright；首次执行需要网络访问工具锁文件中的下载地址。
@@ -36,6 +36,7 @@ bootstrap 下载约 714 MiB 的 OSS CAD Suite，校验 SHA-256 并解压到 `too
 不安装系统包，不修改 HOME/网络/信任配置，不安装或调用 Verilator。
 Mill 首次运行会下载 JDK 和 Maven 依赖，工具及缓存保留在本工程内。
 首次浮点检查另外下载、校验并构建固定版本 SoftFloat；需要 GCC 和 Make。
+M31 的 Windows 编排检查额外下载约 72MiB、SHA 固定的 Linux PowerShell 7.5.4；仅用于运行交付脚本测试，不作为 HDL 仿真器。
 M4 另下载固定版本 RapidWright standalone（约 110 MiB）和 ZU15EG 器件数据库（约 6.5 MiB），
 只做 API/数据库能力检查；不把该检查当作设计时序分析。
 云端工具及浮点参考已安装。`make verify` / `make verify-m2` 保留旧阶段入口。
@@ -141,3 +142,5 @@ M5 的本地 OOC 结果为 setup +0.477 ns、hold +0.036 ns；云端完成 M4/M5
 
 最终 `.bit` 生成和 ZU15EG-2 的实际时序仍需要支持该器件的 AMD 实现工具。
 此工程不生成假的 bitstream，也不把开源映射结果当作 300/500 MHz 已通过。
+
+- M31：整数零/符号扩展，独立源 EEW 与 EMUL 重叠检查；当前 Windows XSim + 300MHz OOC 验证包见 [本地步骤](docs/m31-integer-extensions.md)。

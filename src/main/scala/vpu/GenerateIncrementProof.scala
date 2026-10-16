@@ -34,10 +34,14 @@ class IncrementProof extends Module {
   val overlapMismatch=aligned &&
     (VectorConfig.alignedGroupsOverlap(base,alignment,address5,alignB)=/=
       (base<(address5+&countB) && address5<(base+&count)))
+  // Widening overlap: aligned narrower source must end at destination end.
+  // Cover every pair of 5-bit bases and power-of-two physical group sizes.
+  val highPartMismatch=aligned && countB<count &&
+    (((base^address5)===(alignment^alignB))=/=((base+&count)===(address5+&countB)))
   val alignmentMismatch=(alignment=/=(count-1.U).pad(5)) ||
     (VectorConfig.countAlignment(count)=/=alignment)
   val endMismatch=(base & alignment)===0.U && (base+&count)>32.U
-  io.mismatch:=overlapMismatch || alignmentMismatch || endMismatch || groupMismatch || increments || (address=/=(io.base+offset.pad(64))) || configMismatch
+  io.mismatch:=highPartMismatch || overlapMismatch || alignmentMismatch || endMismatch || groupMismatch || increments || (address=/=(io.base+offset.pad(64))) || configMismatch
 }
 object GenerateIncrementProof extends App {
   val path=Paths.get(args(0));Files.createDirectories(path.getParent)

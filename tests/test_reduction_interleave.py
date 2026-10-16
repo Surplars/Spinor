@@ -88,8 +88,19 @@ execute(0x31,1,8,8,31,[0,0x40250000,0x40400000,0x40800000])
 setwords(8,[0x3f800000]*4)
 execute(0,1,8,8,16,[0x40400000]*4)
 execute(0x17,2,24,8,3,[0x40400000,0x40400000,0x40a00000,0x40a00000])
+# Smaller packed sources must not use destination SEW for RAM offsets.
+setwords(16,[0x7fff8000,0x0001ffff,0,0])
+execute(0x12,2,8,16,6,[0x8000,0x7fff,0xffff,1])
+execute(0x12,2,8,16,7,[0xffff8000,0x7fff,0xffffffff,1])
+execute(0,0,24,8,8,[0xffff0000,0xfffe,0xfffffffe,2])
+setwords(16,[0xff7f8001,0,0,0])
+execute(0x12,2,8,16,4,[1,0x80,0x7f,0xff])
+execute(0x12,2,8,16,5,[1,0xffffff80,0x7f,0xffffffff])
+setwords(8,[0x3f800000]*4);setwords(16,[0x40000000]*4)
+execute(0,1,24,8,16,[0x40400000]*4)
+execute(0x17,2,24,8,3,[0x3f800000,0x3f800000,0x40400000,0x40400000])
 for r in range(32):ctx(r)
-lines+=['$display("PASS reduction-interleave 39 vector instructions");$finish;end endmodule']
+lines+=['$display("PASS reduction-interleave 46 vector instructions");$finish;end endmodule']
 tb=OUT/'tb.sv';tb.write_text('\n'.join(lines));label='mapped' if args.mapped else 'rtl'
 rtl=ROOT/('build/synth/RamVectorFp/mapped.v' if args.mapped else 'build/rtl/RamVectorFp.sv')
 files=[tb,rtl];extra=[]
@@ -98,5 +109,5 @@ with (OUT/(label+'-compile.log')).open('w') as log:
  subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/iverilog'),'-g2012','-s','tb','-DTOP=RamVectorFp',*extra,'-o',str(OUT/label),*map(str,files)],check=True,stdout=log,stderr=log)
 run=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],capture_output=True,text=True)
 (OUT/(label+'.log')).write_text(run.stdout+run.stderr);assert run.returncode==0,run.stdout+run.stderr
-result=dict(status='PASS',mapped=args.mapped,vector_instructions=39,sha256={str(x.relative_to(ROOT)):hashlib.sha256(x.read_bytes()).hexdigest() for x in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
+result=dict(status='PASS',mapped=args.mapped,vector_instructions=46,sha256={str(x.relative_to(ROOT)):hashlib.sha256(x.read_bytes()).hexdigest() for x in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

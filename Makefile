@@ -480,3 +480,11 @@ verify-m30:
 	$(PYTHON) scripts/verify_m30.py
 package-m30:
 	$(PYTHON) scripts/package.py --milestone m30
+
+.PHONY: verify-m31 package-m31 windows-m31
+verify-m31:
+	$(PYTHON) scripts/verify_m31.py
+package-m31:
+	$(PYTHON) scripts/package.py --milestone m31
+windows-m31:
+	$(PYTHON) scripts/windows_current_bundle.py
