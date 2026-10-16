@@ -123,8 +123,26 @@ ctx(48,0,0,64'h0000000100000000);ctx(49,0,0,64'h0000000500000002);
 cancel(32'h3b02ec57,18,1'b0);
 ctx(48,0,0,64'h0000000100000000);ctx(49,0,0,64'h0000000500000002);
 command(32'h3a80b457,0,0,0,80'hed0005,1,0,0,3,8'd4,64'h10);
+// Gather reads committed data with vector, scalar and unsigned immediate
+// indices. EEW16 indices occupy a fractional group independently of data SEW.
+ctx(16,1,64'h0000000200000003,0);ctx(17,1,64'h0000000000000001,0);
+command(32'h33840857,0,0,0,80'hee0001,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,64'h0000000200000005);ctx(33,0,0,64'h0000000000000001);
+command(32'h3382c457,3,0,0,80'hee0002,0,0,0,3,8'd4,64'h10);
+ctx(16,0,0,64'h0000000500000005);ctx(17,0,0,64'h0000000500000005);
+command(32'h3380b857,0,0,0,80'hee0003,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,64'h0000000100000001);ctx(33,0,0,64'h0000000100000001);
+ctx(62,1,64'h0004000000020003,0);ctx(63,1,0,0);
+command(32'h3b8f8857,0,0,0,80'hee0004,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,64'h0000000200000005);ctx(33,0,0,0);
+cancel(32'h3b8f8857,18,1'b0);
+ctx(32,0,0,64'h0000000200000005);ctx(33,0,0,0);
+command(32'h33840c57,0,0,0,80'hee0005,1,0,0,3,8'd4,64'h10);
+command(32'h33880857,0,0,0,80'hee0006,1,0,0,3,8'd4,64'h10);
+command(32'h3382c857,64'hffffffffffffffff,0,0,80'hee0007,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,0);ctx(33,0,0,0);
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h2401);monAccess(64'h18,4,0,64'h1fff);
+monAccess(64'h10,4,0,64'h2501);monAccess(64'h18,4,0,64'h3fff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});

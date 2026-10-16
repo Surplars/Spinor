@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M24）
+# Spinor 指令覆盖矩阵（M25）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -12,7 +12,7 @@
 | 基本FP | 加减/反减、乘除/反除、sqrt、FMA系列、min/max、比较、sign注入、分类 | FP32/64，回归对照固定SoftFloat；非完整FP向量集合 |
 | FP转换 | 6种同宽整数/浮点及RTZ转换 | 宽化/窄化、FP16、Zvfhmin/Zvfh未实现 |
 | FP归约 | 未实现 | ordered/unordered sum、min/max及宽化归约 |
-| 排列/索引生成 | vid.v、viota.m；M24新增整数slideup/down vx/vi、slide1up/down vx；mask、22种SEW/LMUL、除viota外可vstart恢复 | gather、compress、vfslide1等未实现 |
+| 排列/索引生成 | vid.v、viota.m；M24新增整数slideup/down vx/vi、slide1up/down vx；mask、22种SEW/LMUL、除viota外可vstart恢复；M25新增vrgather vv/vx/vi、vrgatherei16 vv | compress、vfslide1等未实现 |
 | 显式mask运算 | 8种mask逻辑.mm、vcpop.m/vfirst.m，M22新增vmsbf/vmsif/vmsof | 8位通路；viota使用独立元素结果路径 |
 | 标量/整组搬运 | M19新增vmv.x.s和vmv.s.x | FP标量搬运及整组寄存器搬运未实现 |
 | 定点/宽窄/进位 | 未实现 | 饱和、平均、clip、宽化/窄化算术及扩展、carry/borrow等 |
@@ -22,3 +22,5 @@
 | 双发射/乱序 | 独立8项实验窗口 | 不属于当前Spinor执行数据通路 |
 
 近期优先继续补齐VPU排列、宽窄整数、FP归约及访存模式，每轮核对资源和云端条件时序；Orbital程序闭环另行推进。只有指令、异常、上下文和内存模型都满足目标配置并完成架构测试后，才能宣称完整目标ISA支持。
+
+已知合法性缺口：旧普通算术/滑移路径尚未统一限制“v0作为数据源同时作为执行mask”的双EEW源别名；这些保留编码在旧正向回归中仍可能被接受。M25新gather已经检查该约束，以及EI16不同EEW数据/索引源的物理寄存器重叠。下一轮应统一旧路径检查和参考模型；当前回归不等于完整架构合规。
