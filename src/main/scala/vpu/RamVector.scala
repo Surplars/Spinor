@@ -30,7 +30,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val busy = Output(Bool())
   })
   val memoryCommit = if(enableMemoryCommit) Some(IO(Flipped(Decoupled(UInt(7.W))))) else None
-  val states=Enum(if(enableFp)24 else 21)
+  val states=Enum(if(enableFp)31 else 28)
   val Seq(idle, decode, copyRead, copyWrite, maskRead, maskCapture, dispatch,
     readA, captureA, readB, captureB, launch, awaitResult, maskOldRead, maskWrite, finish) = states.take(16)
   val readC=if(enableFp)states(16) else idle
@@ -41,6 +41,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val reductionWrite=states(if(enableFp)21 else 18)
   val scalarRead=states(if(enableFp)22 else 19)
   val scalarCapture=states(if(enableFp)23 else 20)
+  val Seq(maskByteReadA,maskByteCaptureA,maskByteReadB,maskByteCaptureB,
+    maskByteOldRead,maskByteWrite,maskByteScan)=states.takeRight(7)
   val state = RegInit(idle)
   val command = Reg(new Command)
   val vl = RegInit(0.U(8.W))
@@ -84,6 +86,11 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val maskLogic=RegInit(false.B)
   val scalarMove=RegInit(0.U(2.W)) // 0 ordinary, 1 vmv.x.s, 2 vmv.s.x
   val maskScalar=RegInit(false.B) // vcpop.m / vfirst.m, no vector destination
+  // Eight mask elements per iteration. Sources stay in committed RAM; only a
+  // byte and its result/valid bits are staged, independent of VLEN and LMUL.
+  val maskByteA=Reg(UInt(8.W))
+  val maskByteResult=Reg(UInt(8.W))
+  val maskByteEnable=Reg(UInt(8.W))
   val reductionAccumulator=Reg(UInt(64.W)) // one scalar element, never a group snapshot
   val streaming = WireDefault(false.B)
   val rf = Module(new VersionedRegisterFile(useRam))
@@ -352,16 +359,67 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(state === maskCapture) { mask := rf.io.readData; state := Mux(reduction,reductionSeedRead,dispatch) }
   when(state === dispatch) {
     when(index >= vl) { state := Mux(reduction,reductionWrite,Mux(streaming && outstanding=/=0.U,awaitResult,finish)) }
+      .elsewhen(maskLogic || maskScalar) {
+        maskByteEnable:=VecInit((0 until 8).map { bit =>
+          val position=Cat(0.U(1.W),index(6,3),bit.U(3.W))
+          position>=index && position<vl
+        }).asUInt
+        state:=maskByteReadA
+      }
       .elsewhen(!vm && !mask(index(6,0)) && (fp || op =/= Op.merge.U)) { index := index+1.U }
       .otherwise {
         val offset = (index<<sew)(6,0)
-        sourceOffset := Mux(maskLogic || maskScalar,0.U,offset(6,4))
-        bitOffset := Mux(maskLogic || maskScalar,index(6,0),Cat(offset(3,0),0.U(3.W)))
+        sourceOffset := offset(6,4)
+        bitOffset := Cat(offset(3,0),0.U(3.W))
         destination := Mux(comparison,vd,(vd+offset(6,4))(4,0))
         val widthMask = VecInit(Seq(1,3,15,255).map(_.U(16.W)))(sew)
         byteMask := (widthMask<<offset(3,0))(15,0)
         state := readA
       }
+  }
+  val ramByte=VecInit((0 until 16).map(i=>rf.io.readData(8*i+7,8*i)))(index(6,3))
+  val predicateByte=VecInit((0 until 16).map(i=>mask(8*i+7,8*i)))(index(6,3))
+  // Preserve the eighth index bit: advancing the last byte must yield 128,
+  // never wrap to zero. vstart may begin in the middle of the first byte.
+  val nextMaskByte=Cat((index(6,3)+&1.U),0.U(3.W))
+  when(state===maskByteReadA) {
+    rf.io.readEnable:=true.B;rf.io.readAddress:=vs2;state:=maskByteCaptureA
+  }
+  when(state===maskByteCaptureA) {
+    when(maskScalar) {
+      maskByteResult:=ramByte & maskByteEnable & Mux(vm,255.U(8.W),predicateByte)
+      state:=maskByteScan
+    }.otherwise {maskByteA:=ramByte;state:=maskByteReadB}
+  }
+  // Separate RAM byte selection/predicate filtering from count/priority and
+  // scalar accumulation. The result byte register is shared with mask logic.
+  when(state===maskByteScan) {
+    index:=nextMaskByte;state:=dispatch
+    when(vs1===17.U) {
+      when(maskByteResult.orR) {
+        scalarResult:=Cat(index(6,3),PriorityEncoder(maskByteResult));state:=finish
+      }
+    }.otherwise {scalarResult:=scalarResult(7,0)+PopCount(maskByteResult)}
+  }
+  when(state===maskByteReadB) {
+    rf.io.readEnable:=true.B;rf.io.readAddress:=vs1;state:=maskByteCaptureB
+  }
+  when(state===maskByteCaptureB) {
+    val rhs=ramByte ^ Fill(8,f6===0x18.U || f6===0x1c.U)
+    val logical=MuxLookup(op,maskByteA & rhs)(Seq(
+      Op.or.U->(maskByteA | rhs),Op.xor.U->(maskByteA ^ rhs)))
+    maskByteResult:=logical ^ Fill(8,f6>=0x1d.U)
+    state:=maskByteOldRead
+  }
+  when(state===maskByteOldRead) {
+    rf.io.readEnable:=true.B;rf.io.readAddress:=vd;rf.io.readCandidate:=true.B
+    state:=maskByteWrite
+  }
+  when(state===maskByteWrite) {
+    val result=(ramByte & ~maskByteEnable) | (maskByteResult & maskByteEnable)
+    writeEnable:=true.B;writeAddress:=vd;writeCandidate:=true.B
+    writeMask:=(1.U(16.W)<<index(6,3))(15,0);writeData:=Fill(16,result)
+    index:=nextMaskByte;state:=dispatch
   }
   val elementMask = VecInit(Seq(8,16,32,64).map(w => ((BigInt(1)<<w)-1).U(64.W)))(sew)
   when(state===scalarRead) {rf.io.readEnable:=true.B;rf.io.readAddress:=vs2;state:=scalarCapture}
@@ -389,27 +447,20 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   }
   when(state === captureA) {
     val value=(rf.io.readData>>bitOffset)(63,0)
-    a := Mux(maskLogic,value(0).asUInt,value&elementMask)
+    a := value&elementMask
     val immediate = Cat(Fill(59,vs1(4)),vs1)
     val isShift = op === Op.sll.U || op === Op.srl.U || op === Op.sra.U
     val fpScalar=Mux(sew===2.U && !command.scalar(63,32).andR,"h7fc00000".U,command.scalar)
     b := Mux(reduction,reductionAccumulator,Mux(fp,fpScalar,Mux(vx || mulVX,command.scalar,Mux(isShift,vs1.pad(64),immediate))))&elementMask
     val fused=fp && fpOp>=FpOp.fma.U && fpOp<=FpOp.fnmadd.U
     state := Mux(vectorSource1,readB,Mux(fused,readC,launch))
-    when(maskScalar) {
-      index:=index+1.U;state:=dispatch
-      when(value(0)) {
-        when(vs1===17.U) {scalarResult:=index;state:=finish}
-          .otherwise {scalarResult:=(scalarResult(7,0)+1.U)(7,0)}
-      }
-    }
   }
   when(state === readB) {
     rf.io.readEnable := true.B; rf.io.readAddress := (vs1+sourceOffset)(4,0); state := captureB
   }
   when(state === captureB) {
     val value=(rf.io.readData>>bitOffset)(63,0)
-    b := Mux(maskLogic,(value(0) ^ (f6===0x18.U || f6===0x1c.U)).asUInt,value&elementMask)
+    b := value&elementMask
     state := Mux(fp && fpOp>=FpOp.fma.U && fpOp<=FpOp.fnmadd.U,readC,launch)
   }
   if(enableFp) {
@@ -425,7 +476,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   lane.io.in.valid := state === launch && !fp && !isMul && !isDiv && !io.flush
   lane.io.in.bits.a := a; lane.io.in.bits.b := b; lane.io.in.bits.sew := sew
   lane.io.in.bits.op := op; lane.io.in.bits.select := mask(index(6,0)); lane.io.in.bits.tag := index
-  streaming := !fp && !comparison && !isMul && !isDiv && !reduction
+  streaming := !fp && !comparison && !isMul && !isDiv && !reduction && !maskScalar && scalarMove===0.U
   val streamActive=state===dispatch || state===readA || state===captureA || state===readB || state===captureB || state===launch || state===awaitResult
   lane.io.out.ready := (Mux(streaming,streamActive,state===awaitResult)) && !fp && !isMul && !isDiv && !io.flush
   when(lane.io.in.fire) {
@@ -471,7 +522,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   }
   when(resultFire) {
     when(reduction) {reductionAccumulator:=resultData;index:=index+1.U;state:=dispatch}
-      .elsewhen(comparison) { resultBit := resultData(0) ^ (maskLogic && f6>=0x1d.U); state := maskOldRead }
+      .elsewhen(comparison) { resultBit := resultData(0); state := maskOldRead }
       .otherwise {
         writeEnable := true.B; writeAddress := destination; writeCandidate := true.B
         val retiredOffset=(lane.io.out.bits.tag<<sew)(6,0)

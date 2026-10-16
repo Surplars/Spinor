@@ -5,8 +5,10 @@ from pathlib import Path
 from test_vector import HEADER
 ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'build/mask-scan';OUT.mkdir(parents=True,exist_ok=True)
 p=argparse.ArgumentParser();p.add_argument('--smoke',action='store_true');p.add_argument('--mapped',action='store_true')
+p.add_argument('--baseline',action='store_true',help='run the same oracle/benchmark on frozen M20 RTL')
 p.add_argument('--top',default='RamVectorFp',choices=['RamVectorFp','RamVector','RamVector16']);args=p.parse_args()
 assert not args.mapped or args.smoke
+assert not args.baseline or (args.top=='RamVectorFp' and not args.mapped)
 fp=args.top=='RamVectorFp';rng=random.Random(0x202020);M64=(1<<64)-1;M128=(1<<128)-1
 h=HEADER.replace('wire [4:0] io_vl;','wire [7:0] io_vl;wire [6:0] io_vstart;wire [1:0] io_vxrm;wire io_vxsat;wire [31:0] io_versions;'+('wire [2:0] io_frm;wire [4:0] io_fflags;' if fp else ''))
 h=h.replace('input [4:0] expectedVl','input [7:0] expectedVl').replace('1000000','3000000')
@@ -49,7 +51,7 @@ def scan(first,rd,src,vm,bad=False,record=False):
  if record:lines.append('begin integer begun;begun=cycles;')
  cmd(inst,result=result,writes=int(rd!=0 and not bad),bad=bad,stall=0 if record else rng.randrange(6))
  if record:
-  ident=len(bench);bench.append(dict(id=ident,op='vfirst' if first else 'vcpop',vl=vl,set_bits=len(active),first=next(iter(active),-1)))
+  ident=len(bench);bench.append(dict(id=ident,op='vfirst' if first else 'vcpop',vl=vl,vm=vm,set_bits=len(active),first=next(iter(active),-1)))
   lines.append(f'$display("SCANPERF {ident} %0d",cycles-begun);end')
  for r in range(32):ctx(r)
 for r in range(32):ctx(r,True)
@@ -67,20 +69,42 @@ for s,m in types:
    ctx(src,True);scan(first,0 if scenario&1 else 3,src,0 if scenario in [2,5,6] else 1,record=scenario==0)
   for length in [0,maximum]:
    config(s,m,length);setstart(127 if not length else 1);scan(first,3,31,1,bad=True)
-# Cancellation at read/scan and completed reply, with ready asserted on flush.
+# Every one-hot location (including masked-out hits) and partial final bytes.
+for length in ([7,8,9,63,64,65,127,128] if args.smoke else [*range(1,18),63,64,65,*range(119,129)]):
+ config(0,3,length)
+ positions=range(128) if length==128 and not args.smoke else sorted({0,1,6,7,8,9,63,64,126,127,length-1,length})
+ for bit in positions:
+  if bit>127:continue
+  regs[31]=1<<bit;regs[0]=M128 ^ (1<<bit);ctx(31,True);ctx(0,True)
+  for first,vm in [(False,1),(True,1),(False,0),(True,0)]:scan(first,3,31,vm)
+# Apples-to-apples latency rows, including a long first-hit search and no hit.
+config(0,3,128)
+for value in [0,M128,1,1<<7,1<<8,1<<63,1<<64,1<<127]:
+ regs[31]=value;ctx(31,True)
+ for first in [False,True]:scan(first,3,31,1,record=True)
+# Small and sparse masked vectors expose fixed byte-pipeline overhead too.
+for length in [1,2,7,8,9,128]:
+ config(0,3,length);regs[31]=M128;ctx(31,True)
+ for predicate in [0,1<<(length-1),M128]:
+  regs[0]=predicate;ctx(0,True)
+  for first in [False,True]:scan(first,3,31,0,record=True)
+# Cancellation at every byte phase and completed reply, ready asserted on flush.
 config(0,3,128);regs[31]=1<<127;regs[0]=M128;ctx(31,True);ctx(0,True)
 for first in [False,True]:
  inst=(0x10<<26)|(1<<25)|(31<<20)|((17 if first else 16)<<15)|(2<<12)|(3<<7)|0x57
- for delay in [0,2,5,12,70,200]:
+ for delay in [0,2,*range(5,17),40,70,200]:
   lines.append(f"cancel(32'h{inst:x},{delay},0);");state();coverage['flush']+=1
  lines.append(f"cancel(32'h{inst:x},0,1);");state();coverage['flush']+=1
  for r in range(32):ctx(r)
  scan(first,3,31,1)
 lines+=['$display("PASS mask-scan commands=%0d cycles=%0d",cmds,cycles);$finish;end endmodule']
-label=args.top+('-smoke' if args.smoke else '-full')+('-mapped' if args.mapped else '-rtl');tb=OUT/(label+'-tb.sv');tb.write_text('\n'.join(lines))
+label=args.top+('-smoke' if args.smoke else '-full')+('-mapped' if args.mapped else '-rtl')
+if args.baseline:label+='-m20-baseline'
+tb=OUT/(label+'-tb.sv');tb.write_text('\n'.join(lines))
 rtl=ROOT/(f'build/synth/{args.top}/mapped.v' if args.mapped else f'build/rtl/{args.top}.sv');files=[tb,rtl];extra=[]
+if args.baseline:rtl=ROOT/'archive/m20/rtl/RamVectorFp.sv';files=[tb,rtl]
 if args.mapped:files += [ROOT/'tools/oss-cad-suite/share/yosys/xilinx/cells_sim.v',ROOT/'third_party/xilinx-unisim/DSP48E2.v',ROOT/'tests/fp_mapped_global.sv'];extra=['-s','glbl']
-else:
+elif not args.baseline:
  source=ROOT/f'build/rtl/verification/assert/{args.top}_Verification_Assert.sv'
  if source.exists():
   f=OUT/(label+'-assert.sv');f.write_text(source.read_text().replace(args.top+'.','tb.dut.'));files.append(f);extra=['-s',args.top+'_Verification_Assert']
@@ -92,5 +116,5 @@ observed={int(s.split()[1]):int(s.split()[2]) for s in run.stdout.splitlines() i
 for row in bench:row['cycles']=observed[row['id']]
 assert all(coverage.values())
 d=dict(status='PASS',top=args.top,mapped=args.mapped,commands=case,coverage=coverage,types=sorted(types_seen),performance=bench,summary=next(s for s in run.stdout.splitlines() if s.startswith('PASS mask-scan')),
- sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
+ sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [rtl,tb,Path(__file__).resolve(),ROOT/('archive/m20/source/RamVector.scala' if args.baseline else 'src/main/scala/vpu/RamVector.scala')]})
 (OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(json.dumps({k:v for k,v in d.items() if k not in ['sha256','performance']},indent=2))

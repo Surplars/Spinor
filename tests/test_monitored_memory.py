@@ -81,7 +81,7 @@ command(32'h420821d7,0,0,0,80'hea0001,0,2,1,3,8'd4,64'h10);
 command(32'h4208a1d7,0,0,0,80'hea0002,0,1,1,3,8'd4,64'h10);
 command(32'h401821d7,0,0,0,80'hea0003,0,1,1,3,8'd4,64'h10);
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h2001);monAccess(64'h18,4,0,64'h3ff);
+monAccess(64'h10,4,0,64'h2101);monAccess(64'h18,4,0,64'h3ff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});

@@ -7,8 +7,10 @@ from test_vector import HEADER
 ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'build/mask-scalar';OUT.mkdir(parents=True,exist_ok=True)
 BIN=ROOT/'tools/oss-cad-suite/bin';M128=(1<<128)-1;M64=(1<<64)-1
 p=argparse.ArgumentParser();p.add_argument('--smoke',action='store_true');p.add_argument('--mapped',action='store_true')
+p.add_argument('--baseline',action='store_true',help='run the same oracle/benchmark on frozen M20 RTL')
 p.add_argument('--top',choices=['RamVectorFp','RamVector','RamVector16'],default='RamVectorFp');args=p.parse_args()
 assert not args.mapped or args.smoke
+assert not args.baseline or (args.top=='RamVectorFp' and not args.mapped)
 fp=args.top=='RamVectorFp';rng=random.Random(0x190019)
 h=HEADER.replace('wire [4:0] io_vl;','wire [7:0] io_vl;wire [6:0] io_vstart;wire [1:0] io_vxrm;wire io_vxsat;wire [31:0] io_versions;'+('wire [2:0] io_frm;wire [4:0] io_fflags;' if fp else ''))
 h=h.replace('input [4:0] expectedVl','input [7:0] expectedVl').replace('1000000','6000000')
@@ -119,6 +121,21 @@ for s,m in types:
 # Directed sign boundary and GPR-zero reads at VL=0 with nonzero vstart.
 for s in range(4):
  config(s,3,0);csr(8,127);regs[31]=(1<<(8<<s))-1;ctx(31,True);execute(8,0,31,0)
+# Exercise every intra-byte start/end offset, byte crossings and the final bit.
+# Random prestart/tail data must survive; rotate all destination/source aliases.
+lengths=[1,7,8,9,63,64,65,127,128] if args.smoke else [*range(1,18),63,64,65,*range(119,129)]
+for op in range(8):
+ for length in lengths:
+  starts=sorted({0,1,7,8,max(0,length-1),length,127}) if not args.smoke else [max(0,length-1)]
+  for initial in starts:
+   config(0,3,length);csr(8,min(127,initial))
+   vd,vs2,vs1=[(7,31,3),(0,0,3),(31,31,3),(3,31,3),(0,0,0)][(length+initial+op)%5]
+   operands([vd,vs2,vs1],0,8);execute(op,vd,vs2,vs1,record=initial==0)
+# Cancellation in each byte-engine phase and its staged candidate write.
+config(0,3,128);csr(8,3)
+inst=(0x1b<<26)|(1<<25)|(31<<20)|(3<<15)|(2<<12)|(7<<7)|0x57
+for delay in range(5,24):
+ lines.append(f"cancel(32'h{inst:08x},{delay},1'b0);");state();checkregs();stats['flush']+=1
 # Cancel every instruction kind, including completed-but-uncommitted and private writes.
 config(0,3,128);csr(8,3)
 for op in range(10):
@@ -138,10 +155,12 @@ regs[24]=dest;versions^=1<<24
 cmd((8<<20)|(16<<15)|(24<<7)|0x57);checkregs()
 lines+=['$display("PASS mask-scalar commands=%0d cycles=%0d",cmds,cycles);$finish;end endmodule']
 label=args.top+('-smoke' if args.smoke else '-full')+('-mapped' if args.mapped else '-rtl')
+if args.baseline:label+='-m20-baseline'
 tb=OUT/(label+'-tb.sv');tb.write_text('\n'.join(lines))
 rtl=ROOT/(f'build/synth/{args.top}/mapped.v' if args.mapped else f'build/rtl/{args.top}.sv');files=[tb,rtl];extra=[]
+if args.baseline:rtl=ROOT/'archive/m20/rtl/RamVectorFp.sv';files=[tb,rtl]
 if args.mapped:files += [ROOT/'tools/oss-cad-suite/share/yosys/xilinx/cells_sim.v',ROOT/'third_party/xilinx-unisim/DSP48E2.v',ROOT/'tests/fp_mapped_global.sv'];extra=['-s','glbl']
-else:
+elif not args.baseline:
  module=args.top;source=ROOT/f'build/rtl/verification/assert/{module}_Verification_Assert.sv'
  if source.exists():
   monitor=OUT/(label+'-assert.sv');monitor.write_text(source.read_text().replace(module+'.','tb.dut.'));files.append(monitor);extra=['-s',module+'_Verification_Assert']
@@ -155,5 +174,5 @@ for row in bench:row['cycles']=observed[row['id']]
 assert all(byop.values()) and all(stats.values())
 result=dict(status='PASS',scope='MASK_LOGIC_AND_INTEGER_SCALAR_MOVES_NOT_FULL_RVV',top=args.top,mapped=args.mapped,commands=case,coverage=stats,by_operation=byop,types=sorted(types_seen),performance=bench,
  summary=next(s for s in run.stdout.splitlines() if s.startswith('PASS mask-scalar')),
- sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
+ sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,tb,Path(__file__).resolve(),ROOT/('archive/m20/source/RamVector.scala' if args.baseline else 'src/main/scala/vpu/RamVector.scala')]})
 (OUT/(label+'-results.json')).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['sha256','performance']},indent=2))

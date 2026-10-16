@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M20）
+# Spinor 指令覆盖矩阵（M21）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -13,7 +13,7 @@
 | FP转换 | 6种同宽整数/浮点及RTZ转换 | 宽化/窄化、FP16、Zvfhmin/Zvfh未实现 |
 | FP归约 | 未实现 | ordered/unordered sum、min/max及宽化归约 |
 | 排列/索引生成 | 未实现 | slide、gather、compress、vid、viota等 |
-| 显式mask运算 | 全部8种mask逻辑.mm，M20新增vcpop.m/vfirst.m | 前后缀mask、viota等未实现 |
+| 显式mask运算 | 全部8种mask逻辑.mm，M20新增vcpop.m/vfirst.m | M21改为8位并行；前后缀mask、viota等未实现 |
 | 标量/整组搬运 | M19新增vmv.x.s和vmv.s.x | FP标量搬运及整组寄存器搬运未实现 |
 | 定点/宽窄/进位 | 未实现 | 饱和、平均、clip、宽化/窄化算术及扩展、carry/borrow等 |
 | 访存 | 单位步长vle/vse，EEW8/16/32/64，独立EMUL、mask、物理故障/停止/vstart前缀 | 无strided/indexed/segments/FOF/whole-register/mask load-store；仅物理普通RAM |
