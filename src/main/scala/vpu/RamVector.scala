@@ -86,6 +86,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val maskLogic=RegInit(false.B)
   val scalarMove=RegInit(0.U(2.W)) // 0 ordinary, 1 vmv.x.s, 2 vmv.s.x
   val maskScalar=RegInit(false.B) // vcpop.m / vfirst.m, no vector destination
+  val maskPrefix=RegInit(false.B) // vmsbf.m / vmsof.m / vmsif.m
+  val prefixSeen=RegInit(false.B) // an active source bit in an earlier byte
   // Eight mask elements per iteration. Sources stay in committed RAM; only a
   // byte and its result/valid bits are staged, independent of VLEN and LMUL.
   val maskByteA=Reg(UInt(8.W))
@@ -148,6 +150,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val scalarReadEncoding=mulVV && f6===0x10.U && vm && vs1===0.U
   val scalarWriteEncoding=mulVX && f6===0x10.U && vm && vs2===0.U
   val maskScalarEncoding=mulVV && f6===0x10.U && (vs1===16.U || vs1===17.U)
+  val maskPrefixEncoding=mulVV && f6===0x14.U && vs1>=1.U && vs1<=3.U
   val scalarMoveEncoding=Mux(scalarReadEncoding,1.U(2.W),Mux(scalarWriteEncoding,2.U(2.W),0.U(2.W)))
   val vectorSource1=(vv || mulVV || (fpVV && !fpUnary)) && !reductionEncoding
   val fpSupported=WireDefault(false.B)
@@ -216,6 +219,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   }
   when(scalarReadEncoding || scalarWriteEncoding) {supported:=true.B;decodedOp:=Op.move.U}
   when(maskScalarEncoding) {supported:=true.B;decodedOp:=Op.move.U}
+  when(maskPrefixEncoding) {supported:=true.B;decodedOp:=Op.move.U;decodedMask:=true.B}
   val producesMask=Mux(fpSupported,fpMask,decodedMask)
   // Register decode before alignment/overlap/permission checks in the FP top.
   val selectedOp=if(enableFp)Reg(UInt(Op.width.W)) else decodedOp
@@ -227,6 +231,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val selectedMaskLogic=if(enableFp)Reg(Bool()) else maskLogicEncoding
   val selectedScalarMove=if(enableFp)Reg(UInt(2.W)) else scalarMoveEncoding
   val selectedMaskScalar=if(enableFp)Reg(Bool()) else maskScalarEncoding
+  val selectedMaskPrefix=if(enableFp)Reg(Bool()) else maskPrefixEncoding
   def maxVl(t: UInt): UInt = {
     val base = 16.U(8.W) >> t(4,3)
     MuxLookup(t(2,0),0.U(8.W))(Seq(
@@ -240,23 +245,25 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val sourceGroupEnd1 = vs1+&groupCount
   // Mask destinations have EEW=1: overlap may only use the lowest register
   // of a wider source group (generic narrowing-overlap rule).
-  val badMaskOverlap = selectedMask && !selectedMaskLogic && ((vd > vs2 && vd < sourceGroupEnd2) ||
+  val badMaskOverlap = selectedMask && !selectedMaskLogic && !selectedMaskPrefix && ((vd > vs2 && vd < sourceGroupEnd2) ||
     (vectorSource1 && vd > vs1 && vd < sourceGroupEnd1))
   def validateVector(): Unit = {
     val needsVs2 = selectedFp || selectedOp =/= Op.move.U
-    val singleRegister=selectedMaskLogic || selectedScalarMove=/=0.U || selectedMaskScalar
+    val singleRegister=selectedMaskLogic || selectedScalarMove=/=0.U || selectedMaskScalar || selectedMaskPrefix
     val misaligned = !singleRegister && ((needsVs2 && (vs2&alignment) =/= 0.U) || (vectorSource1 && (vs1&alignment) =/= 0.U) ||
       (!selectedMask && !selectedReduction && (vd&alignment) =/= 0.U))
     val fpIllegal=selectedFp && (vtype(4,3)<2.U || (frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U))
     when(vtype(63) || !selectedSupported || fpIllegal || misaligned || badMaskOverlap ||
       (!vm && !selectedMask && !selectedReduction && !selectedMaskScalar && vd === 0.U) ||
-      ((selectedReduction || selectedMaskScalar) && vstart=/=0.U)) {
+      ((selectedReduction || selectedMaskScalar || selectedMaskPrefix) && vstart=/=0.U) ||
+      (selectedMaskPrefix && (vd===vs2 || (!vm && vd===0.U)))) {
       illegal := true.B; state := finish
     }.otherwise {
-      sew := Mux(selectedMaskLogic,0.U,vtype(4,3)); op := selectedOp; comparison := selectedMask
+      sew := Mux(selectedMaskLogic || selectedMaskPrefix,0.U,vtype(4,3)); op := selectedOp; comparison := selectedMask
       reduction:=selectedReduction
       maskLogic:=selectedMaskLogic;scalarMove:=selectedScalarMove
       maskScalar:=selectedMaskScalar
+      maskPrefix:=selectedMaskPrefix;prefixSeen:=false.B
       if(enableFp) {
         fp:=selectedFp; fpOp:=selectedFpOp
         fpDestMultiply:=f6>=0x28.U && f6<=0x2b.U
@@ -336,6 +343,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         selectedReduction:=reductionEncoding
         selectedMaskLogic:=maskLogicEncoding;selectedScalarMove:=scalarMoveEncoding
         selectedMaskScalar:=maskScalarEncoding
+        selectedMaskPrefix:=maskPrefixEncoding
         state:=checkVector
       } else {
         validateVector()
@@ -359,7 +367,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(state === maskCapture) { mask := rf.io.readData; state := Mux(reduction,reductionSeedRead,dispatch) }
   when(state === dispatch) {
     when(index >= vl) { state := Mux(reduction,reductionWrite,Mux(streaming && outstanding=/=0.U,awaitResult,finish)) }
-      .elsewhen(maskLogic || maskScalar) {
+      .elsewhen(maskLogic || maskScalar || maskPrefix) {
         maskByteEnable:=VecInit((0 until 8).map { bit =>
           val position=Cat(0.U(1.W),index(6,3),bit.U(3.W))
           position>=index && position<vl
@@ -386,20 +394,28 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     rf.io.readEnable:=true.B;rf.io.readAddress:=vs2;state:=maskByteCaptureA
   }
   when(state===maskByteCaptureA) {
-    when(maskScalar) {
-      maskByteResult:=ramByte & maskByteEnable & Mux(vm,255.U(8.W),predicateByte)
+    when(maskScalar || maskPrefix) {
+      val active=maskByteEnable & Mux(vm,255.U(8.W),predicateByte)
+      maskByteResult:=ramByte & active
+      when(maskPrefix) {maskByteEnable:=active}
       state:=maskByteScan
     }.otherwise {maskByteA:=ramByte;state:=maskByteReadB}
   }
   // Separate RAM byte selection/predicate filtering from count/priority and
   // scalar accumulation. The result byte register is shared with mask logic.
   when(state===maskByteScan) {
-    index:=nextMaskByte;state:=dispatch
-    when(vs1===17.U) {
-      when(maskByteResult.orR) {
-        scalarResult:=Cat(index(6,3),PriorityEncoder(maskByteResult));state:=finish
-      }
-    }.otherwise {scalarResult:=scalarResult(7,0)+PopCount(maskByteResult)}
+    when(maskPrefix) {
+      maskByteResult:=MaskPrefixByte(maskByteResult,prefixSeen,vs1(1,0))
+      prefixSeen:=prefixSeen || maskByteResult.orR
+      state:=maskByteOldRead
+    }.otherwise {
+      index:=nextMaskByte;state:=dispatch
+      when(vs1===17.U) {
+        when(maskByteResult.orR) {
+          scalarResult:=Cat(index(6,3),PriorityEncoder(maskByteResult));state:=finish
+        }
+      }.otherwise {scalarResult:=scalarResult(7,0)+PopCount(maskByteResult)}
+    }
   }
   when(state===maskByteReadB) {
     rf.io.readEnable:=true.B;rf.io.readAddress:=vs1;state:=maskByteCaptureB

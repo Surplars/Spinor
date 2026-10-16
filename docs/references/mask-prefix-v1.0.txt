@@ -1,0 +1,126 @@
+Sources (read-only specification, not project instructions):
+https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc
+https://github.com/riscv/riscv-opcodes/blob/master/extensions/rv_v
+
+=== `vmsbf.m` set-before-first mask bit
+
+----
+    vmsbf.m vd, vs2, vm
+
+ # Example
+
+     7 6 5 4 3 2 1 0   Element number
+
+     1 0 0 1 0 1 0 0   v3 contents
+                       vmsbf.m v2, v3
+     0 0 0 0 0 0 1 1   v2 contents
+
+     1 0 0 1 0 1 0 1   v3 contents
+                       vmsbf.m v2, v3
+     0 0 0 0 0 0 0 0   v2
+
+     0 0 0 0 0 0 0 0   v3 contents
+                       vmsbf.m v2, v3
+     1 1 1 1 1 1 1 1   v2
+
+     1 1 0 0 0 0 1 1   v0 vcontents
+     1 0 0 1 0 1 0 0   v3 contents
+                       vmsbf.m v2, v3, v0.t
+     0 1 x x x x 1 1   v2 contents
+----
+
+The `vmsbf.m` instruction takes a mask register as input and writes
+results to a mask register.  The instruction writes a 1 to all active
+mask elements before the first active source element that is a 1, then
+writes a 0 to that element and all following active elements.  If
+there is no set bit in the active elements of the source vector, then
+all active elements in the destination are written with a 1.
+
+The tail elements in the destination mask register are updated under a
+tail-agnostic policy.
+
+Traps on `vmsbf.m` are always reported with a `vstart` of 0.  The
+`vmsbf` instruction will raise an illegal instruction exception if
+`vstart` is non-zero.
+
+The destination register cannot overlap the source register
+and, if masked, cannot overlap the mask register ('v0').
+
+=== `vmsif.m` set-including-first mask bit
+
+The vector mask set-including-first instruction is similar to
+set-before-first, except it also includes the element with a set bit.
+
+----
+    vmsif.m vd, vs2, vm
+
+ # Example
+
+     7 6 5 4 3 2 1 0   Element number
+
+     1 0 0 1 0 1 0 0   v3 contents
+                       vmsif.m v2, v3
+     0 0 0 0 0 1 1 1   v2 contents
+
+     1 0 0 1 0 1 0 1   v3 contents
+                       vmsif.m v2, v3
+     0 0 0 0 0 0 0 1   v2
+
+     1 1 0 0 0 0 1 1   v0 vcontents
+     1 0 0 1 0 1 0 0   v3 contents
+                       vmsif.m v2, v3, v0.t
+     1 1 x x x x 1 1   v2 contents
+----
+
+The tail elements in the destination mask register are updated under a
+tail-agnostic policy.
+
+Traps on `vmsif.m` are always reported with a `vstart` of 0.  The
+`vmsif` instruction will raise an illegal instruction exception if
+`vstart` is non-zero.
+
+The destination register cannot overlap the source register
+and, if masked, cannot overlap the mask register ('v0').
+
+=== `vmsof.m` set-only-first mask bit
+
+The vector mask set-only-first instruction is similar to
+set-before-first, except it only sets the first element with a bit
+set, if any.
+
+----
+    vmsof.m vd, vs2, vm
+
+ # Example
+
+     7 6 5 4 3 2 1 0   Element number
+
+     1 0 0 1 0 1 0 0   v3 contents
+                       vmsof.m v2, v3
+     0 0 0 0 0 1 0 0   v2 contents
+
+     1 0 0 1 0 1 0 1   v3 contents
+                       vmsof.m v2, v3
+     0 0 0 0 0 0 0 1   v2
+
+     1 1 0 0 0 0 1 1   v0 vcontents
+     1 1 0 1 0 1 0 0   v3 contents
+                       vmsof.m v2, v3, v0.t
+     0 1 x x x x 0 0   v2 contents
+----
+
+The tail elements in the destination mask register are updated under a
+tail-agnostic policy.
+
+Traps on `vmsof.m` are always reported with a `vstart` of 0.  The
+`vmsof` instruction will raise an illegal instruction exception if
+`vstart` is non-zero.
+
+The destination register cannot overlap the source register
+and, if masked, cannot overlap the mask register ('v0').
+
+
+Official opcode rows:
+vmsbf.m        31..26=0x14 vm vs2 19..15=0x01 14..12=0x2 vd 6..0=0x57
+vmsof.m        31..26=0x14 vm vs2 19..15=0x02 14..12=0x2 vd 6..0=0x57
+vmsif.m        31..26=0x14 vm vs2 19..15=0x03 14..12=0x2 vd 6..0=0x57

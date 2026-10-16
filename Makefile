@@ -1,5 +1,11 @@
 PYTHON ?= python3
 
+.PHONY: verify-m22 package-m22
+verify-m22:
+	$(PYTHON) scripts/verify_m22.py
+package-m22:
+	$(PYTHON) scripts/package.py --milestone m22
+
 .PHONY: verify-m21 package-m21
 verify-m21:
 	$(PYTHON) scripts/verify_m21.py

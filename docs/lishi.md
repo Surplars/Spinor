@@ -6,7 +6,7 @@
 
 目标是为 ZU15EG-2 上 Valence SoC 中的 Orbital RV64 核提供向量协处理能力。优先 RAM 友好的寄存器文件、可验证的状态提交和可切分的算术路径，以 300 MHz 为基线设计目标。当前为 VLEN128/ELEN64、单指令顺序执行的部分 RVV 原型，容量与吞吐取决于具体执行单元。
 
-M18 新增八种同宽整数归约和独立 CPU 提交边界模块；M19 新增八种掩码逻辑与两种整数标量搬运，M20 增加掩码扫描并优化 FP/monitor 路径，M21增加字节并行mask通路，详情见 [M21 说明](m21-byte-mask.md)、[CPU 接口合同](cpu-spinor-contract.md) 和 [指令覆盖表](isa-coverage.md)。尚无完整 RVV 或实际 Orbital 核接入，不能发布完整 V/RVA23 合规声明。下文保留各里程碑的实现记录与当时的复现命令；当前版本使用 `make verify-m21` 和 `make package-m21`。
+M18 新增八种同宽整数归约和独立 CPU 提交边界模块；M19 新增八种掩码逻辑与两种整数标量搬运，M20 增加掩码扫描并优化 FP/monitor 路径，M21增加字节并行mask通路，M22增加三条前缀mask指令，详情见 [M22 说明](m22-prefix-mask.md)、[CPU 接口合同](cpu-spinor-contract.md) 和 [指令覆盖表](isa-coverage.md)。尚无完整 RVV 或实际 Orbital 核接入，不能发布完整 V/RVA23 合规声明。下文保留各里程碑的实现记录与当时的复现命令；当前版本使用 `make verify-m22` 和 `make package-m22`。
 
 ## M7 除法结构
 

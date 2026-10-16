@@ -4,7 +4,7 @@
 
 最终目标：为 PL 中的 Valence RV64 核提供 RVA23 所需的向量能力，运行于
 `xczu15eg-ffvb1156-2-i`。优先小规模和 RAM 友好结构；300 MHz 基线，500 MHz 候选。
-当前交付M21：新增字节并行mask逻辑/扫描通路，保留M20的FP/monitor时序优化及先前RAM优先架构。ISA覆盖、周期和时序边界见 [M21说明](m21-byte-mask.md) 与 [评估](../reports/m21/evaluation.md)。仍为单条指令在途的部分RVV，实际Orbital与Linux计算驱动尚未接入；访存逐元素提交和延迟停止，不继承M5的真实时序结论。
+当前交付M22：在字节并行mask通路上增加vmsbf/vmsif/vmsof前缀操作，保留M20的FP/monitor时序优化及先前RAM优先架构。ISA覆盖、周期和时序边界见 [M22说明](m22-prefix-mask.md) 与 [评估](../reports/m22/evaluation.md)。仍为单条指令在途的部分RVV，实际Orbital与Linux计算驱动尚未接入；访存逐元素提交和延迟停止，不继承M5的真实时序结论。
 完整 V 必须包含 FP32/FP64，并不因为 VLEN128 就允许省略浮点、复杂访存或 LMUL。
 
 来源：[RVV 1.0](https://docs.riscv.org/reference/isa/unpriv/v-st-ext)、
