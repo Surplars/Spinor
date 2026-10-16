@@ -18,7 +18,7 @@ h=h.replace('repeat(stall) begin','repeat(stall) begin\n'+guard+'\nif(io_complet
 h=h.replace('io_flush=1;#1;if(io_completion_valid','io_completion_ready=1;io_flush=1;#1;if(io_completion_valid',1).replace('tick();io_flush=0;\nrepeat(12)','tick();io_flush=0;io_completion_ready=0;\nrepeat(12)',1)
 lines=[h];regs=[rng.getrandbits(128) for _ in range(32)];versions=0;vl=0;typ=1<<63;start=0;case=0;maximum=0
 seen_types=set();bench=[]
-coverage={k:0 for k in ['up_vx','up_vi','down_vx','down_vi','up1','down1','illegal','overlap_up','alias_down','misaligned','reserved','masked_vd0','zero_vl','restart','nop_start','masked','all_masked','huge_offset','immediate_unsigned','past_vl_source','zero_source','below_offset','scalar_insert','scalar_masked','source_v0','dest_v0','cross_register','flush']}
+coverage={k:0 for k in ['up_vx','up_vi','down_vx','down_vi','up1','down1','illegal','overlap_up','alias_down','misaligned','reserved','masked_vd0','masked_source_v0','zero_vl','restart','nop_start','masked','all_masked','huge_offset','immediate_unsigned','past_vl_source','zero_source','below_offset','scalar_insert','scalar_masked','source_v0','dest_v0','cross_register','flush']}
 def state():
  lines.append(f"if(io_versions!==32'h{versions:x} || io_vstart!==7'd{start} || io_vxrm!==2'd2 || io_vxsat!==1'b1)$fatal(1,\"slide state {case}\");")
  if fp:lines.append('if(io_frm!==3\'d3 || io_fflags!==5\'d21)$fatal(1,"slide FP state");')
@@ -47,11 +47,11 @@ def execute(down,form,vd,src,vm,operand,record=False):
  group=(1<<(typ&7)) if typ&7<4 else 1;bits=8<<(typ>>3&3);mask=(1<<bits)-1;one=form==6
  offset=1 if one else operand
  overlap=not down and vd==src
- bad=bool(typ>>63 or vd%group or src%group or (not vm and vd==0) or form not in [3,4,6] or overlap)
+ bad=bool(typ>>63 or vd%group or src%group or (not vm and (vd==0 or src==0)) or form not in [3,4,6] or overlap)
  inst=encoding(down,form,vd,src,vm,operand)
  if bad:
   coverage['illegal']+=1;coverage['overlap_up']+=int(overlap);coverage['misaligned']+=int(vd%group!=0 or src%group!=0)
-  coverage['reserved']+=int(form not in [3,4,6]);coverage['masked_vd0']+=int(not vm and vd==0)
+  coverage['reserved']+=int(form not in [3,4,6]);coverage['masked_vd0']+=int(not vm and vd==0);coverage['masked_source_v0']+=int(not vm and src==0)
  else:
   snapshot=list(regs)
   source=[(snapshot[src+(i*bits)//128]>>((i*bits)%128))&mask for i in range(maximum)]
@@ -118,7 +118,7 @@ for s,m in ([(0,3),(3,3)] if args.smoke else types):
   for amount in ([0,1,127,128,256,M64] if args.smoke else [0,1,2,7,8,15,16,31,63,64,127,128,129,255,256,1<<32,1<<63,M64]):
    execute(down,4,8,16,1,amount)
   for amount in ([16,31] if args.smoke else range(32)):execute(down,3,8,16,1,amount)
-# Mask only selects destination; source may be v0. Exercise suppressed scalar.
+# Masked v0 data reads are reserved even when every destination is inactive.
 config(0,3,127);regs[0]=0;ctx(0,True)
 for down in [False,True]:execute(down,6,8,0,0,M64)
 for form in [0,1,2,5]:

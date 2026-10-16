@@ -1,15 +1,16 @@
 # 砺矢 · Spinor VPU
 
 目标器件 `xczu15eg-ffvb1156-2-i`；采用 **Mill 1.1.7 / Scala 2.13.18 / Chisel 7.16.0**。
-300 MHz 为基线设计目标，500 MHz 为候选目标。M5 已有满足 3.333 ns 已约束内部时序的本地 OOC 结果；当前 M25 尚未经过 Vivado 实现验证。
+300 MHz 为基线设计目标，500 MHz 为候选目标。M5 已有满足 3.333 ns 已约束内部时序的本地 OOC 结果；当前 M26 尚未经过 Vivado 实现验证。
 
 **当前是含整数与部分浮点的向量原型，不是完整 RVV，尚未接入 Orbital CPU。**
 尚未实现完整 V / Zvfhmin / Zvbb / Zvkt；不能向软件发布 `misa.V` 或 RVA23 合规声明。
-命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M25**：新增 `vrgather.vv/vx/vi`、`vrgatherei16.vv`，分级读取索引和源RAM；vx/vi读取一次后复用已有操作数暂存广播。保留FP路径优化、整数归约、标量搬运、独立 `VpuHostBoundary` 与monitor MMIO从端。见 [M25说明](docs/m25-gather.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
+命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M26**：分级FP舍入与IEEE封装，优化索引进位链，统一v0数据源与执行mask的保留编码检查；保留M25的四种gather和RAM广播。保留FP路径优化、整数归约、标量搬运、独立 `VpuHostBoundary` 与monitor MMIO从端。见 [M26说明](docs/m26-timing-legality.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
 仅物理普通 RAM、单事务，访存采用逐元素提交和延迟停止；不支持 MMIO/分页/PMP/一致性，尚未接入 Orbital CPU。
 **访存期间 flush 必须等待 Completion/status，不能按算术指令立即丢弃 token。** 见 [M10 合同](docs/m10-memory.md)。
 已加入 [M8 的 220 组性能对照](archive/m8/reports/performance.md)，并检查输出结果。
-最新结果和输入散列见 [M25 报告](reports/m25/evaluation.md)；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 是物理基线。
+固定100ps/段连线假设下，M26公开/计算访存顶层预算为3.300/3.209ns，均在3.333ns门槛内；公开顶层仅余0.033ns，物理300MHz仍未验证。
+最新结果和输入散列见 [M26 报告](reports/m26/evaluation.md)；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 是物理基线。
 命名与设计方向见 [项目介绍](docs/lishi.md)。
 M4 原始报告保存在 [归档](archive/m4/reports/evaluation.md)。后续本地 Vivado 的 M4 OOC 结果及其时钟限制另记录在 M5 报告中。
 前一版浮点基线保存在 [M3](archive/m3/reports/evaluation.md)。
@@ -23,8 +24,8 @@ M1/M2 的原始证据保存在 [M1](archive/m1/reports/evaluation.md) / [M2](arc
 git clone https://github.com/Surplars/Spinor.git
 cd Spinor
 make bootstrap
-python3 scripts/verify_m25.py
-python3 scripts/package.py --milestone m25
+python3 scripts/verify_m26.py
+python3 scripts/package.py --milestone m26
 ```
 
 验证入口会准备固定版本 SoftFloat 和 RapidWright；首次执行需要网络访问工具锁文件中的下载地址。
@@ -100,6 +101,7 @@ Valence 接入后须遵守其 GSIM、独立差分与精确异常验收要求。
 - M23：viota/vid索引生成；8位前缀计数复用已有私有暂存，目的沿用整数流水和版本化RAM。
 - M24：整数slide六种编码，保留64位偏移精度、VL/VLMAX边界、mask/vstart及下移别名支持。
 - M25：四种gather编码，EI16独立EMUL；scalar/immediate索引以单元素暂存广播，无整组快照。
+- M26：舍入与IEEE封装分级、并行索引递增、统一执行mask/v0数据别名检查；两个顶层满足固定云端参考门槛。
 
 命令顺序执行，只有一条向量指令在途。M2 源读已提交 RAM，目的写候选 RAM，
 只有宿主接受完成才翻转版本表或更新配置；RAM 内的候选数据在撤销后无需清零。

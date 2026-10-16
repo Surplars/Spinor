@@ -48,7 +48,7 @@ for cycle in range(2600):
  addr+=args.base
  if opcode in [0,1] and size==2:data |= rng.getrandbits(32)<<32
  status=int(busy)|(mem<<1)|(tl<<2)|(owned<<3)|(int(valid)<<4)|32|(int(overflow)<<6)|(int(sticky)<<7)
- table={0:0x4c495348,1:0x10000,2:0x2501,3:0x3fff,4:(1<<48)|(32<<32)|(64<<16)|128,5:(8<<32)|512,6:width,7:status,8:0,9:seq,
+ table={0:0x4c495348,1:0x10000,2:0x2601,3:0x3fff,4:(1<<48)|(32<<32)|(64<<16)|128,5:(8<<32)|512,6:width,7:status,8:0,9:seq,
  10:err[0]|(err[3]<<16),11:err[1],12:err[2]&((1<<64)-1),13:err[2]>>64,14:vt,15:config,
  48:ss,49:sv,50:sc,51:se[0]|(se[3]<<16),52:se[1],53:se[2]&((1<<64)-1),54:se[2]>>64}
  table.update({32+i:x for i,x in enumerate(snap)})

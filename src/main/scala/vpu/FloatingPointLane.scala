@@ -113,10 +113,10 @@ class FloatingPointLane extends Module {
   val io=IO(new Bundle {
     val flush=Input(Bool()); val in=Flipped(Decoupled(new FpRequest)); val out=Decoupled(new FpResponse)
   })
-  val states=Enum(24)
+  val states=Enum(25)
   val Seq(idle,recode,prepare,preWait,multiply,reduceA,reduceB,reduceC,add0,add1,add2,add3,
     normalize,postWait,rounding,roundWait,divLaunch,divWait,misc,miscReply,reply)=states.take(21)
-  val convertStart=states(21);val convertWait=states(22);val recodeFinish=states(23)
+  val convertStart=states(21);val convertWait=states(22);val recodeFinish=states(23);val roundPack=states(24)
   val state=RegInit(idle)
   val request=Reg(new FpRequest)
   val response=Reg(new FpResponse)
@@ -231,11 +231,19 @@ class FloatingPointLane extends Module {
     r.io.in:=raw; r.io.invalidExc:=invalid; r.io.infiniteExc:=infinite
     r.io.roundingMode:=request.rounding; r.io.detectTininess:=true.B
   }
-  val ieee=Mux(request.double,fNFromRecFN(11,53,r64.io.out),fNFromRecFN(8,24,r32.io.out).pad(64))
+  val u32=Module(new StagedIeeeUnrecode(8,24))
+  val u64=Module(new StagedIeeeUnrecode(11,53))
+  val rounded=state===roundWait && r32.io.done && r64.io.done && !io.flush
+  u32.io.in:=r32.io.out;u64.io.in:=r64.io.out
+  u32.io.capture:=rounded;u64.io.capture:=rounded
+  val ieee=Mux(request.double,u64.io.out,u32.io.out.pad(64))
   when(state===rounding) { state:=roundWait }
-  when(state===roundWait && r32.io.done && r64.io.done) {
-    response.data:=Mux(FpBits.nan(ieee,request.double),FpBits.canonical(request.double),ieee)
+  when(rounded) {
     response.flags:=Mux(request.double,r64.io.exceptionFlags,r32.io.exceptionFlags)
+    state:=roundPack
+  }
+  when(state===roundPack) {
+    response.data:=Mux(FpBits.nan(ieee,request.double),FpBits.canonical(request.double),ieee)
     state:=reply
   }
   val converter=Module(new FloatingPointConvert)

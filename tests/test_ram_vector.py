@@ -84,6 +84,7 @@ def main():
     def getgroup(base,n):return sum(regs[base+j]<<(128*j) for j in range(n))
     def vec(f6,op,form,vd,vs2,vs1,vm,scalar=0,illegal=False):
         nonlocal versions,vstart
+        illegal=illegal or (not vm and ((op!=18 and vs2==0) or (form in [0,2] and vs1==0)))
         inst=(f6<<26)|(vm<<25)|(vs2<<20)|(vs1<<15)|(form<<12)|(vd<<7)|0x57
         n=(1<<(vtype&7)) if vtype&7<=3 else 1
         dc=1 if 12<=op<=17 else n

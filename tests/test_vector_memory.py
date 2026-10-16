@@ -173,7 +173,14 @@ def main():
  config(0,4);setstart(2)
  for bits in [1<<29,1<<28,1<<26,1<<20,1<<12]:run(0,False,BASE,illegal=True,reserved=bits)
  config(1,4);run(0,False,BASE,vr=9,illegal=True)
- config(0,16);run(0,False,BASE+768,vr=0);run(0,True,BASE+1024,vr=0,masked=True)
+ config(0,16);run(0,False,BASE+768,vr=0);run(0,True,BASE+1024,vr=0,masked=True,illegal=True)
+ # Mixed-EEW mask/data aliases are checked before empty/inactive/restart exits.
+ for ew in range(4):
+  for length,restart,predicate in [(0,0,0),(2,0,0),(2,3,(1<<128)-1)]:
+   config(ew<<3,length);mask(predicate);setstart(restart)
+   for write in [False,True]:run(ew,write,BASE+1024,vr=0,masked=True,illegal=True)
+ # v0 remains a legal unmasked store source.
+ config(0,2);run(0,True,BASE+1024,vr=0)
  config(0,2);setstart(1);run(0,False,0xffffffff)
  # Closed loop: load -> integer add -> store, with a real version-map flip.
  config(16,4);run(2,False,BASE+512)

@@ -286,8 +286,12 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         indexEnd>32.U || (vd<indexEnd && vs1<(vd+&groupCount)))) ||
       (selectedGather===2.U && vtype(4,3)=/=1.U && vs2<indexEnd && vs1<sourceGroupEnd2) ||
       (!vm && (vs2===0.U || (vv && vs1===0.U))))
+    // Execution mask is an EEW=1 source; a data source cannot read v0 at SEW.
+    // Reductions also read the scalar vector seed, unlike unary selectors.
+    val badMaskSourceAlias = !vm && ((needsVs2 && vs2===0.U) ||
+      ((vectorSource1 || selectedReduction) && vs1===0.U))
     val fpIllegal=selectedFp && (vtype(4,3)<2.U || (frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U))
-    when(vtype(63) || !selectedSupported || fpIllegal || misaligned || badMaskOverlap || gatherBad ||
+    when(vtype(63) || !selectedSupported || fpIllegal || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias ||
       (!vm && !selectedMask && !selectedReduction && !selectedMaskScalar && vd === 0.U) ||
       ((selectedReduction || selectedMaskScalar || selectedMaskPrefix || selectedIndexGenerate===1.U) && vstart=/=0.U) ||
       (selectedMaskPrefix && (vd===vs2 || (!vm && vd===0.U))) ||
@@ -415,7 +419,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         }).asUInt
         state:=maskByteReadA
       }
-      .elsewhen(!vm && !mask(index(6,0)) && (fp || op =/= Op.merge.U)) { index := index+1.U }
+      .elsewhen(!vm && !mask(index(6,0)) && (fp || op =/= Op.merge.U)) { index := ParallelIncrement(index,true.B) }
       .otherwise {
         val offset = (index<<sew)(6,0)
         sourceOffset := offset(6,4)
@@ -450,7 +454,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       }
         .otherwise {state:=readA}
     }.elsewhen(up && !mulVX && (slideHuge || a(8))) {
-      index:=index+1.U;state:=dispatch // below OFFSET: preserve destination
+      index:=ParallelIncrement(index,true.B);state:=dispatch // below OFFSET: preserve destination
     }.elsewhen(scalarElement || zero) {
       b:=Mux(scalarElement,command.scalar & VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(sew),0.U);state:=launch
     }.otherwise {state:=readA}
@@ -459,7 +463,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val predicateByte=VecInit((0 until 16).map(i=>mask(8*i+7,8*i)))(index(6,3))
   // Preserve the eighth index bit: advancing the last byte must yield 128,
   // never wrap to zero. vstart may begin in the middle of the first byte.
-  val nextMaskByte=Cat((index(6,3)+&1.U),0.U(3.W))
+  val nextMaskByte=Cat(ParallelIncrement(Cat(0.U(1.W),index(6,3)),true.B),0.U(3.W))
   when(state===maskByteReadA) {
     rf.io.readEnable:=true.B;rf.io.readAddress:=vs2;state:=maskByteCaptureA
   }
@@ -580,7 +584,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val streamActive=state===slideAddress || state===dispatch || state===readA || state===captureA || state===readB || state===captureB || state===launch || state===awaitResult
   lane.io.out.ready := (Mux(streaming,streamActive,state===awaitResult)) && !fp && !isMul && !isDiv && !io.flush
   when(lane.io.in.fire) {
-    when(streaming) { index:=index+1.U;state:=dispatch }.otherwise { state:=awaitResult }
+    when(streaming) { index:=ParallelIncrement(index,true.B);state:=dispatch }.otherwise { state:=awaitResult }
   }
   when(streaming && (lane.io.in.fire =/= lane.io.out.fire)) {
     outstanding:=Mux(lane.io.in.fire,outstanding+1.U,outstanding-1.U)
@@ -621,7 +625,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     resultData:=Mux(fp,unit.io.out.bits.data,integerData)
   }
   when(resultFire) {
-    when(reduction) {reductionAccumulator:=resultData;index:=index+1.U;state:=dispatch}
+    when(reduction) {reductionAccumulator:=resultData;index:=ParallelIncrement(index,true.B);state:=dispatch}
       .elsewhen(comparison) { resultBit := resultData(0); state := maskOldRead }
       .otherwise {
         writeEnable := true.B; writeAddress := destination; writeCandidate := true.B
@@ -631,7 +635,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         writeAddress:=Mux(streaming,(vd+retiredOffset(6,4))(4,0),destination)
         writeMask := Mux(streaming,retiredMask,byteMask)
         writeData := (resultData.pad(128)<<Mux(streaming,retiredBits,bitOffset))(127,0)
-        when(!streaming) { index := index+1.U; state := dispatch }
+        when(!streaming) { index := ParallelIncrement(index,true.B); state := dispatch }
       }
   }
   when(state === maskOldRead) {
@@ -643,7 +647,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val newByte = (oldByte & ~bit) | Mux(resultBit,bit,0.U)
     writeEnable := true.B; writeAddress := vd; writeCandidate := true.B
     writeMask := (1.U(16.W)<<index(6,3))(15,0); writeData := Fill(16,newByte)
-    index := index+1.U; state := dispatch
+    index := ParallelIncrement(index,true.B); state := dispatch
   }
   when(io.completion.fire) {
     when(!illegal) {

@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 =============================================================================*/
 
 // Derived from HardFloat c1105e6 RoundAnyRawFNToRecFN.
-// Modified: register adjusted inputs, mask, rounded significand and output;
+// Modified: register adjusted inputs, mask, rounded significand, common result and output;
 // replace increment with a balanced prefix. Inputs held by capacity-one owner.
 package vpu
 
@@ -71,9 +71,9 @@ class
     //------------------------------------------------------------------------
     //------------------------------------------------------------------------
     val phase=RegInit(0.U(3.W))
-    io.done := phase===5.U && !io.flush
+    io.done := phase===6.U && !io.flush
     when(phase===0.U && io.start && !io.flush) { phase:=1.U }
-    when(phase=/=0.U) { phase:=Mux(phase===5.U,0.U,phase+1.U) }
+    when(phase=/=0.U) { phase:=Mux(phase===6.U,0.U,phase+1.U) }
     when(io.flush) { phase:=0.U }
     val result=Reg(UInt((outExpWidth+outSigWidth+1).W))
     val flags=Reg(UInt(5.W))
@@ -141,12 +141,12 @@ class
     val doShiftSigDown1 =
         if (sigMSBitAlwaysZero) false.B else adjustedSig(outSigWidth + 2)
 
-    val common_expOut   = Wire(UInt((outExpWidth + 1).W))
-    val common_fractOut = Wire(UInt((outSigWidth - 1).W))
-    val common_overflow       = Wire(Bool())
-    val common_totalUnderflow = Wire(Bool())
-    val common_underflow      = Wire(Bool())
-    val common_inexact        = Wire(Bool())
+    val common_expOutComb   = Wire(UInt((outExpWidth + 1).W))
+    val common_fractOutComb = Wire(UInt((outSigWidth - 1).W))
+    val common_overflowComb       = Wire(Bool())
+    val common_totalUnderflowComb = Wire(Bool())
+    val common_underflowComb      = Wire(Bool())
+    val common_inexactComb        = Wire(Bool())
 
     if (
         neverOverflows && neverUnderflows
@@ -155,16 +155,16 @@ class
 
         //--------------------------------------------------------------------
         //--------------------------------------------------------------------
-        common_expOut := sAdjustedExp(outExpWidth, 0) + doShiftSigDown1
-        common_fractOut :=
+        common_expOutComb := sAdjustedExp(outExpWidth, 0) + doShiftSigDown1
+        common_fractOutComb :=
             Mux(doShiftSigDown1,
                 adjustedSig(outSigWidth + 1, 3),
                 adjustedSig(outSigWidth, 2)
             )
-        common_overflow       := false.B
-        common_totalUnderflow := false.B
-        common_underflow      := false.B
-        common_inexact        := false.B
+        common_overflowComb       := false.B
+        common_totalUnderflowComb := false.B
+        common_underflowComb      := false.B
+        common_inexactComb        := false.B
 
     } else {
 
@@ -219,17 +219,17 @@ val roundedSig=Reg(chiselTypeOf(roundedSigComb))
 //***  M.S. BIT OF SUBNORMAL SIG?
         val sRoundedExp = sAdjustedExp +& (roundedSig>>outSigWidth).asUInt.zext
 
-        common_expOut := sRoundedExp(outExpWidth, 0)
-        common_fractOut :=
+        common_expOutComb := sRoundedExp(outExpWidth, 0)
+        common_fractOutComb :=
             Mux(doShiftSigDown1,
                 roundedSig(outSigWidth - 1, 1),
                 roundedSig(outSigWidth - 2, 0)
             )
-        common_overflow :=
+        common_overflowComb :=
             (if (neverOverflows) false.B else
 //*** REWRITE BASED ON BEFORE-ROUNDING EXPONENT?:
                  (sRoundedExp>>(outExpWidth - 1) >= 3.S))
-        common_totalUnderflow :=
+        common_totalUnderflowComb :=
             (if (neverUnderflows) false.B else
 //*** WOULD BE GOOD ENOUGH TO USE EXPONENT BEFORE ROUNDING?:
                  (sRoundedExp < outMinNonzeroExp.S))
@@ -247,9 +247,9 @@ val roundedSig=Reg(chiselTypeOf(roundedSigComb))
                 roundedSig(outSigWidth + 1),
                 roundedSig(outSigWidth)
             )
-        common_underflow :=
+        common_underflowComb :=
             (if (neverUnderflows) false.B else
-                 common_totalUnderflow ||
+                 common_totalUnderflowComb ||
 //*** IF SIG WIDTH IS VERY NARROW, NEED TO ACCOUNT FOR ROUND-EVEN ZEROING
 //***  M.S. BIT OF SUBNORMAL SIG?
                      (anyRound && ((sAdjustedExp>>outExpWidth) <= 0.S) &&
@@ -262,7 +262,23 @@ val roundedSig=Reg(chiselTypeOf(roundedSigComb))
                                  roundCarry && roundPosBit &&
                                  unboundedRange_roundIncr)))
 
-        common_inexact := common_totalUnderflow || anyRound
+        common_inexactComb := common_totalUnderflowComb || anyRound
+    }
+
+    // Separate exponent correction/classification from special-value packing.
+    val common_expOut=Reg(chiselTypeOf(common_expOutComb))
+    val common_fractOut=Reg(chiselTypeOf(common_fractOutComb))
+    val common_overflow=Reg(chiselTypeOf(common_overflowComb))
+    val common_totalUnderflow=Reg(chiselTypeOf(common_totalUnderflowComb))
+    val common_underflow=Reg(chiselTypeOf(common_underflowComb))
+    val common_inexact=Reg(chiselTypeOf(common_inexactComb))
+    when(phase===4.U) {
+        common_expOut:=common_expOutComb
+        common_fractOut:=common_fractOutComb
+        common_overflow:=common_overflowComb
+        common_totalUnderflow:=common_totalUnderflowComb
+        common_underflow:=common_underflowComb
+        common_inexact:=common_inexactComb
     }
 
     //------------------------------------------------------------------------
@@ -318,7 +334,7 @@ val roundedSig=Reg(chiselTypeOf(roundedSigComb))
         ) |
         Fill(outSigWidth - 1, pegMaxFiniteMagOut)
 
-    when(phase===4.U) {
+    when(phase===5.U) {
         result := signOut ## expOut ## fractOut
         flags := io.invalidExc ## io.infiniteExc ## overflow ## underflow ## inexact
     }

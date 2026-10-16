@@ -70,7 +70,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val validWidth=f3===0.U || f3===5.U || f3===6.U || f3===7.U
     val bad= !validOpcode || !validWidth || typ(63) || typ(5,3)>3.U || emul<(-3).S || emul>3.S ||
       inst(31,26)=/=0.U || inst(24,20)=/=0.U || (vr&(group-1.U))=/=0.U ||
-      (vr+&group)>32.U || (!isStore && !inst(25) && vr===0.U)
+      (vr+&group)>32.U || (!inst(25) && vr===0.U)
     store:=isStore;masked:= !inst(25);baseRegister:=vr;width:=ew
     decodedBad:=bad;state:=validate
   }

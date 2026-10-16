@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M25）
+# Spinor 指令覆盖矩阵（M26）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -7,7 +7,7 @@
 | 配置/CSR | vsetvli、vsetivli、vsetvl；vstart/vxrm/vxsat/vcsr/vl/vtype/vlenb；FP配置与flags | CPU仍需实现权限及VS/FS管理 |
 | 基本整数 | add/sub、逻辑、移位、min/max、比较、merge/move的已实现vv/vx/vi编码 | 不是所有整数编码，详见RamVector解码 |
 | 整数乘除 | vmul、vmulh、vmulhu、vmulhsu、vdiv[u]、vrem[u] vv/vx | 迭代单元，容量1 |
-| 单宽整数归约 | M18新增vredsum/and/or/xor/min[u]/max[u].vs | 掩码、任意标量寄存器和源重叠；非零vstart非法 |
+| 单宽整数归约 | M18新增vredsum/and/or/xor/min[u]/max[u].vs | seed/目的可不按LMUL对齐；合法源重叠；非零vstart非法 |
 | 宽化整数归约 | 未实现 | vwredsum[u].vs |
 | 基本FP | 加减/反减、乘除/反除、sqrt、FMA系列、min/max、比较、sign注入、分类 | FP32/64，回归对照固定SoftFloat；非完整FP向量集合 |
 | FP转换 | 6种同宽整数/浮点及RTZ转换 | 宽化/窄化、FP16、Zvfhmin/Zvfh未实现 |
@@ -23,4 +23,4 @@
 
 近期优先继续补齐VPU排列、宽窄整数、FP归约及访存模式，每轮核对资源和云端条件时序；Orbital程序闭环另行推进。只有指令、异常、上下文和内存模型都满足目标配置并完成架构测试后，才能宣称完整目标ISA支持。
 
-已知合法性缺口：旧普通算术/滑移路径尚未统一限制“v0作为数据源同时作为执行mask”的双EEW源别名；这些保留编码在旧正向回归中仍可能被接受。M25新gather已经检查该约束，以及EI16不同EEW数据/索引源的物理寄存器重叠。下一轮应统一旧路径检查和参考模型；当前回归不等于完整架构合规。
+M26已统一执行mask（EEW1）与v0数据源（SEW≥8）的保留编码检查，覆盖普通INT/FP、乘除、归约seed、滑移、gather及masked store/load v0。VL0、全mask关闭和vstart越过VL也先检查。EEW1的vcpop/vfirst、前缀mask、viota源可合法使用v0；FP单目selector0、标量寄存器编号0不是向量数据源。EI16仍独立检查不同EEW的数据/索引物理组重叠。新检查修复已知缺口，回归仍不构成完整架构合规证明。

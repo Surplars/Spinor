@@ -84,6 +84,7 @@ end endtask
         name,f6,op,comparison,unary=desc
         vf=scalar is not None;f3=5 if vf else 1
         rs=unary if unary>=0 else vs1
+        illegal=illegal or (not vm and (vs2==0 or (not vf and unary<0 and vs1==0)))
         inst=(f6<<26)|(vm<<25)|(vs2<<20)|(rs<<15)|(f3<<12)|(vd<<7)|0x57
         w=8<<((vtype>>3)&7);n=(1<<(vtype&7)) if (vtype&7)<=3 else 1
         dc=1 if comparison else n

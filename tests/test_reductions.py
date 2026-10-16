@@ -15,7 +15,7 @@ h=h.replace('io_command_bits_instruction=inst;io_command_bits_scalar=scalar;','o
 h=h.replace('while(!io_completion_valid) tick();','while(!io_completion_valid)begin tick();if(io_versions!==originalVersions)$fatal(1,"early version publish");end',1)
 h=h.replace('repeat(stall) begin','repeat(stall) begin\nif(io_versions!==originalVersions)$fatal(1,"publish while completion stalled");',1)
 lines=[h];regs=[0]*32;versions=0;vl=0;typ=1<<63;vstart=0;case=0
-stats=dict(reductions=0,illegal=0,configs=0,flushes=0,all_masked=0,zero_vl=0,masked_vd0=0,unaligned_scalar=0,aliases=0)
+stats=dict(reductions=0,illegal=0,configs=0,flushes=0,all_masked=0,zero_vl=0,masked_vd0=0,unaligned_scalar=0,aliases=0,masked_source_v0=0)
 byop={i:0 for i in range(8)};bytype={};bench=[]
 def state():
  lines.append(f"if(io_versions!==32'h{versions:x} || io_vstart!==7'd{vstart} || io_vxrm!==0 || io_vxsat!==0)$fatal(1,\"state case {case}\");")
@@ -56,6 +56,8 @@ def reduce_value(op,values,w):
  return (min(values,key=signed) if op==5 else max(values,key=signed))&mask
 def reduction(op,vd,vs2,vs1,vm,bad=False,form=2,record=False):
  global versions,vstart
+ bad=bad or (not vm and (vs1==0 or vs2==0))
+ stats['masked_source_v0']+=int(not vm and (vs1==0 or vs2==0))
  inst=(op<<26)|(vm<<25)|(vs2<<20)|(vs1<<15)|(form<<12)|(vd<<7)|0x57
  oldregs=regs.copy();w=8<<((typ>>3)&3);m=(1<<w)-1;n=(1<<(typ&7)) if typ&7<4 else 1
  group=sum(regs[vs2+i]<<(128*i) for i in range(n)) if vs2+n<=32 else 0

@@ -1,3 +1,9 @@
+.PHONY: verify-m26 package-m26
+verify-m26:
+	$(PYTHON) scripts/verify_m26.py
+package-m26:
+	$(PYTHON) scripts/package.py --milestone m26
+
 PYTHON ?= python3
 
 .PHONY: verify-m25 package-m25

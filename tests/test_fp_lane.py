@@ -108,7 +108,7 @@ def main():
         for op in [30,31]:add(d,op,0,one,one)
     cancels=0
     for op in ([0,5] if args.smoke else [0,2,5,3,4]):
-        for delay in ([0,1,2,3] if args.smoke else list(range(33))+[40,60,100,180,250,280]):
+        for delay in ([0,1,2,3,*range(25,33)] if args.smoke else list(range(33))+[40,60,100,180,250,280]):
             lines.append(f"cancel({op},{delay},0,0);");cancels+=1
         lines.append(f"cancel({op},0,1,0);")
         lines.append(f"cancel({op},2,0,1);");cancels+=2
