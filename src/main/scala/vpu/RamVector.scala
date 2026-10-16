@@ -151,7 +151,9 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val fpVV=enableFp.B && f3===1.U; val fpVF=enableFp.B && f3===5.U
   val fpUnary=fpVV && (f6===0x13.U || f6===0x12.U)
   val mulVV=f3===2.U; val mulVX=f3===6.U
-  val reductionEncoding=mulVV && f6<=7.U
+  val integerReductionEncoding=mulVV && f6<=7.U
+  val fpReductionEncoding=fpVV && f6(5,3)===0.U && f6(0) // 1/3 sum, 5 min, 7 max
+  val reductionEncoding=integerReductionEncoding || fpReductionEncoding
   val maskLogicEncoding=mulVV && f6>=0x18.U && f6<=0x1f.U
   val scalarReadEncoding=mulVV && f6===0x10.U && vm && vs1===0.U
   val scalarWriteEncoding=mulVX && f6===0x10.U && vm && vs2===0.U
@@ -172,6 +174,10 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       when(f6===code.U && (fpVF || (fpVV && !scalarOnly.B))) {
         fpSupported:=true.B; fpDecoded:=operation.U; fpMask:=mask.B
       }
+    }
+    when(fpReductionEncoding) {
+      fpSupported:=true.B
+      fpDecoded:=Mux(f6(2),Mux(f6(1),FpOp.max.U,FpOp.min.U),FpOp.add.U)
     }
     entryFp(0x00,FpOp.add); entryFp(0x02,FpOp.sub)
     entryFp(0x04,FpOp.min); entryFp(0x06,FpOp.max)
@@ -217,7 +223,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   for((code,operation)<-Seq((0x20,Op.divu),(0x21,Op.div),(0x22,Op.remu),(0x23,Op.rem),(0x25,Op.mul),(0x27,Op.mulh),(0x24,Op.mulhu),(0x26,Op.mulhsu))) {
     when(f6===code.U && (mulVV || mulVX)) { supported:=true.B;decodedOp:=operation.U }
   }
-  when(reductionEncoding) {
+  when(integerReductionEncoding) {
     supported:=true.B
     decodedOp:=MuxLookup(f6,Op.add.U)(Seq(0.U->Op.add.U,1.U->Op.and.U,
       2.U->Op.or.U,3.U->Op.xor.U,4.U->Op.minu.U,5.U->Op.min.U,

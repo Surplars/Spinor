@@ -61,8 +61,17 @@ execute(0,1,24,24,16,[0x40400000,0x40400000,0x40a00000,0x40a00000])
 execute(0x14,2,8,3,16,[0,0,1,1])
 execute(0x17,2,24,8,3,[0,1,0x40a00000,0x40a00000])
 execute(0x0c,3,8,24,0,[0,0,0,0])
+# FP feedback reduction shares seed/candidate RAM with integer modes.
+setwords(8,[0x3f800000,0x40000000,0x40400000,0x40800000])
+setwords(16,[0x3f000000]*4)
+execute(3,1,24,8,16,[0x41280000,1,0x40a00000,0x40a00000])
+execute(1,1,24,8,16,[0x41280000,1,0x40a00000,0x40a00000])
+execute(5,1,24,8,16,[0x3f000000,1,0x40a00000,0x40a00000])
+execute(7,1,24,8,16,[0x40800000,1,0x40a00000,0x40a00000])
+execute(0,1,8,8,16,[0x3fc00000,0x40200000,0x40600000,0x40900000])
+execute(0x17,2,24,8,3,[0x40200000,0x40900000,0x40a00000,0x40a00000])
 for r in range(32):ctx(r)
-lines+=['$display("PASS reduction-interleave 24 vector instructions");$finish;end endmodule']
+lines+=['$display("PASS reduction-interleave 30 vector instructions");$finish;end endmodule']
 tb=OUT/'tb.sv';tb.write_text('\n'.join(lines));label='mapped' if args.mapped else 'rtl'
 rtl=ROOT/('build/synth/RamVectorFp/mapped.v' if args.mapped else 'build/rtl/RamVectorFp.sv')
 files=[tb,rtl];extra=[]
@@ -71,5 +80,5 @@ with (OUT/(label+'-compile.log')).open('w') as log:
  subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/iverilog'),'-g2012','-s','tb','-DTOP=RamVectorFp',*extra,'-o',str(OUT/label),*map(str,files)],check=True,stdout=log,stderr=log)
 run=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],capture_output=True,text=True)
 (OUT/(label+'.log')).write_text(run.stdout+run.stderr);assert run.returncode==0,run.stdout+run.stderr
-result=dict(status='PASS',mapped=args.mapped,vector_instructions=24,sha256={str(x.relative_to(ROOT)):hashlib.sha256(x.read_bytes()).hexdigest() for x in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
+result=dict(status='PASS',mapped=args.mapped,vector_instructions=30,sha256={str(x.relative_to(ROOT)):hashlib.sha256(x.read_bytes()).hexdigest() for x in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

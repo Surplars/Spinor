@@ -156,8 +156,21 @@ command(32'h5c81a857,0,0,0,80'hef0005,1,0,0,3,8'd4,64'h10);
 // Resume ordinary integer execution after dense-target addressing.
 command(32'h02804457,1,0,0,80'hef0006,0,0,0,3,8'd4,64'h10);
 ctx(16,0,0,64'h0000002300000012);ctx(17,0,0,64'h0000004500000034);
+// FP reductions traverse the public issue boundary and monitor alongside TL.
+ctx(16,1,64'h400000003f800000,0);ctx(17,1,64'h4080000040400000,0);
+ctx(62,1,64'h3f000000,0);ctx(63,1,0,0);
+cancel(32'h0e8f9857,30,1'b0);
+ctx(32,0,0,64'h0000004400000022);ctx(33,0,0,64'habcdef0123456789);
+command(32'h0e8f9857,0,0,0,80'hf00001,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,64'h0000004441280000);ctx(33,0,0,64'habcdef0123456789);
+command(32'h068f9857,0,0,0,80'hf00002,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,64'h0000004441280000);
+command(32'h168f9857,0,0,0,80'hf00003,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,64'h000000443f000000);
+command(32'h1e8f9857,0,0,0,80'hf00004,0,0,0,3,8'd4,64'h10);
+ctx(32,0,0,64'h0000004440800000);ctx(33,0,0,64'habcdef0123456789);
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h2701);monAccess(64'h18,4,0,64'h7fff);
+monAccess(64'h10,4,0,64'h2801);monAccess(64'h18,4,0,64'hffff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});

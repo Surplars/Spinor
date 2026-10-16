@@ -462,3 +462,9 @@ verify-m16: m16-test m16-proof m16-paths m16-mapped-test m16-budget
 	$(PYTHON) scripts/report_m16.py
 package-m16:
 	$(PYTHON) scripts/package.py --milestone m16
+
+.PHONY: verify-m28 package-m28
+verify-m28:
+	$(PYTHON) scripts/verify_m28.py
+package-m28:
+	$(PYTHON) scripts/package.py --milestone m28
