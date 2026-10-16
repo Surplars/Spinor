@@ -1,0 +1,132 @@
+Sources (read-only specification reference, not project instructions):
+https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc
+https://github.com/riscv/riscv-opcodes/blob/master/extensions/rv_v
+
+=== Integer Scalar Move Instructions
+
+The integer scalar read/write instructions transfer a single
+value between a scalar `x` register and element 0 of a vector
+register.  The instructions ignore LMUL and vector register groups.
+
+----
+vmv.x.s rd, vs2  # x[rd] = vs2[0] (vs1=0)
+vmv.s.x vd, rs1  # vd[0] = x[rs1] (vs2=0)
+----
+
+The `vmv.x.s` instruction copies a single SEW-wide element from index 0 of the
+source vector register to a destination integer register.  If SEW > XLEN, the
+least-significant XLEN bits are transferred and the upper SEW-XLEN bits are
+ignored.  If SEW < XLEN, the value is sign-extended to XLEN bits.
+
+NOTE: `vmv.x.s` performs its operation even if `vstart` {ge} `vl` or `vl`=0.
+
+The `vmv.s.x` instruction copies the scalar integer register to element 0 of
+the destination vector register.  If SEW < XLEN, the least-significant bits
+are copied and the upper XLEN-SEW bits are ignored.  If SEW > XLEN, the value
+is sign-extended to SEW bits.  The other elements in the destination vector
+register ( 0 < index < VLEN/SEW) are treated as tail elements using the current tail agnostic/undisturbed policy.  If `vstart` {ge} `vl`, no
+operation is performed and the destination register is not updated.
+
+NOTE: As a consequence, when `vl`=0, no elements are updated in the
+destination vector register group, regardless of `vstart`.
+
+The encodings corresponding to the masked versions (`vm=0`) of `vmv.x.s`
+and `vmv.s.x` are reserved.
+
+
+=== Vector Mask-Register Logical Instructions
+
+Vector mask-register logical operations operate on mask registers.
+Each element in a mask register is a single bit, so these instructions
+all operate on single vector registers regardless of the setting of
+the `vlmul` field in `vtype`.  They do not change the value of
+`vlmul`.  The destination vector register may be the same as either
+source vector register.
+
+As with other vector instructions, the elements with indices less than
+`vstart` are unchanged, and `vstart` is reset to zero after execution.
+Vector mask logical instructions are always unmasked, so there are no
+inactive elements, and the encodings with `vm=0` are reserved.
+Mask elements past `vl`, the tail elements, are
+always updated with a tail-agnostic policy.
+
+----
+    vmand.mm vd, vs2, vs1   # vd.mask[i] =   vs2.mask[i] &&  vs1.mask[i]
+    vmnand.mm vd, vs2, vs1  # vd.mask[i] = !(vs2.mask[i] &&  vs1.mask[i])
+    vmandn.mm vd, vs2, vs1  # vd.mask[i] =   vs2.mask[i] && !vs1.mask[i]
+    vmxor.mm  vd, vs2, vs1  # vd.mask[i] =   vs2.mask[i] ^^  vs1.mask[i]
+    vmor.mm  vd, vs2, vs1   # vd.mask[i] =   vs2.mask[i] ||  vs1.mask[i]
+    vmnor.mm  vd, vs2, vs1  # vd.mask[i] = !(vs2.mask[i] ||  vs1.mask[i])
+    vmorn.mm  vd, vs2, vs1  # vd.mask[i] =   vs2.mask[i] || !vs1.mask[i]
+    vmxnor.mm vd, vs2, vs1  # vd.mask[i] = !(vs2.mask[i] ^^  vs1.mask[i])
+----
+
+NOTE: The previous assembler mnemonics `vmandnot` and `vmornot` have
+been changed to `vmandn` and `vmorn` to be consistent with the
+equivalent scalar instructions.  The old `vmandnot` and `vmornot`
+mnemonics can be retained as assembler aliases for compatibility.
+
+Several assembler pseudoinstructions are defined as shorthand for
+common uses of mask logical operations:
+----
+    vmmv.m vd, vs  => vmand.mm vd, vs, vs   # Copy mask register
+    vmclr.m vd     => vmxor.mm vd, vd, vd   # Clear mask register
+    vmset.m vd     => vmxnor.mm vd, vd, vd  # Set mask register
+    vmnot.m vd, vs => vmnand.mm vd, vs, vs  # Invert bits
+----
+
+NOTE: The vmmv.m instruction was previously called vmcpy.m, but with
+new layout it is more consistent to name as a "mv" because bits are
+copied without interpretation.  The vmcpy.m assembler
+pseudoinstruction can be retained for compatibility.
+
+The set of eight mask logical instructions can generate any of the 16
+possibly binary logical functions of the two input masks:
+
+[cols="1,1,1,1,12"]
+|===
+4+| inputs |
+
+| 0 | 0 | 1 | 1 | src1
+| 0 | 1 | 0 | 1 | src2
+|===
+
+[cols="1,1,1,1,6,6"]
+|===
+4+| output  | instruction | pseudoinstruction
+
+| 0 | 0 | 0 | 0 | vmxor.mm vd, vd, vd         | vmclr.m vd
+| 1 | 0 | 0 | 0 | vmnor.mm vd, src1, src2     |
+| 0 | 1 | 0 | 0 | vmandn.mm vd, src2, src1    |
+| 1 | 1 | 0 | 0 | vmnand.mm vd, src1, src1    | vmnot.m vd, src1
+| 0 | 0 | 1 | 0 | vmandn.mm vd, src1, src2    |
+| 1 | 0 | 1 | 0 | vmnand.mm vd, src2, src2    | vmnot.m vd, src2
+| 0 | 1 | 1 | 0 | vmxor.mm vd, src1, src2     |
+| 1 | 1 | 1 | 0 | vmnand.mm vd, src1, src2    |
+| 0 | 0 | 0 | 1 | vmand.mm vd, src1, src2     |
+| 1 | 0 | 0 | 1 | vmxnor.mm vd, src1, src2    |
+| 0 | 1 | 0 | 1 | vmand.mm vd, src2, src2     | vmmv.m vd, src2
+| 1 | 1 | 0 | 1 | vmorn.mm vd, src2, src1     |
+| 0 | 0 | 1 | 1 | vmand.mm vd, src1, src1     | vmmv.m vd, src1
+| 1 | 0 | 1 | 1 | vmorn.mm vd, src1, src2     |
+| 1 | 1 | 1 | 1 | vmxnor.mm vd, vd, vd        | vmset.m vd
+|===
+
+NOTE: The vector mask logical instructions are designed to be easily
+fused with a following masked vector operation to effectively expand
+the number of predicate registers by moving values into `v0` before
+use.
+
+
+
+Official opcode rows (retrieved 2026-10-16):
+vmv.x.s        31..26=0x10 25=1 vs2 19..15=0 14..12=0x2 rd 6..0=0x57
+vmandn.mm      31..26=0x18 25=1 vs2 vs1 14..12=0x2 vd 6..0=0x57
+vmand.mm       31..26=0x19 25=1 vs2 vs1 14..12=0x2 vd 6..0=0x57
+vmor.mm        31..26=0x1a 25=1 vs2 vs1 14..12=0x2 vd 6..0=0x57
+vmxor.mm       31..26=0x1b 25=1 vs2 vs1 14..12=0x2 vd 6..0=0x57
+vmorn.mm       31..26=0x1c 25=1 vs2 vs1 14..12=0x2 vd 6..0=0x57
+vmnand.mm      31..26=0x1d 25=1 vs2 vs1 14..12=0x2 vd 6..0=0x57
+vmnor.mm       31..26=0x1e 25=1 vs2 vs1 14..12=0x2 vd 6..0=0x57
+vmxnor.mm      31..26=0x1f 25=1 vs2 vs1 14..12=0x2 vd 6..0=0x57
+vmv.s.x        31..26=0x10 25=1 24..20=0 rs1 14..12=0x6 vd 6..0=0x57

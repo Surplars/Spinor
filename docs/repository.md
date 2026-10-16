@@ -11,11 +11,11 @@
 | `scripts/` | 工具准备、综合、条件时序预算、报告与打包 |
 | `software/monitor/` | Linux UIO monitor 用户态工具及寄存器定义 |
 | `docs/` | 指令覆盖、CPU/TileLink 协议和设计记录 |
-| `reports/m18/` | M18 评估及源码/证据 SHA-256 清单 |
+| `reports/m19/` | 当前 M19 评估及源码/证据 SHA-256 清单 |
 | `archive/` | 冻结的历史报告、RTL 与回归输入 |
 | `third_party/` | 固定版本硬件依赖、仿真模型及许可证 |
 
-`archive/m17/synth-LishiVpuMemory/mapped.json` 是云端预算对照所需的历史网表，属于冻结回归输入。其余历史报告也保留当时的路径和名称，不代表所有旧验证命令都支持当前源码。
+`archive/m18/synth-SpinorVpu/mapped.json` 是 M19 云端预算对照所需的历史网表，属于冻结回归输入；M17 对照也继续保留。其余历史报告保留当时的路径和名称，不代表所有旧验证命令都支持当前源码。
 
 ## 构建与验证
 
@@ -27,14 +27,14 @@ make bootstrap
 make rtl
 ```
 
-完整 M18 验证会自动准备 SoftFloat 和 RapidWright，然后执行 RTL、映射后功能回归、资源评估与条件时序预算：
+完整 M19 验证会自动准备 SoftFloat 和 RapidWright，然后执行 RTL、映射后功能回归、资源评估与条件时序预算：
 
 ```bash
-python3 scripts/verify_m18.py
-python3 scripts/package.py --milestone m18
+python3 scripts/verify_m19.py
+python3 scripts/package.py --milestone m19
 ```
 
-生成工具与缓存写入 `tools/`，RTL、测试台、日志和网表写入 `build/`，发布 ZIP 写入仓库根目录。这些生成文件不进入 Git。完整验证会重新生成 `reports/m18/receipt.json`；其中源码 SHA 可以直接核对，`build/` 证据 SHA 需要相应生成文件。
+生成工具与缓存写入 `tools/`，RTL、测试台、日志和网表写入 `build/`，发布 ZIP 写入仓库根目录。这些生成文件不进入 Git。完整验证会重新生成 `reports/m19/receipt.json`；其中源码 SHA 可以直接核对，`build/` 证据 SHA 需要相应生成文件。
 
 初始导入的功能证据来自已经完成的 M18 验证。导入仓库时补上了验证入口中 SoftFloat 和 RapidWright 的准备步骤，并修正文档，硬件源码保持与 M18 源码包一致。仓库内没有安装后的工具、凭据、Vivado DCP 或 bitstream。
 

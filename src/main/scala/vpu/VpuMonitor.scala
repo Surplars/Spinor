@@ -41,8 +41,8 @@ class VpuMonitor(base:BigInt=0,counterBits:Int=32) extends Module {
   switch(index) {
     is(0.U) {data:="h4c495348".U} // LISH
     is(1.U) {data:="h00010000".U} // ABI major 1, minor 0
-    is(2.U) {data:="h00001801".U} // M18 + monitor ABI v1; not full RVV
-    is(3.U) {data:="h7f".U} // prior features plus single-width integer reductions
+    is(2.U) {data:="h00001901".U} // M19 + monitor ABI v1; not full RVV
+    is(3.U) {data:="h1ff".U} // prior features, mask logic, integer scalar moves
     is(4.U) {data:=Cat(1.U(16.W),32.U(16.W),64.U(16.W),128.U(16.W))}
     is(5.U) {data:=Cat(0.U(24.W),8.U(8.W),512.U(32.W))} // architectural bytes, max LMUL
     is(6.U) {data:=counterBits.U}

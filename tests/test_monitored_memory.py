@@ -59,7 +59,26 @@ command(32'h02882c57,0,0,0,80'he80002,0,0,0,3,8'd4,64'h10);
 ctx(48,0,0,64'h1234567800000014);ctx(49,0,0,64'hfedcba9876543210);
 cancel(32'h02880457,20,1'b0);
 ctx(16,0,0,64'h0000000200000001);ctx(17,0,0,64'h0000000400000003);
+// Scalar extraction/insertion, including sign extension and preserved tail.
+command(32'h438021d7,0,0,0,80'he90001,0,20,1,3,8'd4,64'h10);
+ctx(62,1,64'habcdef0112345678,0);ctx(63,1,64'hfedcba9876543210,0);
+command(32'h4200efd7,64'hfffffffffffffffd,0,0,80'he90002,0,0,0,3,8'd4,64'h10);
+ctx(62,0,0,64'habcdef01fffffffd);ctx(63,0,0,64'hfedcba9876543210);
+command(32'h43f021d7,0,0,0,80'he90003,0,64'hfffffffffffffffd,1,3,8'd4,64'h10);
+// Build v0 via mask XOR, then consume it in an ordinary masked vadd.
+ctx(0,1,0,0);ctx(1,1,0,0);
+ctx(2,1,10,0);ctx(3,1,0,0);ctx(4,1,12,0);ctx(5,1,0,0);
+command(32'h6e112057,0,0,0,80'he90004,0,0,0,3,8'd4,64'h10);
+ctx(0,0,0,6);ctx(1,0,0,0);
+ctx(32,1,64'h0000000100000001,0);ctx(33,1,64'h0000000100000001,0);
+command(32'h00880457,0,0,0,80'he90005,0,0,0,3,8'd4,64'h10);
+ctx(16,0,0,64'h0000000300000001);ctx(17,0,0,64'h0000000400000004);
+// Return from the new instruction kinds to the reduction path, then extract it.
+command(32'h02882c57,0,0,0,80'he90006,0,0,0,3,8'd4,64'h10);
+ctx(48,0,0,64'h123456780000000d);ctx(49,0,0,64'hfedcba9876543210);
+command(32'h438021d7,0,0,0,80'he90007,0,13,1,3,8'd4,64'h10);
 monPolling=0;repeat(4)tick();
+monAccess(64'h10,4,0,64'h1901);monAccess(64'h18,4,0,64'h1ff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});
