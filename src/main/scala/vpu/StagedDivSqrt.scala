@@ -398,11 +398,11 @@ class
         savedRem := rem; savedTerm := trialTerm; phase := 2.U
     }
     when (phase === 2.U) {
-        val sum = (savedRem(31,0) +& ~savedTerm(31,0)) + 1.U
+        val sum = CarrySelect.add(savedRem(31,0),~savedTerm(31,0),true.B)
         low := sum(31,0); carryLow := sum(32); phase := 3.U
     }
     when (phase === 3.U) {
-        val sum = (savedRem(subtractionWidth-1,32) +& ~savedTerm(subtractionWidth-1,32)) + carryLow
+        val sum = CarrySelect.add(savedRem(subtractionWidth-1,32),~savedTerm(subtractionWidth-1,32),carryLow)
         trialRem := Cat(sum(subtractionWidth-33,0),low).asSInt
         phase := 4.U
     }

@@ -83,6 +83,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val reduction=RegInit(false.B)
   val maskLogic=RegInit(false.B)
   val scalarMove=RegInit(0.U(2.W)) // 0 ordinary, 1 vmv.x.s, 2 vmv.s.x
+  val maskScalar=RegInit(false.B) // vcpop.m / vfirst.m, no vector destination
   val reductionAccumulator=Reg(UInt(64.W)) // one scalar element, never a group snapshot
   val streaming = WireDefault(false.B)
   val rf = Module(new VersionedRegisterFile(useRam))
@@ -139,6 +140,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val maskLogicEncoding=mulVV && f6>=0x18.U && f6<=0x1f.U
   val scalarReadEncoding=mulVV && f6===0x10.U && vm && vs1===0.U
   val scalarWriteEncoding=mulVX && f6===0x10.U && vm && vs2===0.U
+  val maskScalarEncoding=mulVV && f6===0x10.U && (vs1===16.U || vs1===17.U)
   val scalarMoveEncoding=Mux(scalarReadEncoding,1.U(2.W),Mux(scalarWriteEncoding,2.U(2.W),0.U(2.W)))
   val vectorSource1=(vv || mulVV || (fpVV && !fpUnary)) && !reductionEncoding
   val fpSupported=WireDefault(false.B)
@@ -206,6 +208,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       0x1e.U->Op.or.U,0x1f.U->Op.xor.U))
   }
   when(scalarReadEncoding || scalarWriteEncoding) {supported:=true.B;decodedOp:=Op.move.U}
+  when(maskScalarEncoding) {supported:=true.B;decodedOp:=Op.move.U}
   val producesMask=Mux(fpSupported,fpMask,decodedMask)
   // Register decode before alignment/overlap/permission checks in the FP top.
   val selectedOp=if(enableFp)Reg(UInt(Op.width.W)) else decodedOp
@@ -216,6 +219,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val selectedReduction=if(enableFp)Reg(Bool()) else reductionEncoding
   val selectedMaskLogic=if(enableFp)Reg(Bool()) else maskLogicEncoding
   val selectedScalarMove=if(enableFp)Reg(UInt(2.W)) else scalarMoveEncoding
+  val selectedMaskScalar=if(enableFp)Reg(Bool()) else maskScalarEncoding
   def maxVl(t: UInt): UInt = {
     val base = 16.U(8.W) >> t(4,3)
     MuxLookup(t(2,0),0.U(8.W))(Seq(
@@ -233,17 +237,19 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     (vectorSource1 && vd > vs1 && vd < sourceGroupEnd1))
   def validateVector(): Unit = {
     val needsVs2 = selectedFp || selectedOp =/= Op.move.U
-    val singleRegister=selectedMaskLogic || selectedScalarMove=/=0.U
+    val singleRegister=selectedMaskLogic || selectedScalarMove=/=0.U || selectedMaskScalar
     val misaligned = !singleRegister && ((needsVs2 && (vs2&alignment) =/= 0.U) || (vectorSource1 && (vs1&alignment) =/= 0.U) ||
       (!selectedMask && !selectedReduction && (vd&alignment) =/= 0.U))
     val fpIllegal=selectedFp && (vtype(4,3)<2.U || (frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U))
     when(vtype(63) || !selectedSupported || fpIllegal || misaligned || badMaskOverlap ||
-      (!vm && !selectedMask && !selectedReduction && vd === 0.U) || (selectedReduction && vstart=/=0.U)) {
+      (!vm && !selectedMask && !selectedReduction && !selectedMaskScalar && vd === 0.U) ||
+      ((selectedReduction || selectedMaskScalar) && vstart=/=0.U)) {
       illegal := true.B; state := finish
     }.otherwise {
       sew := Mux(selectedMaskLogic,0.U,vtype(4,3)); op := selectedOp; comparison := selectedMask
       reduction:=selectedReduction
       maskLogic:=selectedMaskLogic;scalarMove:=selectedScalarMove
+      maskScalar:=selectedMaskScalar
       if(enableFp) {
         fp:=selectedFp; fpOp:=selectedFpOp
         fpDestMultiply:=f6>=0x28.U && f6<=0x2b.U
@@ -254,9 +260,11 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         1.U -> 3.U(32.W),2.U -> 15.U(32.W),3.U -> 255.U(32.W))))
       commitMask := (maskBase<<vd)(31,0)
       copyIndex := 0.U; index := vstart
-      hasElements := vl =/= 0.U && vstart < vl && selectedScalarMove=/=1.U
-      scalarWrite:=selectedScalarMove===1.U && vd=/=0.U
-      state := Mux(selectedScalarMove===1.U,scalarRead,Mux(vl === 0.U || vstart >= vl,finish,copyRead))
+      hasElements := vl =/= 0.U && vstart < vl && selectedScalarMove=/=1.U && !selectedMaskScalar
+      scalarWrite:=(selectedScalarMove===1.U || selectedMaskScalar) && vd=/=0.U
+      when(selectedMaskScalar) {scalarResult:=Mux(vs1===17.U,"hffffffffffffffff".U,0.U)}
+      state := Mux(selectedMaskScalar,Mux(vl===0.U,finish,maskRead),
+        Mux(selectedScalarMove===1.U,scalarRead,Mux(vl === 0.U || vstart >= vl,finish,copyRead)))
     }
   }
   when(state === decode) {
@@ -320,6 +328,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         selectedMask:=producesMask;selectedSupported:=supported||fpSupported
         selectedReduction:=reductionEncoding
         selectedMaskLogic:=maskLogicEncoding;selectedScalarMove:=scalarMoveEncoding
+        selectedMaskScalar:=maskScalarEncoding
         state:=checkVector
       } else {
         validateVector()
@@ -346,8 +355,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       .elsewhen(!vm && !mask(index(6,0)) && (fp || op =/= Op.merge.U)) { index := index+1.U }
       .otherwise {
         val offset = (index<<sew)(6,0)
-        sourceOffset := Mux(maskLogic,0.U,offset(6,4))
-        bitOffset := Mux(maskLogic,index(6,0),Cat(offset(3,0),0.U(3.W)))
+        sourceOffset := Mux(maskLogic || maskScalar,0.U,offset(6,4))
+        bitOffset := Mux(maskLogic || maskScalar,index(6,0),Cat(offset(3,0),0.U(3.W)))
         destination := Mux(comparison,vd,(vd+offset(6,4))(4,0))
         val widthMask = VecInit(Seq(1,3,15,255).map(_.U(16.W)))(sew)
         byteMask := (widthMask<<offset(3,0))(15,0)
@@ -387,6 +396,13 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     b := Mux(reduction,reductionAccumulator,Mux(fp,fpScalar,Mux(vx || mulVX,command.scalar,Mux(isShift,vs1.pad(64),immediate))))&elementMask
     val fused=fp && fpOp>=FpOp.fma.U && fpOp<=FpOp.fnmadd.U
     state := Mux(vectorSource1,readB,Mux(fused,readC,launch))
+    when(maskScalar) {
+      index:=index+1.U;state:=dispatch
+      when(value(0)) {
+        when(vs1===17.U) {scalarResult:=index;state:=finish}
+          .otherwise {scalarResult:=(scalarResult(7,0)+1.U)(7,0)}
+      }
+    }
   }
   when(state === readB) {
     rf.io.readEnable := true.B; rf.io.readAddress := (vs1+sourceOffset)(4,0); state := captureB

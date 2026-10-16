@@ -122,13 +122,12 @@ class StagedFloatToInt(expWidth: Int, sigWidth: Int, intWidth: Int) extends chis
     when(state===calculate) { complement:=Mux(rawIn.sign,~unroundedInt,unroundedInt);increment:=roundIncr^rawIn.sign }
     val roundedInt=Reg(UInt(intWidth.W));val carry=Reg(Bool())
     when(state===low) {
-      val sum=complement(31,0)+&increment
-      roundedInt:=sum(31,0);carry:=sum(32)
+      roundedInt:=ParallelIncrement(complement(31,0),increment)
+      carry:=complement(31,0).andR && increment
     }
     if(intWidth==64) {
       when(state===high) {
-        val sum=complement(63,32)+&carry
-        roundedInt:=Cat(sum(31,0),roundedInt(31,0))
+        roundedInt:=Cat(ParallelIncrement(complement(63,32),carry),roundedInt(31,0))
       }
     }
 

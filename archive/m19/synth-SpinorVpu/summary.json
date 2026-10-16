@@ -1,0 +1,25 @@
+{
+  "top": "SpinorVpu",
+  "elapsed_seconds": 56.94,
+  "mapped_cells": {
+    "$scopeinfo": 24,
+    "CARRY4": 451,
+    "DSP48E2": 9,
+    "FDRE": 11567,
+    "FDSE": 12,
+    "INV": 196,
+    "LUT2": 2635,
+    "LUT3": 3705,
+    "LUT4": 2728,
+    "LUT5": 5938,
+    "LUT6": 2673,
+    "RAM32M16": 6,
+    "RAM64M8": 32
+  },
+  "scope": "out-of-context mapping, no IOB/clock buffers",
+  "family": "xcup",
+  "target_device": "xczu15eg-ffvb1156-2-i",
+  "vrf_mapping": "automatic",
+  "DSP_mapping_disabled": false,
+  "timing_status": "NO_DEVICE_PLACE_ROUTE_OR_SIGNOFF"
+}

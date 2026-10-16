@@ -71,19 +71,18 @@ class
     //------------------------------------------------------------------------
     //------------------------------------------------------------------------
     val phase=RegInit(0.U(3.W))
-    io.done := phase===4.U && !io.flush
+    io.done := phase===5.U && !io.flush
     when(phase===0.U && io.start && !io.flush) { phase:=1.U }
-    when(phase=/=0.U) { phase:=Mux(phase===4.U,0.U,phase+1.U) }
+    when(phase=/=0.U) { phase:=Mux(phase===5.U,0.U,phase+1.U) }
     when(io.flush) { phase:=0.U }
     val result=Reg(UInt((outExpWidth+outSigWidth+1).W))
     val flags=Reg(UInt(5.W))
     io.out:=result;io.exceptionFlags:=flags
-    // Local 16-bit carry groups; limit ABC factoring of per-bit prefixes into LUT chains.
-    def increment(x: UInt): UInt = {
-        val pieces=(0 until x.getWidth by 16).map { lo=>
-            val hi=math.min(lo+15,x.getWidth-1)
-            val carry=if(lo==0)true.B else x(lo-1,0).andR
-            (x(hi,lo)+carry)(hi-lo,0)
+    // Local 8-bit carry groups. The rounding decision is registered separately.
+    def increment(x: UInt,carries: Vec[Bool]): UInt = {
+        val pieces=(0 until x.getWidth by 8).zipWithIndex.map { case (lo,k)=>
+            val hi=math.min(lo+7,x.getWidth-1)
+            (x(hi,lo)+carries(k))(hi-lo,0)
         }
         Cat(pieces.reverse)
     }
@@ -186,27 +185,36 @@ class
         when(phase===1.U) { roundMask:=roundMaskComb }
         val shiftedRoundMask = 0.U(1.W) ## roundMask>>1
         val roundPosMask = ~shiftedRoundMask & roundMask
-        val roundPosBit = (adjustedSig & roundPosMask).orR
-        val anyRoundExtra = (adjustedSig & shiftedRoundMask).orR
-        val anyRound = roundPosBit || anyRoundExtra
+        val roundPosBitComb = (adjustedSig & roundPosMask).orR
+        val anyRoundExtraComb = (adjustedSig & shiftedRoundMask).orR
+        val anyRoundComb = roundPosBitComb || anyRoundExtraComb
+        val roundPosBit=Reg(Bool());val anyRound=Reg(Bool())
 
         val roundIncr =
             ((roundingMode_near_even || roundingMode_near_maxMag) &&
-                 roundPosBit) ||
-                (roundMagUp && anyRound)
+                 roundPosBitComb) ||
+                (roundMagUp && anyRoundComb)
+        val incrementSelected=Reg(Bool())
+        val incrementBase=Reg(UInt((outSigWidth+2).W))
+        val incrementCarries=Reg(Vec((outSigWidth+9)/8,Bool()))
+        val evenClearMask=Reg(UInt((outSigWidth+2).W))
+        val unrounded=Reg(UInt((outSigWidth+2).W))
+        when(phase===2.U) {
+            roundPosBit:=roundPosBitComb;anyRound:=anyRoundComb
+            incrementSelected:=roundIncr
+            val base=Cat(0.U(1.W),(adjustedSig | roundMask)>>2)
+            incrementBase:=base
+            for((lo,k)<-(0 until outSigWidth+2 by 8).zipWithIndex) {
+                incrementCarries(k):= (if(lo==0)true.B else base(lo-1,0).andR)
+            }
+            evenClearMask:=Mux(roundingMode_near_even && roundPosBitComb && !anyRoundExtraComb,roundMask>>1,0.U)
+            unrounded:=(adjustedSig & ~roundMask)>>2 |
+                Mux(roundingMode_odd && anyRoundComb,roundPosMask>>1,0.U)
+        }
         val roundedSigComb: Bits =
-            Mux(roundIncr,
-                increment(Cat(0.U(1.W),(adjustedSig | roundMask)>>2)) &
-                    ~Mux(roundingMode_near_even && roundPosBit &&
-                             ! anyRoundExtra,
-                         roundMask>>1,
-                         0.U((outSigWidth + 2).W)
-                     ),
-                (adjustedSig & ~roundMask)>>2 |
-                    Mux(roundingMode_odd && anyRound, roundPosMask>>1, 0.U)
-            )
+            Mux(incrementSelected,increment(incrementBase,incrementCarries) & ~evenClearMask,unrounded)
 val roundedSig=Reg(chiselTypeOf(roundedSigComb))
-        when(phase===2.U) { roundedSig:=roundedSigComb }
+        when(phase===3.U) { roundedSig:=roundedSigComb }
 //*** IF SIG WIDTH IS VERY NARROW, NEED TO ACCOUNT FOR ROUND-EVEN ZEROING
 //***  M.S. BIT OF SUBNORMAL SIG?
         val sRoundedExp = sAdjustedExp +& (roundedSig>>outSigWidth).asUInt.zext
@@ -310,7 +318,7 @@ val roundedSig=Reg(chiselTypeOf(roundedSigComb))
         ) |
         Fill(outSigWidth - 1, pegMaxFiniteMagOut)
 
-    when(phase===3.U) {
+    when(phase===4.U) {
         result := signOut ## expOut ## fractOut
         flags := io.invalidExc ## io.infiniteExc ## overflow ## underflow ## inexact
     }

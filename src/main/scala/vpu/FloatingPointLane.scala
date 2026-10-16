@@ -21,6 +21,14 @@ class FpResponse extends Bundle {
 }
 
 object FpBits {
+  /** Exact raw decode with special classification independent of normalization. */
+  def raw32(x:UInt):RawFloat = {
+    val out=Wire(new RawFloat(8,24));out:=rawFloatFromFN(8,24,x(31,0))
+    val special=x(30,23).andR;val fraction=x(22,0).orR
+    out.isNaN:=special && fraction;out.isInf:=special && !fraction
+    out.isZero:= !x(30,23).orR && !fraction
+    out
+  }
   /** IEEE fclass bits directly from the encoding; subnormals need no normalization. */
   def classify(x: UInt,e: Int,p: Int): UInt = {
     val s=x(e+p-1);val exponent=x(e+p-2,p-1);val fraction=x(p-2,0)
@@ -84,7 +92,7 @@ class FloatingPointLane extends Module {
   val norm64=Reg(Vec(3,UInt(6.W)))
   when(state===recode) {
     for((x,k)<-Seq(request.a,request.b,request.c).zipWithIndex) {
-      raw32(k):=rawFloatFromFN(8,24,x(31,0));norm64(k):=countLeadingZeros(x(51,0))
+      raw32(k):=FpBits.raw32(x);norm64(k):=countLeadingZeros(x(51,0))
     }
     state:=recodeFinish
   }

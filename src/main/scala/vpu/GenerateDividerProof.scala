@@ -17,9 +17,10 @@ class DividerWordProof extends Module {
   dut.io.in.bits:=0.U.asTypeOf(new LaneRequest);dut.io.out.ready:=false.B
   val actual=dut.negateWord(io.bits(31,0),io.negative,io.carry)
   val expected=(io.bits(31,0) ^ Fill(32,io.negative))+&io.carry
-  val mismatch=Seq(11,16,17,32,33).map { width =>
+  val mismatch=Seq(11,16,17,26,32,33).map { width =>
     val x=io.bits(width-1,0);val y=io.other(width-1,0)
-    CarrySelect.add(x,y,io.carry)=/=(x+&y+io.carry)
+    (CarrySelect.add(x,y,io.carry)=/=(x+&y+io.carry)) ||
+      (Cat(x.andR && io.carry,ParallelIncrement(x,io.carry))=/=(x+&io.carry))
   }.reduce(_ || _)
   io.mismatch:=(actual=/=expected) || mismatch
 

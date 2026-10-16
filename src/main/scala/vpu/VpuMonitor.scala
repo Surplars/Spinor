@@ -21,6 +21,9 @@ class VpuMonitor(base:BigInt=0,counterBits:Int=32) extends Module {
   override def desiredName=if(counterBits==8)"VpuMonitorTiny" else "VpuMonitor"
   val io=IO(new Bundle {val signals=Input(new MonitorSignals);val mmio=Flipped(new VpuTileLinkMaster(VpuTLParams()))})
   val live=RegInit(VecInit(Seq.fill(13)(0.U(counterBits.W))))
+  // Exact lookahead: predict the next stored all-ones value on each increment.
+  // Overflow still asserts on the wrapping event; no telemetry cycle is added.
+  val wrapNext=RegInit(VecInit(Seq.fill(13)(false.B)))
   val snap=RegInit(VecInit(Seq.fill(13)(0.U(counterBits.W))))
   val snapshotValid=RegInit(false.B);val sequence=RegInit(0.U(32.W))
   val overflow=RegInit(false.B);val errorSticky=RegInit(false.B)
@@ -28,8 +31,11 @@ class VpuMonitor(base:BigInt=0,counterBits:Int=32) extends Module {
   val snapStatus=RegInit(0.U(64.W));val snapVtype=RegInit(0.U(64.W));val snapConfig=RegInit(0.U(32.W))
   val snapCause=RegInit(0.U(16.W));val snapAddress=RegInit(0.U(64.W));val snapToken=RegInit(0.U(80.W));val snapElement=RegInit(0.U(8.W))
   val status=Cat(0.U(56.W),errorSticky,overflow,true.B,snapshotValid,io.signals.owned,io.signals.tlPending,io.signals.memoryOwned,io.signals.busy)
-  for(i<-0 until 13) {when(io.signals.events(i)) {live(i):=ParallelIncrement(live(i),true.B)}}
-  when((0 until 13).map(i=>io.signals.events(i)&&live(i).andR).reduce(_||_)) {overflow:=true.B}
+  for(i<-0 until 13) {when(io.signals.events(i)) {
+    live(i):=ParallelIncrement(live(i),true.B)
+    wrapNext(i):=live(i)===((BigInt(1)<<counterBits)-2).U
+  }}
+  when((0 until 13).map(i=>io.signals.events(i)&&wrapNext(i)).reduce(_||_)) {overflow:=true.B}
   when(io.signals.error) {errorSticky:=true.B;cause:=io.signals.cause;address:=io.signals.address;token:=io.signals.token;element:=io.signals.element}
   val pending=RegInit(false.B);val response=Reg(new VpuTLD(VpuTLParams()))
   io.mmio.a.ready:= !pending;io.mmio.d.valid:=pending;io.mmio.d.bits:=response
@@ -41,8 +47,8 @@ class VpuMonitor(base:BigInt=0,counterBits:Int=32) extends Module {
   switch(index) {
     is(0.U) {data:="h4c495348".U} // LISH
     is(1.U) {data:="h00010000".U} // ABI major 1, minor 0
-    is(2.U) {data:="h00001901".U} // M19 + monitor ABI v1; not full RVV
-    is(3.U) {data:="h1ff".U} // prior features, mask logic, integer scalar moves
+    is(2.U) {data:="h00002001".U} // M20 + monitor ABI v1; not full RVV
+    is(3.U) {data:="h3ff".U} // prior features plus mask population/first-set scans
     is(4.U) {data:=Cat(1.U(16.W),32.U(16.W),64.U(16.W),128.U(16.W))}
     is(5.U) {data:=Cat(0.U(24.W),8.U(8.W),512.U(32.W))} // architectural bytes, max LMUL
     is(6.U) {data:=counterBits.U}
@@ -89,7 +95,7 @@ class VpuMonitor(base:BigInt=0,counterBits:Int=32) extends Module {
     // Explicit monitor clear wins over this edge's events, including errors.
     // Neither clear nor snapshot touches the vector core or outstanding memory.
     when(allowed && controlWrite && controlData===2.U) {
-      live.foreach(_:=0.U);snap.foreach(_:=0.U);snapshotValid:=false.B;overflow:=false.B;errorSticky:=false.B
+      live.foreach(_:=0.U);wrapNext.foreach(_:=false.B);snap.foreach(_:=0.U);snapshotValid:=false.B;overflow:=false.B;errorSticky:=false.B
       cause:=0.U;address:=0.U;token:=0.U;element:=0.U
       snapStatus:=0.U;snapVtype:=0.U;snapConfig:=0.U;snapCause:=0.U;snapAddress:=0.U;snapToken:=0.U;snapElement:=0.U
     }

@@ -87,7 +87,7 @@ class StagedFmaPost extends Module {
   }
   when(phase===2.U) {
     val r=orReduceBy2(nAbs)
-    reduced:=r;norm2:=countLeadingZeros(r)
+    reduced:=r;norm2:=BalancedLeadingZeros(r)
     phase:=3.U
   }
   when(phase===3.U) {

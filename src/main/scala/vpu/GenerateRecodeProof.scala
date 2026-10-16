@@ -13,7 +13,9 @@ class IeeeRecodeProof extends Module {
   val n32=Wire(UInt(5.W));val n64=Wire(UInt(6.W))
   n32:=countLeadingZeros(io.bits(22,0));n64:=countLeadingZeros(io.bits(51,0))
   io.mismatch:=(recFNFromFN(8,24,io.bits(31,0))=/=IeeeRecode(8,24,io.bits(31,0),n32)) ||
-    (recFNFromFN(11,53,io.bits)=/=IeeeRecode(11,53,io.bits,n64))
+    (recFNFromFN(11,53,io.bits)=/=IeeeRecode(11,53,io.bits,n64)) ||
+    (FpBits.raw32(io.bits).asUInt=/=rawFloatFromFN(8,24,io.bits(31,0)).asUInt) ||
+    Seq(23,52,54).map(w=>BalancedLeadingZeros(io.bits(w-1,0))=/=countLeadingZeros(io.bits(w-1,0))).reduce(_||_)
 }
 object GenerateRecodeProof extends App {
   val path=Paths.get(args(0));Files.createDirectories(path.getParent)

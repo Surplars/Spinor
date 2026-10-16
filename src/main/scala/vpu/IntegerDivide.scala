@@ -29,13 +29,15 @@ class IntegerDivide extends Module {
     remainderOp:=io.in.bits.op===Op.rem.U || io.in.bits.op===Op.remu.U
     sew:=io.in.bits.sew;tag:=io.in.bits.tag;state:=aLow
   }
-  // Two parallel 16-bit increments. Carry into each group is a prefix
+  // Four parallel 8-bit increments. Carry into each group is a prefix
   // reduction, rather than a serial 32-bit ripple after the sign XOR.
   def negateWord(x:UInt,negative:Bool,cin:Bool):UInt = {
     val flipped=x ^ Fill(32,negative)
-    val lo=flipped(15,0)+&cin
-    val hi=flipped(31,16)+&(cin && flipped(15,0).andR)
-    Cat(cin && flipped.andR,hi(15,0),lo(15,0))
+    val words=(0 until 32 by 8).map { lo=>
+      val carry=if(lo==0)cin else cin && flipped(lo-1,0).andR
+      (flipped(lo+7,lo)+carry)(7,0)
+    }
+    Cat(cin && flipped.andR,Cat(words.reverse))
   }
   when(state===aLow) {
     val sum=negateWord(a(31,0),negativeA,negativeA)
