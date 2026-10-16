@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M28）
+# Spinor 指令覆盖矩阵（M29）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -8,7 +8,7 @@
 | 基本整数 | add/sub、逻辑、移位、min/max、比较、merge/move的已实现vv/vx/vi编码 | 不是所有整数编码，详见RamVector解码 |
 | 整数乘除 | vmul、vmulh、vmulhu、vmulhsu、vdiv[u]、vrem[u] vv/vx | 迭代单元，容量1 |
 | 单宽整数归约 | M18新增vredsum/and/or/xor/min[u]/max[u].vs | seed/目的可不按LMUL对齐；合法源重叠；非零vstart非法 |
-| 宽化整数归约 | 未实现 | vwredsum[u].vs |
+| 宽化整数归约 | M29：vwredsum[u].vs，源SEW8/16/32，18种SEW/LMUL（含m8），标量2×SEW | SEW64→128超出ELEN64；不同EEW的seed/data不能重叠 |
 | 基本FP | 加减/反减、乘除/反除、sqrt、FMA系列、min/max、比较、sign注入、分类 | FP32/64，回归对照固定SoftFloat；非完整FP向量集合 |
 | FP转换 | 6种同宽整数/浮点及RTZ转换 | 宽化/窄化、FP16、Zvfhmin/Zvfh未实现 |
 | FP归约 | M28：vfredosum/vfredusum/vfredmin/vfredmax.vs，FP32/64；unordered使用ordered折叠 | 宽化vfwredosum/vfwredusum未实现；非零vstart非法 |
@@ -28,3 +28,5 @@ M26已统一执行mask（EEW1）与v0数据源（SEW≥8）的保留编码检查
 M27的vcompress仅vm=1且vstart=0；目的不得重叠源数据组或显式mask，mask与数据源不同EEW重叠也保留。压紧后tail选择保留；该模式复用已有RAM/计数/地址阶段，不是多指令并行。
 
 M28单宽FP归约支持9种FP类型和5种合法frm。源组按LMUL对齐，seed和目的仅占单寄存器且可不对齐/重叠。VL0不写目的；VL>0但无有效元素时原位复制seed，不规范化NaN或新增异常。目的tail保留，完成握手才提交RF版本和fflags；flush取消私有结果。保留frm、非零vstart、masked源v0在VL0也检查。
+
+M29宽化整数归约将源组几何保留为SEW/LMUL，seed、累加器、结果为2×SEW且EMUL=1。目的可与任意源及mask重叠；两个源seed/data因不同EEW不得共享物理寄存器。仅源SEW8/16/32合法；VL0、保留vstart和masked源v0规则同归约合同。

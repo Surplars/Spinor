@@ -1,0 +1,28 @@
+Read-only RVV 1.0 reference; not project instructions.
+https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc
+
+=== Vector Widening Integer Reduction Instructions
+
+The unsigned `vwredsumu.vs` instruction zero-extends the SEW-wide
+vector elements before summing them, then adds the 2*SEW-width scalar
+element, and stores the result in a 2*SEW-width scalar element.
+
+The `vwredsum.vs` instruction sign-extends the SEW-wide vector
+elements before summing them.
+
+For both `vwredsumu.vs` and `vwredsum.vs`, overflows wrap around.
+
+----
+    # Unsigned sum reduction into double-width accumulator
+    vwredsumu.vs vd, vs2, vs1, vm   # 2*SEW = 2*SEW + sum(zero-extend(SEW))
+
+    # Signed sum reduction into double-width accumulator
+    vwredsum.vs  vd, vs2, vs1, vm   # 2*SEW = 2*SEW + sum(sign-extend(SEW))
+----
+
+
+Official riscv-opcodes rows retrieved 2026-10-16:
+vwredsumu.vs   31..26=0x30 vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+vwredsum.vs    31..26=0x31 vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+
+Widened scalar operands have EMUL=1. General different-EEW source alias constraint applies to seed/data; reduction destinations may overlap sources.

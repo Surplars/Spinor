@@ -9,7 +9,7 @@ import chisel3.util._
   * LMUL; there are no full-group FF snapshots. Basic integer data operations may overlap elements; other units remain serial.
   * Completing non-faulting arithmetic atomically flips destination versions.
   * Shared FP32/FP64 lane with same-width integer conversions. NOT full RVV: LSU,
-  * widening/narrowing conversions, reduction FP and remaining integer groups absent.
+  * widening/narrowing conversions, widening FP reductions and remaining integer groups absent.
   */
 class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean = false, enableMemoryCommit: Boolean = false) extends Module {
   override def desiredName = if(enableMemoryCommit) (if(chunkBits==16) "RamVectorFpMemory16" else "RamVectorFpMemory") else if(enableFp) (if(chunkBits==16) "RamVectorFp16" else "RamVectorFp") else if (!useRam) "RamVectorFlops" else if (chunkBits==16) "RamVector16" else "RamVector"
@@ -153,7 +153,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val mulVV=f3===2.U; val mulVX=f3===6.U
   val integerReductionEncoding=mulVV && f6<=7.U
   val fpReductionEncoding=fpVV && f6(5,3)===0.U && f6(0) // 1/3 sum, 5 min, 7 max
-  val reductionEncoding=integerReductionEncoding || fpReductionEncoding
+  val wideningReductionEncoding=vv && f6(5,1)===0x18.U // vwredsumu/sum, f6=0x30/31
+  val reductionEncoding=integerReductionEncoding || fpReductionEncoding || wideningReductionEncoding
   val maskLogicEncoding=mulVV && f6>=0x18.U && f6<=0x1f.U
   val scalarReadEncoding=mulVV && f6===0x10.U && vm && vs1===0.U
   val scalarWriteEncoding=mulVX && f6===0x10.U && vm && vs2===0.U
@@ -223,6 +224,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   for((code,operation)<-Seq((0x20,Op.divu),(0x21,Op.div),(0x22,Op.remu),(0x23,Op.rem),(0x25,Op.mul),(0x27,Op.mulh),(0x24,Op.mulhu),(0x26,Op.mulhsu))) {
     when(f6===code.U && (mulVV || mulVX)) { supported:=true.B;decodedOp:=operation.U }
   }
+  when(wideningReductionEncoding) {supported:=true.B;decodedOp:=Op.add.U}
   when(integerReductionEncoding) {
     supported:=true.B
     decodedOp:=MuxLookup(f6,Op.add.U)(Seq(0.U->Op.add.U,1.U->Op.and.U,
@@ -298,8 +300,10 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val compressBad=selectedIndexGenerate===3.U && (
       vd===vs2 || VectorConfig.alignedGroupContains(vs1,vd,alignment) ||
       VectorConfig.alignedGroupContains(vs1,vs2,alignment))
+    val wideningReductionBad=wideningReductionEncoding && (vtype(4,3)===3.U ||
+      VectorConfig.alignedGroupContains(vs1,vs2,alignment))
     val fpIllegal=selectedFp && (vtype(4,3)<2.U || (frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U))
-    when(vtype(63) || !selectedSupported || fpIllegal || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias || compressBad ||
+    when(vtype(63) || !selectedSupported || fpIllegal || wideningReductionBad || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias || compressBad ||
       (!vm && !selectedMask && !selectedReduction && !selectedMaskScalar && vd === 0.U) ||
       ((selectedReduction || selectedMaskScalar || selectedMaskPrefix || selectedIndexGenerate===1.U || selectedIndexGenerate===3.U) && vstart=/=0.U) ||
       (selectedMaskPrefix && (vd===vs2 || (!vm && vd===0.U))) ||
@@ -531,6 +535,10 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     index:=nextMaskByte;state:=dispatch
   }
   val elementMask = VecInit(Seq(8,16,32,64).map(w => ((BigInt(1)<<w)-1).U(64.W)))(sew)
+  // Keep source geometry at SEW, but operate and commit the scalar at 2*SEW.
+  // Owner instruction is stable until completion/flush; no extra mode register.
+  val arithmeticSew=Mux(wideningReductionEncoding,Cat(sew(1)||sew(0),!sew(0)),sew)
+  val accumulatorMask=VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(arithmeticSew)
   when(state===scalarRead) {rf.io.readEnable:=true.B;rf.io.readAddress:=vs2;state:=scalarCapture}
   when(state===scalarCapture) {
     val value=rf.io.readData(63,0)
@@ -544,11 +552,11 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     rf.io.readEnable:=true.B;rf.io.readAddress:=vs1;state:=reductionSeedCapture
   }
   when(state===reductionSeedCapture) {
-    reductionAccumulator:=rf.io.readData(63,0)&elementMask;state:=dispatch
+    reductionAccumulator:=rf.io.readData(63,0)&accumulatorMask;state:=dispatch
   }
   when(state===reductionWrite) {
     writeEnable:=true.B;writeCandidate:=true.B;writeAddress:=vd
-    writeMask:=VecInit(Seq(1,3,15,255).map(_.U(16.W)))(sew)
+    writeMask:=VecInit(Seq(1,3,15,255).map(_.U(16.W)))(arithmeticSew)
     writeData:=Mux(scalarMove===2.U,command.scalar,reductionAccumulator).pad(128);state:=finish
   }
   when(state === readA) {
@@ -556,11 +564,15 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   }
   when(state === captureA) {
     val value=(rf.io.readData>>bitOffset)(63,0)
-    a := value&elementMask
+    val signExtended=MuxLookup(sew,value)(Seq(
+      0.U->Cat(Fill(56,value(7)),value(7,0)),
+      1.U->Cat(Fill(48,value(15)),value(15,0)),
+      2.U->Cat(Fill(32,value(31)),value(31,0))))
+    a := Mux(wideningReductionEncoding && f6(0),signExtended,value&elementMask)
     val immediate = Cat(Fill(59,vs1(4)),vs1)
     val isShift = op === Op.sll.U || op === Op.srl.U || op === Op.sra.U
     val fpScalar=Mux(sew===2.U && !command.scalar(63,32).andR,"h7fc00000".U,command.scalar)
-    b := Mux(reduction,reductionAccumulator,Mux(fp,fpScalar,Mux(vx || mulVX,command.scalar,Mux(isShift,vs1.pad(64),immediate))))&elementMask
+    b := Mux(reduction,reductionAccumulator,Mux(fp,fpScalar,Mux(vx || mulVX,command.scalar,Mux(isShift,vs1.pad(64),immediate))))&accumulatorMask
     // Small registered prefix feedback; RAM bit selection never feeds the
     // 64-bit arithmetic result chain. Masked-out elements bypass captureA.
     when(indexGenerate=/=0.U) {
@@ -597,7 +609,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val isMul=op===Op.mul.U || op===Op.mulh.U || op===Op.mulhu.U || op===Op.mulhsu.U
   val isDiv=op===Op.div.U || op===Op.divu.U || op===Op.rem.U || op===Op.remu.U
   lane.io.in.valid := state === launch && !fp && !isMul && !isDiv && !io.flush
-  lane.io.in.bits.a := a; lane.io.in.bits.b := b; lane.io.in.bits.sew := sew
+  lane.io.in.bits.a := a; lane.io.in.bits.b := b; lane.io.in.bits.sew := arithmeticSew
   lane.io.in.bits.op := op; lane.io.in.bits.select := mask(index(6,0)); lane.io.in.bits.tag := index
   streaming := !fp && !comparison && !isMul && !isDiv && !reduction && !maskScalar && scalarMove===0.U && indexGenerate=/=3.U
   val streamActive=state===slideAddress || state===dispatch || state===readA || state===captureA || state===readB || state===captureB || state===launch || state===awaitResult

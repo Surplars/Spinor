@@ -1,16 +1,16 @@
 # 砺矢 · Spinor VPU
 
 目标器件 `xczu15eg-ffvb1156-2-i`；采用 **Mill 1.1.7 / Scala 2.13.18 / Chisel 7.16.0**。
-300 MHz 为基线设计目标，500 MHz 为候选目标。M5 已有满足 3.333 ns 已约束内部时序的本地 OOC 结果；当前 M28 尚未经过 Vivado 实现验证。
+300 MHz 为基线设计目标，500 MHz 为候选目标。M5 已有满足 3.333 ns 已约束内部时序的本地 OOC 结果；当前 M29 尚未经过 Vivado 实现验证。
 
 **当前是含整数与部分浮点的向量原型，不是完整 RVV，尚未接入 Orbital CPU。**
 尚未实现完整 V / Zvfhmin / Zvbb / Zvkt；不能向软件发布 `misa.V` 或 RVA23 合规声明。
-命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M28**：新增 FP32/64 单宽归约 `vfredosum`、`vfredusum`、`vfredmin`、`vfredmax`，复用 RAM 归约反馈和现有浮点单元；无序求和采用确定的顺序折叠。保留FP路径优化、整数归约、标量搬运、独立 `VpuHostBoundary` 与monitor MMIO从端。见 [M28说明](docs/m28-fp-reductions.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
+命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M29**：新增宽化整数归约 `vwredsum[u].vs`，支持8→16、16→32、32→64，复用 RAM、64位累加器与整数流水，不增加状态或寄存器。保留FP路径优化、整数归约、标量搬运、独立 `VpuHostBoundary` 与monitor MMIO从端。见 [M29说明](docs/m29-widening-reductions.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
 仅物理普通 RAM、单事务，访存采用逐元素提交和延迟停止；不支持 MMIO/分页/PMP/一致性，尚未接入 Orbital CPU。
 **访存期间 flush 必须等待 Completion/status，不能按算术指令立即丢弃 token。** 见 [M10 合同](docs/m10-memory.md)。
 已加入 [M8 的 220 组性能对照](archive/m8/reports/performance.md)，并检查输出结果。
-M28交付前强制检查两个顶层的固定100ps/段云端条件预算均≤3.333ns；物理300MHz仍未验证。
-最新结果和输入散列见 [M28 报告](reports/m28/evaluation.md)；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 是物理基线。
+M29交付前强制检查两个顶层的固定100ps/段云端条件预算均≤3.333ns；物理300MHz仍未验证。
+最新结果和输入散列见 [M29 报告](reports/m29/evaluation.md)；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 是物理基线。
 命名与设计方向见 [项目介绍](docs/lishi.md)。
 M4 原始报告保存在 [归档](archive/m4/reports/evaluation.md)。后续本地 Vivado 的 M4 OOC 结果及其时钟限制另记录在 M5 报告中。
 前一版浮点基线保存在 [M3](archive/m3/reports/evaluation.md)。
@@ -24,8 +24,8 @@ M1/M2 的原始证据保存在 [M1](archive/m1/reports/evaluation.md) / [M2](arc
 git clone https://github.com/Surplars/Spinor.git
 cd Spinor
 make bootstrap
-python3 scripts/verify_m28.py
-python3 scripts/package.py --milestone m28
+python3 scripts/verify_m29.py
+python3 scripts/package.py --milestone m29
 ```
 
 验证入口会准备固定版本 SoftFloat 和 RapidWright；首次执行需要网络访问工具锁文件中的下载地址。
@@ -104,6 +104,7 @@ Valence 接入后须遵守其 GSIM、独立差分与精确异常验收要求。
 - M26：舍入与IEEE封装分级、并行索引递增、统一执行mask/v0数据别名检查；两个顶层满足固定云端参考门槛。
 - M27：RAM压紧vcompress；复用现有计数/地址阶段，组边界检查进行局部形式等价验证。
 - M28：单宽 FP32/64 有序/无序求和与 min/max 归约；无新增 RAM 端口，宽化 FP 归约尚未实现。
+- M29：宽化整数归约复用RAM/累加器/整数流水，区分源SEW与标量2×SEW，并检查不同EEW的seed/data源别名。
 
 命令顺序执行，只有一条向量指令在途。M2 源读已提交 RAM，目的写候选 RAM，
 只有宿主接受完成才翻转版本表或更新配置；RAM 内的候选数据在撤销后无需清零。
