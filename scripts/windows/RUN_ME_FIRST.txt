@@ -1,0 +1,32 @@
+ZU15EG-2 / M5 Windows 时序评估
+
+M5 加入候选 RAM 写回流水，RTL 已改变，必须重新综合、布局和布线。
+本包包含生成好的 RTL，不需要在 Windows 安装 Mill、Chisel、Java 或 RapidWright。
+
+1. 解压到 D:\surplars\Downloads，得到 vpu-m5 目录。
+2. 打开 PowerShell，运行：
+
+cd D:\surplars\Downloads\vpu-m5
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -VivadoBat "E:\Xilinx\2025.1\Vivado\bin\vivado.bat" -PeriodNs 3.333 -RunName M5_300MHz
+
+这是全新实现，不要添加指向旧 M4 routed.dcp 的 -Checkpoint 参数。
+脚本会保存综合/布局/布线 DCP、独立 EDIF、资源及时序报告，并全局加载官方脚本导出 DSP 数据。
+它继承了在本地成功执行的 fix3 Tcl 流程。M5 新硬件的 Vivado 实现尚未运行。
+
+3. 完成后上传本目录新生成的 vpu_results_M5_300MHz_日期时间.zip。
+若中途报错，也会尽量打包已产生的结果；上传这个结果包进行诊断。
+
+4. 若只是同一份 M5 RTL 的 DSP 导出中断，可以使用 -Checkpoint 指向本次 M5 的 routed.dcp。
+Checkpoint 旁必须保留该次运行的 run-inputs.json，脚本核对其 RTL 散列，拒绝将 M4 DCP 当作 M5。
+
+本包默认保留与原 M4 对照相同的 OOC 约束：3.333 ns，宿主 IO 延迟未指定、HD.CLK_SRC 未指定。
+因此用于比较模块内部数据路径；真实时钟树、宿主接口及板级时序尚需单独验证。
+脚本成功不代表时序通过；检查 timing_routed.rpt 的 setup/hold、约束覆盖和 route_status.rpt。
+不生成可直接上板运行的 .bit，也不包含完整 RVV/LSU/Valence 系统。
+
+如需另外评估 500 MHz，独立运行：
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -VivadoBat "E:\Xilinx\2025.1\Vivado\bin\vivado.bat" -PeriodNs 2.000 -RunName M5_500MHz
+
+需要支持 Zynq UltraScale+ / ZU15EG 的 Vivado 安装和相应许可证。
+路径不同时按实际位置修改 VivadoBat。ExecutionPolicy Bypass 仅影响本次 PowerShell 进程。
+输入散列、来源、验证边界和许可证见 input-sha256.json、provenance.json、validation.json 和 licenses/。

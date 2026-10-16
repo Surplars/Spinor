@@ -1,0 +1,285 @@
+{
+  "scope": "FIXED_ROUTED_DATA_PATH_REFERENCE_NOT_NEW_RTL_SIGNOFF",
+  "exported_paths": 20,
+  "matched_paths": 20,
+  "paths": [
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[49]/D",
+      "slack_ns": 0.477,
+      "data_ns": 2.836,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.7569999999999997,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.7423,
+      "reference_minus_vivado_ns": -0.014699999999999491
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[63]/D",
+      "slack_ns": 0.515,
+      "data_ns": 2.798,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.719,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6940999999999997,
+      "reference_minus_vivado_ns": -0.024900000000000144
+    },
+    {
+      "source": "unit/request_b_reg[19]/C",
+      "output_pin": "unit/request_b_reg[19]/Q",
+      "endpoint": "unit/response_data_reg[24]/D",
+      "slack_ns": 0.52,
+      "data_ns": 2.795,
+      "launch_arc_ns": 0.08,
+      "q_to_d_ns": 2.715,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.7254998,
+      "reference_minus_vivado_ns": 0.010499800000000281
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[45]/D",
+      "slack_ns": 0.528,
+      "data_ns": 2.785,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.706,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6749001,
+      "reference_minus_vivado_ns": -0.03109990000000007
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[35]/D",
+      "slack_ns": 0.529,
+      "data_ns": 2.785,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.706,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6749001,
+      "reference_minus_vivado_ns": -0.03109990000000007
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[15]/D",
+      "slack_ns": 0.529,
+      "data_ns": 2.785,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.706,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6749001,
+      "reference_minus_vivado_ns": -0.03109990000000007
+    },
+    {
+      "source": "unit/request_b_reg[20]/C",
+      "output_pin": "unit/request_b_reg[20]/Q",
+      "endpoint": "unit/rb_reg[29]/D",
+      "slack_ns": 0.533,
+      "data_ns": 2.781,
+      "launch_arc_ns": 0.081,
+      "q_to_d_ns": 2.7,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.8172002000000003,
+      "reference_minus_vivado_ns": 0.11720020000000009
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[22]/D",
+      "slack_ns": 0.534,
+      "data_ns": 2.78,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.7009999999999996,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6677,
+      "reference_minus_vivado_ns": -0.03329999999999966
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[46]/D",
+      "slack_ns": 0.535,
+      "data_ns": 2.778,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.699,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6749001,
+      "reference_minus_vivado_ns": -0.024099899999999952
+    },
+    {
+      "source": "unit/request_b_reg[27]/C",
+      "output_pin": "unit/request_b_reg[27]/Q",
+      "endpoint": "unit/rb_reg[20]/D",
+      "slack_ns": 0.549,
+      "data_ns": 2.764,
+      "launch_arc_ns": 0.077,
+      "q_to_d_ns": 2.687,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.5665002,
+      "reference_minus_vivado_ns": -0.12049979999999971
+    },
+    {
+      "source": "unit/request_b_reg[20]/C",
+      "output_pin": "unit/request_b_reg[20]/Q",
+      "endpoint": "unit/rb_reg[22]/D",
+      "slack_ns": 0.55,
+      "data_ns": 2.764,
+      "launch_arc_ns": 0.081,
+      "q_to_d_ns": 2.683,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.8113003,
+      "reference_minus_vivado_ns": 0.12830030000000026
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[43]/D",
+      "slack_ns": 0.555,
+      "data_ns": 2.758,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.679,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6583,
+      "reference_minus_vivado_ns": -0.02069999999999972
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[21]/D",
+      "slack_ns": 0.555,
+      "data_ns": 2.758,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.679,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6315,
+      "reference_minus_vivado_ns": -0.047499999999999876
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[20]/D",
+      "slack_ns": 0.559,
+      "data_ns": 2.755,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.6759999999999997,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.5909001,
+      "reference_minus_vivado_ns": -0.0850998999999999
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[48]/D",
+      "slack_ns": 0.561,
+      "data_ns": 2.752,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.6729999999999996,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6341,
+      "reference_minus_vivado_ns": -0.03889999999999949
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[33]/D",
+      "slack_ns": 0.564,
+      "data_ns": 2.75,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.671,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.5909001,
+      "reference_minus_vivado_ns": -0.0800999
+    },
+    {
+      "source": "unit/request_b_reg[20]/C",
+      "output_pin": "unit/request_b_reg[20]/Q",
+      "endpoint": "unit/rb_reg[23]/D",
+      "slack_ns": 0.564,
+      "data_ns": 2.75,
+      "launch_arc_ns": 0.081,
+      "q_to_d_ns": 2.669,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.7877002,
+      "reference_minus_vivado_ns": 0.11870020000000014
+    },
+    {
+      "source": "unit/request_a_reg[8]/C",
+      "output_pin": "unit/request_a_reg[8]/Q",
+      "endpoint": "unit/response_data_reg[8]/D",
+      "slack_ns": 0.567,
+      "data_ns": 2.749,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.67,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6715,
+      "reference_minus_vivado_ns": 0.0015000000000000568
+    },
+    {
+      "source": "unit/r32/result_reg[25]/C",
+      "output_pin": "unit/r32/result_reg[25]/Q",
+      "endpoint": "unit/response_data_reg[1]/D",
+      "slack_ns": 0.568,
+      "data_ns": 2.746,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.667,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6346999999999996,
+      "reference_minus_vivado_ns": -0.03230000000000022
+    },
+    {
+      "source": "unit/request_b_reg[20]/C",
+      "output_pin": "unit/request_b_reg[20]/Q",
+      "endpoint": "unit/rb_reg[48]/D",
+      "slack_ns": 0.572,
+      "data_ns": 2.743,
+      "launch_arc_ns": 0.081,
+      "q_to_d_ns": 2.662,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.6488,
+      "reference_minus_vivado_ns": -0.013199999999999878
+    }
+  ],
+  "mean_absolute_error_ns": 0.05023998499999995,
+  "worst_underestimate_ns": 0.12049979999999971,
+  "worst_overestimate_ns": 0.12830030000000026,
+  "frequency_what_if": [
+    {
+      "MHz": 300,
+      "setup_slack_ns": 0.477333
+    },
+    {
+      "MHz": 333.333,
+      "setup_slack_ns": 0.144003
+    },
+    {
+      "MHz": 350,
+      "setup_slack_ns": 0.001143
+    },
+    {
+      "MHz": 400,
+      "setup_slack_ns": -0.356
+    },
+    {
+      "MHz": 500,
+      "setup_slack_ns": -0.856
+    }
+  ],
+  "signoff_STA": false,
+  "limitations": [
+    "Only the exported top 20 paths, not full graph error coverage.",
+    "Q-to-D comparison excludes Vivado launch clock-to-output arc; model may choose another path between the same pins.",
+    "Frequency scan reuses fixed routes, setup checks and clock assumptions; no new implementation, hold or pulse-width qualification.",
+    "No complete DSP internal-arc coverage, min-delay or actual clock-tree validation."
+  ],
+  "evidence_sha256": {
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/setup_paths.rpt": "a6ec638393a696c220744365231048034b9ee4721e828f88228630820d52e0c7",
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/run-summary.txt": "f285ce46c8258e87420a7507538fce232f0d17bcd60516a2ee4318842c64f228",
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/routed.dcp": "16a09345f303f223ffb4eefa74892e2785c5d4455753271370eb1d32eaa40ab3",
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/routed.edf": "4d87560baa7d200309d79f814e901796b9c92b5514e1599cbce9b324b8b1b99f"
+  }
+}

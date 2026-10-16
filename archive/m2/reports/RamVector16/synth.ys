@@ -1,0 +1,7 @@
+read_verilog -sv /workspace/zu15-vpu/build/rtl/RamVector16.sv
+
+synth_xilinx -family xcup -top RamVector16 -flatten -noiopad -noclkbuf -nosrl -nowidelut
+tee -o /workspace/zu15-vpu/build/synth/RamVector16/stat.json stat -json
+check -assert
+write_json /workspace/zu15-vpu/build/synth/RamVector16/mapped.json
+write_verilog -noattr /workspace/zu15-vpu/build/synth/RamVector16/mapped.v

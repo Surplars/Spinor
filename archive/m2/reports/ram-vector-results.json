@@ -1,0 +1,22 @@
+{
+  "coverage": {
+    "vector_ops": 553,
+    "csr_ops": 137,
+    "configs": 99,
+    "flushes": 7,
+    "illegal_ops": 26,
+    "group_regs": [
+      1,
+      2,
+      4,
+      8
+    ]
+  },
+  "commands": 789,
+  "models": {
+    "RamVector": "PASS ram-vector commands=789 reads=2968 cycles=72744\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 731275 (1s)",
+    "RamVector16": "PASS ram-vector commands=789 reads=2968 cycles=77329\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 777125 (1s)",
+    "RamVectorFlops": "PASS ram-vector commands=789 reads=2968 cycles=72744\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 731275 (1s)",
+    "RamVector-mapped": "PASS ram-vector commands=789 reads=2968 cycles=72744\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 731275 (1s)"
+  }
+}

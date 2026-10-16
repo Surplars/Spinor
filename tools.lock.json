@@ -1,0 +1,36 @@
+{
+  "chisel": "7.16.0",
+  "scala": "2.13.18",
+  "mill": "1.1.7",
+  "firtool_observed": "1.160.0",
+  "artifacts": {
+    "mill-dist": {
+      "url": "https://repo.maven.apache.org/maven2/com/lihaoyi/mill-dist/1.1.7/mill-dist-1.1.7.exe",
+      "sha256": "49c1c575ad44efba1b9103ca1d6042624ef341aad9d8f4cb58fbfc56cf930e0d"
+    },
+    "oss-cad-suite.tgz": {
+      "url": "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-10-14/oss-cad-suite-linux-x64-20261014.tgz",
+      "sha256": "a6ccc6b96b2d985336a1061c78b2fd2bdd73e0f68690da17db88e00457881a11"
+    }
+  },
+  "references": {
+    "Valence": {
+      "url": "https://github.com/Surplars/Valence",
+      "revision": "6c8977f684830137fae088d4679f9d84e5ce4a11",
+      "use": "read-only interface study; no scalar-core edits or integration claim"
+    },
+    "NaxRiscv": {
+      "url": "https://github.com/SpinalHDL/NaxRiscv",
+      "revision": "9f452d50560d02fb391bc8039f5453c54e0911af",
+      "use": "RAM/register-file implementation study; no source copied"
+    }
+  },
+  "rapidwright": {
+    "version": "v2026.1.1-beta",
+    "artifact": {
+      "url": "https://github.com/Xilinx/RapidWright/releases/download/v2026.1.1-beta/rapidwright-2026.1.1-standalone-lin64.jar",
+      "sha256": "b3bd8e98a026fec792347b9d007af1fc054e9376789186a3721c400ed52e9955"
+    },
+    "scope": "Optional target-device and family-delay probe; no physical implementation or speed-grade qualification"
+  }
+}

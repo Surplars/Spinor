@@ -1,0 +1,32 @@
+{
+  "coverage": {
+    "vector_ops": 730,
+    "csr_ops": 225,
+    "configs": 276,
+    "flushes": 7,
+    "illegal_ops": 26,
+    "group_regs": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "multiply_forms": {
+      "20:2": 22,
+      "20:6": 22,
+      "25:2": 22,
+      "25:6": 22,
+      "26:2": 22,
+      "26:6": 22,
+      "27:2": 22,
+      "27:6": 22
+    },
+    "multiply_flushes": 9
+  },
+  "commands": 1231,
+  "models": {
+    "RamVector": "PASS ram-vector commands=1231 reads=4044 cycles=130764\n/workspace/zu15-vpu/build/test/m6_mul_vector_tb.sv:7902: $finish called at 1313011 (1s)",
+    "RamVector16": "PASS ram-vector commands=1231 reads=4044 cycles=135349\n/workspace/zu15-vpu/build/test/m6_mul_vector_tb.sv:7902: $finish called at 1358861 (1s)",
+    "RamVectorFlops": "PASS ram-vector commands=1231 reads=4044 cycles=130764\n/workspace/zu15-vpu/build/test/m6_mul_vector_tb.sv:7902: $finish called at 1313011 (1s)"
+  }
+}

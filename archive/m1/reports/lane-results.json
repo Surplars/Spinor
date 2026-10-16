@@ -1,0 +1,23 @@
+{
+  "IntegerLaneBaseline": {
+    "accepted": 4017,
+    "retired": 3899,
+    "flushed": 118,
+    "output_stall_cycles": 1615,
+    "corrupt_result_rejected": true
+  },
+  "IntegerLaneSplit": {
+    "accepted": 4461,
+    "retired": 4012,
+    "flushed": 449,
+    "output_stall_cycles": 1670,
+    "corrupt_result_rejected": true
+  },
+  "IntegerLaneSplit16": {
+    "accepted": 4488,
+    "retired": 3983,
+    "flushed": 505,
+    "output_stall_cycles": 1659,
+    "corrupt_result_rejected": true
+  }
+}

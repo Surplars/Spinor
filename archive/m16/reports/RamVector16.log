@@ -1,0 +1,2 @@
+PASS ram-vector commands=789 reads=2968 cycles=51009
+/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 513925 (1s)

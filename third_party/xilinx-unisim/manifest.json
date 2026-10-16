@@ -1,0 +1,11 @@
+{
+  "repository": "https://github.com/Xilinx/XilinxUnisimLibrary",
+  "revision": "1c8e05fd1e9a79ceb8b996a0996674122eed086f",
+  "license": "Apache-2.0",
+  "scope": "Unmodified DSP48E2 functional simulation model; no device speed files or SDF",
+  "sha256": {
+    "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "DSP48E2.v": "d2ab5e8f0bbb6c99183d559fcab3bcdb6f49c1c2961e5896c27b054b32d10c04",
+    "README.md": "11450a4eb3bdd681aa0edaaaf625033d0080c4761273f399d07319cdda10c9ad"
+  }
+}

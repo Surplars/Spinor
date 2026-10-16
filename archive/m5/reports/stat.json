@@ -1,0 +1,63 @@
+{
+   "creator": "Yosys 0.70+16 (git sha1 3bb533450, Release, Clang /usr/bin/clang++ 21.1.8)",
+   "invocation": "stat -json ",
+   "modules": {
+      "\\RamVectorFp": {
+         "num_wires":         9869,
+         "num_wire_bits":     31621,
+         "num_pub_wires":     399,
+         "num_pub_wire_bits": 10418,
+         "num_ports":         33,
+         "num_port_bits":     750,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         17067,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "$scopeinfo": 12,
+            "CARRY4": 167,
+            "DSP48E2": 8,
+            "FDRE": 7020,
+            "FDSE": 7,
+            "INV": 73,
+            "LUT2": 1482,
+            "LUT3": 2130,
+            "LUT4": 1294,
+            "LUT5": 3137,
+            "LUT6": 1700,
+            "RAM32M16": 5,
+            "RAM64M8": 32
+         }
+      }
+   },
+      "design": {
+         "num_wires":         9869,
+         "num_wire_bits":     31621,
+         "num_pub_wires":     399,
+         "num_pub_wire_bits": 10418,
+         "num_ports":         33,
+         "num_port_bits":     750,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         17067,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "$scopeinfo": 12,
+            "CARRY4": 167,
+            "DSP48E2": 8,
+            "FDRE": 7020,
+            "FDSE": 7,
+            "INV": 73,
+            "LUT2": 1482,
+            "LUT3": 2130,
+            "LUT4": 1294,
+            "LUT5": 3137,
+            "LUT6": 1700,
+            "RAM32M16": 5,
+            "RAM64M8": 32
+         }
+      }
+}
+

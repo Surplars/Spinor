@@ -1,0 +1,47 @@
+{
+  "coverage": {
+    "vector_ops": 907,
+    "csr_ops": 313,
+    "configs": 453,
+    "flushes": 7,
+    "illegal_ops": 26,
+    "group_regs": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "multiply_forms": {
+      "20:2": 22,
+      "20:6": 22,
+      "25:2": 22,
+      "25:6": 22,
+      "26:2": 22,
+      "26:6": 22,
+      "27:2": 22,
+      "27:6": 22
+    },
+    "multiply_flushes": 9,
+    "divide_forms": {
+      "21:2": 22,
+      "21:6": 22,
+      "22:2": 22,
+      "22:6": 22,
+      "23:2": 22,
+      "23:6": 22,
+      "24:2": 22,
+      "24:6": 22
+    },
+    "divide_flushes": 12
+  },
+  "commands": 1673,
+  "models": {
+    "RamVectorFp": "PASS ram-vector commands=1673 reads=5126 cycles=284054\n/workspace/zu15-vpu/build/test/m7-div-fp-tb.sv:10334: $finish called at 2847459 (1s)"
+  },
+  "input_sha256": {
+    "RamVectorFp": {
+      "rtl": "e9d106fa738be53c42f0b41451333c8f9440ae09a1dec08242f457633175fd17",
+      "testbench": "55d84843b38fdb94327fc0ea85d65d28cc36f7031717fe3adc8c249efb13efda"
+    }
+  }
+}

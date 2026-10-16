@@ -1,0 +1,7 @@
+{
+  "version": "v2026.1.1-beta",
+  "source_url": "https://github.com/Xilinx/RapidWright/blob/v2026.1.1-beta/tcl/rwroute/dump_all_dsp_delay.tcl",
+  "modified": false,
+  "sha256": "bdad085df1e466acde46faf1775a1dcdb0a86ca349a216aed406a16dc1bba02c",
+  "license": "Apache-2.0"
+}

@@ -1,0 +1,18 @@
+import mill.*, scalalib.*
+
+object HardFloat extends SbtModule {
+  override def scalaVersion = "2.13.18"
+  override def mvnDeps = Seq(mvn"org.chipsalliance::chisel:7.16.0")
+  override def scalacPluginMvnDeps = Seq(mvn"org.chipsalliance:::chisel-plugin:7.16.0")
+  override def scalacOptions = Seq("-language:reflectiveCalls", "-deprecation", "-feature")
+  override def moduleDir = os.Path(sys.env("MILL_WORKSPACE_ROOT")) / "third_party" / "berkeley-hardfloat"
+}
+
+object Vpu extends SbtModule {
+  override def moduleDeps = super.moduleDeps ++ Seq(HardFloat)
+  override def scalaVersion = "2.13.18"
+  override def mvnDeps = Seq(mvn"org.chipsalliance::chisel:7.16.0")
+  override def scalacPluginMvnDeps = Seq(mvn"org.chipsalliance:::chisel-plugin:7.16.0")
+  override def scalacOptions = Seq("-language:reflectiveCalls", "-deprecation", "-feature", "-Ymacro-annotations")
+  override def moduleDir = os.Path(sys.env("MILL_WORKSPACE_ROOT"))
+}

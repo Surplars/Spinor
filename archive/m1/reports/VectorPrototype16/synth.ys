@@ -1,0 +1,7 @@
+read_verilog -sv /workspace/zu15-vpu/build/rtl/VectorPrototype16.sv
+
+synth_xilinx -family xcup -top VectorPrototype16 -flatten -noiopad -noclkbuf -nosrl -nowidelut
+tee -o /workspace/zu15-vpu/build/synth/VectorPrototype16/stat.json stat -json
+check -assert
+write_json /workspace/zu15-vpu/build/synth/VectorPrototype16/mapped.json
+write_verilog -noattr /workspace/zu15-vpu/build/synth/VectorPrototype16/mapped.v

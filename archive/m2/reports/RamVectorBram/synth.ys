@@ -1,0 +1,12 @@
+read_verilog -sv /workspace/zu15-vpu/build/rtl/RamVector.sv
+rename RamVector RamVectorBram
+proc
+memory_collect
+select -assert-count 1 storage_64x128/t:$mem_v2
+setattr -set ram_style "block" storage_64x128/t:$mem_v2
+
+synth_xilinx -family xcup -top RamVectorBram -flatten -noiopad -noclkbuf -nosrl -nowidelut
+tee -o /workspace/zu15-vpu/build/synth/RamVectorBram/stat.json stat -json
+check -assert
+write_json /workspace/zu15-vpu/build/synth/RamVectorBram/mapped.json
+write_verilog -noattr /workspace/zu15-vpu/build/synth/RamVectorBram/mapped.v

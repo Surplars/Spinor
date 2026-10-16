@@ -1,0 +1,20 @@
+{
+  "top": "IntegerDivide",
+  "elapsed_seconds": 9.97,
+  "mapped_cells": {
+    "CARRY4": 80,
+    "FDRE": 455,
+    "INV": 8,
+    "LUT2": 328,
+    "LUT3": 49,
+    "LUT4": 166,
+    "LUT5": 210,
+    "LUT6": 101
+  },
+  "scope": "out-of-context mapping, no IOB/clock buffers",
+  "family": "xcup",
+  "target_device": "xczu15eg-ffvb1156-2-i",
+  "vrf_mapping": "automatic",
+  "DSP_mapping_disabled": false,
+  "timing_status": "NO_DEVICE_PLACE_ROUTE_OR_SIGNOFF"
+}

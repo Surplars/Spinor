@@ -1,0 +1,22 @@
+==============================================================================
+==                         Reading DCP: routed.dcp                          ==
+==============================================================================
+ XML Parse & Device Load:     0.948s
+    (Read PhysDB Caches):            (    0.207s)
+   (Read PhysDB Routing):            (    0.569s)
+ (Read PhysDB Placement):            (    0.898s)
+(Read PhysDB Finalizing):            (    0.104s)
+            (EDIF Parse):            (    1.320s)
+   Read Netlist & PhysDB:     1.322s
+------------------------------------------------------------------------------
+         [No GC] *Total*:     2.270s
+PROBE_FOLDER_WORKAROUND true
+INFO: DSP timing data folder set as: /workspace/zu15-vpu-local-results/m4-300MHz-resume-20261016-094747/dsp_delay/
+PROBE_VERTICES 82764
+PROBE_EDGES 106453
+PROBE_DSP_LOGIC_EDGES 1775
+PROBE_CYCLES false
+PROBE_REFERENCE_PATH_PS 2913.5
+PROBE_REFERENCE_START unit/request_c_reg[19]/Q
+PROBE_REFERENCE_END unit/rc_reg[44]/D
+PROBE_NO_CLOCK_TREE_HOLD_OR_SPEED_GRADE_SIGNOFF

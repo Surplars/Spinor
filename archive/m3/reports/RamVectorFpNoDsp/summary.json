@@ -1,0 +1,24 @@
+{
+  "top": "RamVectorFpNoDsp",
+  "elapsed_seconds": 86.67,
+  "mapped_cells": {
+    "$scopeinfo": 13,
+    "CARRY4": 258,
+    "FDRE": 3325,
+    "FDSE": 5,
+    "INV": 52,
+    "LUT2": 2691,
+    "LUT3": 4801,
+    "LUT4": 1763,
+    "LUT5": 4587,
+    "LUT6": 1385,
+    "RAM32M16": 5,
+    "RAM64M8": 32
+  },
+  "scope": "out-of-context mapping, no IOB/clock buffers",
+  "family": "xcup",
+  "target_device": "xczu15eg-ffvb1156-2-i",
+  "vrf_mapping": "automatic",
+  "DSP_mapping_disabled": true,
+  "timing_status": "NO_DEVICE_PLACE_ROUTE_OR_SIGNOFF"
+}

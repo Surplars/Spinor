@@ -1,0 +1,106 @@
+{
+  "VectorPrototypeBaseline": [
+    {
+      "sew": 8,
+      "instructions": 64,
+      "cycles": 2944,
+      "cycles_per_instruction": 46.0
+    },
+    {
+      "sew": 16,
+      "instructions": 64,
+      "cycles": 1920,
+      "cycles_per_instruction": 30.0
+    },
+    {
+      "sew": 32,
+      "instructions": 64,
+      "cycles": 1408,
+      "cycles_per_instruction": 22.0
+    },
+    {
+      "sew": 64,
+      "instructions": 64,
+      "cycles": 1152,
+      "cycles_per_instruction": 18.0
+    }
+  ],
+  "VectorPrototype": [
+    {
+      "sew": 8,
+      "instructions": 64,
+      "cycles": 3264,
+      "cycles_per_instruction": 51.0
+    },
+    {
+      "sew": 16,
+      "instructions": 64,
+      "cycles": 2240,
+      "cycles_per_instruction": 35.0
+    },
+    {
+      "sew": 32,
+      "instructions": 64,
+      "cycles": 1728,
+      "cycles_per_instruction": 27.0
+    },
+    {
+      "sew": 64,
+      "instructions": 64,
+      "cycles": 1472,
+      "cycles_per_instruction": 23.0
+    }
+  ],
+  "VectorPrototype16": [
+    {
+      "sew": 8,
+      "instructions": 64,
+      "cycles": 3328,
+      "cycles_per_instruction": 52.0
+    },
+    {
+      "sew": 16,
+      "instructions": 64,
+      "cycles": 2304,
+      "cycles_per_instruction": 36.0
+    },
+    {
+      "sew": 32,
+      "instructions": 64,
+      "cycles": 1792,
+      "cycles_per_instruction": 28.0
+    },
+    {
+      "sew": 64,
+      "instructions": 64,
+      "cycles": 1536,
+      "cycles_per_instruction": 24.0
+    }
+  ],
+  "VectorPrototypeFlops": [
+    {
+      "sew": 8,
+      "instructions": 64,
+      "cycles": 3264,
+      "cycles_per_instruction": 51.0
+    },
+    {
+      "sew": 16,
+      "instructions": 64,
+      "cycles": 2240,
+      "cycles_per_instruction": 35.0
+    },
+    {
+      "sew": 32,
+      "instructions": 64,
+      "cycles": 1728,
+      "cycles_per_instruction": 27.0
+    },
+    {
+      "sew": 64,
+      "instructions": 64,
+      "cycles": 1472,
+      "cycles_per_instruction": 23.0
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "top": "VectorMemoryEngine",
+  "elapsed_seconds": 5.87,
+  "mapped_cells": {
+    "CARRY4": 24,
+    "FDRE": 630,
+    "FDSE": 2,
+    "INV": 2,
+    "LUT2": 198,
+    "LUT3": 156,
+    "LUT4": 138,
+    "LUT5": 233,
+    "LUT6": 103
+  },
+  "scope": "out-of-context mapping, no IOB/clock buffers",
+  "family": "xcup",
+  "target_device": "xczu15eg-ffvb1156-2-i",
+  "vrf_mapping": "automatic",
+  "DSP_mapping_disabled": false,
+  "timing_status": "NO_DEVICE_PLACE_ROUTE_OR_SIGNOFF"
+}

@@ -1,0 +1,11 @@
+# M17：不增加周期的整数与浮点优化
+
+保持整数通道32位分段，在每段内部采用现有CarrySelect.add的16位进位选择。流水线延迟、II、FIFO信用和flush规则不变；整条指令的发射机制也不变。不是多条向量指令乱序执行。
+
+浮点min/max的NaN、零判定使用已有的raw32或ra/rb寄存器。FP32/FP64 fclass直接检测IEEE符号、指数和尾数，省去仅为分类而做的规格化。scripts/prove_classify.py用Yosys SAT将直接分类与固定版本HardFloat的recFNFromFN/classifyRecFN逐位比较，覆盖所有编码。进位选择加法仍由scripts/prove_divider_word.py验证所有输入及进位输出。浮点通道没有增加或减少周期，数值、异常标志、负零和NaN策略不变。
+
+默认顶层仍为LishiVpuMemory / RamVectorFp。新增LishiVpuMemory16 / RamVectorFp16仅供实验，本轮最初16位候选因收尾多1周期且全图条件预算退化而未采用。rejected16记录对应最初候选，并非后来更新后的16位RTL。
+
+运行make verify-m17重新生成RTL、证明、仿真、三份独立顶层映射和全图条件预算；make package-m17检验散列后打包。须先有归档M16映射网表和RamVectorFp RTL作为比较基线；M17包已包含。工具安装方法沿用README，整个流程不需要Vivado。
+
+条件预算只用于寻找下一条优化链，没有器件布线、速度等级校准、时钟树或hold检查，DSP相关路径仍排除。通过300MHz需要后续本地Vivado实现报告。现阶段先在云端处理FP64舍入控制到roundedSig的路径，不要求重复本地验证。

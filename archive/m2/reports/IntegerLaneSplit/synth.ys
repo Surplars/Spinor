@@ -1,0 +1,7 @@
+read_verilog -sv /workspace/zu15-vpu/build/rtl/IntegerLaneSplit.sv
+
+synth_xilinx -family xcup -top IntegerLaneSplit -flatten -noiopad -noclkbuf -nosrl -nowidelut
+tee -o /workspace/zu15-vpu/build/synth/IntegerLaneSplit/stat.json stat -json
+check -assert
+write_json /workspace/zu15-vpu/build/synth/IntegerLaneSplit/mapped.json
+write_verilog -noattr /workspace/zu15-vpu/build/synth/IntegerLaneSplit/mapped.v

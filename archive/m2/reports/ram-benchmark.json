@@ -1,0 +1,80 @@
+{
+  "RamVector": [
+    {
+      "sew": 8,
+      "instructions": 64,
+      "cycles": 13824,
+      "cycles_per_instruction": 216.0
+    },
+    {
+      "sew": 16,
+      "instructions": 64,
+      "cycles": 7168,
+      "cycles_per_instruction": 112.0
+    },
+    {
+      "sew": 32,
+      "instructions": 64,
+      "cycles": 3840,
+      "cycles_per_instruction": 60.0
+    },
+    {
+      "sew": 64,
+      "instructions": 64,
+      "cycles": 2176,
+      "cycles_per_instruction": 34.0
+    }
+  ],
+  "RamVector16": [
+    {
+      "sew": 8,
+      "instructions": 64,
+      "cycles": 14848,
+      "cycles_per_instruction": 232.0
+    },
+    {
+      "sew": 16,
+      "instructions": 64,
+      "cycles": 7680,
+      "cycles_per_instruction": 120.0
+    },
+    {
+      "sew": 32,
+      "instructions": 64,
+      "cycles": 4096,
+      "cycles_per_instruction": 64.0
+    },
+    {
+      "sew": 64,
+      "instructions": 64,
+      "cycles": 2304,
+      "cycles_per_instruction": 36.0
+    }
+  ],
+  "RamVectorFlops": [
+    {
+      "sew": 8,
+      "instructions": 64,
+      "cycles": 13824,
+      "cycles_per_instruction": 216.0
+    },
+    {
+      "sew": 16,
+      "instructions": 64,
+      "cycles": 7168,
+      "cycles_per_instruction": 112.0
+    },
+    {
+      "sew": 32,
+      "instructions": 64,
+      "cycles": 3840,
+      "cycles_per_instruction": 60.0
+    },
+    {
+      "sew": 64,
+      "instructions": 64,
+      "cycles": 2176,
+      "cycles_per_instruction": 34.0
+    }
+  ]
+}

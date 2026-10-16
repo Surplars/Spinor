@@ -1,0 +1,53 @@
+{
+   "creator": "Yosys 0.70+16 (git sha1 3bb533450, Release, Clang /usr/bin/clang++ 21.1.8)",
+   "invocation": "stat -json ",
+   "modules": {
+      "\\VersionedRegisterFileRam": {
+         "num_wires":         191,
+         "num_wire_bits":     910,
+         "num_pub_wires":     23,
+         "num_pub_wire_bits": 672,
+         "num_ports":         14,
+         "num_port_bits":     353,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         151,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "$scopeinfo": 1,
+            "FDRE": 38,
+            "LUT2": 16,
+            "LUT3": 37,
+            "LUT4": 3,
+            "LUT5": 10,
+            "LUT6": 14,
+            "RAM64M8": 32
+         }
+      }
+   },
+      "design": {
+         "num_wires":         191,
+         "num_wire_bits":     910,
+         "num_pub_wires":     23,
+         "num_pub_wire_bits": 672,
+         "num_ports":         14,
+         "num_port_bits":     353,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         151,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "$scopeinfo": 1,
+            "FDRE": 38,
+            "LUT2": 16,
+            "LUT3": 37,
+            "LUT4": 3,
+            "LUT5": 10,
+            "LUT6": 14,
+            "RAM64M8": 32
+         }
+      }
+}
+

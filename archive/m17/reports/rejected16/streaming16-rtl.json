@@ -1,0 +1,9 @@
+{
+  "status": "PASS",
+  "commands": 251,
+  "flushes": 102,
+  "mapped": false,
+  "rtl_or_netlist_sha256": "3df6c1baa66833db8f45ff13239d6cc280b7d05c3da2398f3d219129c1a32502",
+  "testbench_sha256": "e023dc4f89337ffc34976ecceae6b4a287611c037e92ad1bf6578ae7c008dbe8",
+  "trace": "PASS streaming commands=251 max_inflight=2 overlap_rw=1641\n/workspace/zu15-vpu/build/test/streaming16-rtl-tb.sv:4113: $finish called at 997751 (1s)"
+}

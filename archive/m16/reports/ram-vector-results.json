@@ -1,0 +1,35 @@
+{
+  "coverage": {
+    "vector_ops": 553,
+    "csr_ops": 137,
+    "configs": 99,
+    "flushes": 7,
+    "illegal_ops": 26,
+    "group_regs": [
+      1,
+      2,
+      4,
+      8
+    ]
+  },
+  "commands": 789,
+  "models": {
+    "RamVector": "PASS ram-vector commands=789 reads=2968 cycles=49704\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 500875 (1s)",
+    "RamVector16": "PASS ram-vector commands=789 reads=2968 cycles=51009\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 513925 (1s)",
+    "RamVectorFlops": "PASS ram-vector commands=789 reads=2968 cycles=49704\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 500875 (1s)"
+  },
+  "input_sha256": {
+    "RamVector": {
+      "rtl": "4099c5ab6ee05cf86e9644d3a899697ba3fde94b9b0f5745d4ee3952972f7a4a",
+      "testbench": "9a6a93cf84ae98882c8c507bd56d1a038c7820f3dbd30ec62e47b0e7fbdf8c42"
+    },
+    "RamVector16": {
+      "rtl": "acda1b87ca25e4504e8bbe2009b5a5cfd67f18c1daf2fc541c7916c48dd6dbf4",
+      "testbench": "9a6a93cf84ae98882c8c507bd56d1a038c7820f3dbd30ec62e47b0e7fbdf8c42"
+    },
+    "RamVectorFlops": {
+      "rtl": "3f4cc9e95702eb24d217b8ae02cb19d1d1eb3be17ae013b12b16deda1b4bdf99",
+      "testbench": "9a6a93cf84ae98882c8c507bd56d1a038c7820f3dbd30ec62e47b0e7fbdf8c42"
+    }
+  }
+}

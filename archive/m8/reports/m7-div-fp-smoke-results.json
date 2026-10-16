@@ -1,0 +1,31 @@
+{
+  "coverage": {
+    "vector_ops": 98,
+    "csr_ops": 54,
+    "configs": 48,
+    "flushes": 7,
+    "illegal_ops": 2,
+    "group_regs": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "divide_forms": {
+      "21:2": 3,
+      "21:6": 3,
+      "22:2": 3,
+      "22:6": 3,
+      "23:2": 3,
+      "23:6": 3,
+      "24:2": 3,
+      "24:6": 3
+    },
+    "divide_flushes": 12
+  },
+  "commands": 200,
+  "models": {
+    "RamVectorFp": "PASS ram-vector commands=200 reads=410 cycles=19591\n/workspace/zu15-vpu/build/test/m7-div-fp-smoke-tb.sv:1181: $finish called at 196622 (1s)",
+    "RamVectorFp-mapped": "PASS ram-vector commands=200 reads=410 cycles=19591\n/workspace/zu15-vpu/build/test/m7-div-fp-smoke-tb.sv:1181: $finish called at 196622000000000000 (1ps)"
+  }
+}

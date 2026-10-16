@@ -1,0 +1,822 @@
+{
+  "scope": "M4_TIMING_PIPELINE_SPLITS_AND_RAPIDWRIGHT_CAPABILITY_PROBE",
+  "target": "xczu15eg-ffvb1156-2-i",
+  "full_RVV_implemented": false,
+  "Valence_core_integrated": false,
+  "vector_LSU_implemented": false,
+  "scalar_vector_FCSR_unified_in_Valence": false,
+  "device_place_route_performed": false,
+  "passes_300MHz": null,
+  "passes_500MHz": null,
+  "FP_device_timing_simulation_performed": false,
+  "bitstream_generated": false,
+  "tools": {
+    "chisel": "7.16.0",
+    "scala": "2.13.18",
+    "mill": "1.1.7",
+    "firtool_observed": "1.160.0",
+    "artifacts": {
+      "mill-dist": {
+        "url": "https://repo.maven.apache.org/maven2/com/lihaoyi/mill-dist/1.1.7/mill-dist-1.1.7.exe",
+        "sha256": "49c1c575ad44efba1b9103ca1d6042624ef341aad9d8f4cb58fbfc56cf930e0d"
+      },
+      "oss-cad-suite.tgz": {
+        "url": "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-10-14/oss-cad-suite-linux-x64-20261014.tgz",
+        "sha256": "a6ccc6b96b2d985336a1061c78b2fd2bdd73e0f68690da17db88e00457881a11"
+      }
+    },
+    "references": {
+      "Valence": {
+        "url": "https://github.com/Surplars/Valence",
+        "revision": "6c8977f684830137fae088d4679f9d84e5ce4a11",
+        "use": "read-only interface study; no scalar-core edits or integration claim"
+      },
+      "NaxRiscv": {
+        "url": "https://github.com/SpinalHDL/NaxRiscv",
+        "revision": "9f452d50560d02fb391bc8039f5453c54e0911af",
+        "use": "RAM/register-file implementation study; no source copied"
+      }
+    },
+    "rapidwright": {
+      "version": "v2026.1.1-beta",
+      "artifact": {
+        "url": "https://github.com/Xilinx/RapidWright/releases/download/v2026.1.1-beta/rapidwright-2026.1.1-standalone-lin64.jar",
+        "sha256": "b3bd8e98a026fec792347b9d007af1fc054e9376789186a3721c400ed52e9955"
+      },
+      "scope": "Optional target-device and family-delay probe; no physical implementation or speed-grade qualification"
+    }
+  },
+  "HardFloat_and_SoftFloat": {
+    "repository": "https://github.com/ucb-bar/berkeley-hardfloat",
+    "revision": "c1105e6ac6a0dd90fc80893efc4830ab609005d3",
+    "local_sources_sha256": {
+      "primitives.scala": "134cfae67052244a836aebbae3f9252b0e9bf4800ab5cbcba4b92eb1c56e7c31",
+      "recFNFromFN.scala": "90060c571a38718330f8781ecc4f555096ac45a0c75abb3fe5219e06dacdbd2d",
+      "AddRecFN.scala": "a0dec1dd3476eb42250529817e8d53b4efe327f08849fe130e475bf4963a779a",
+      "rawFloatFromRecFN.scala": "bf7e4b0e453569c91f6a9d8c414feb3a5fed6dc7354ba31cdc8c7c0f1ffd8317",
+      "RoundAnyRawFNToRecFN.scala": "31cdb3be147471d52e721f14914031c19b915bd7aaffe5c0e333393a0c7fb67d",
+      "rawFloatFromFN.scala": "39fb14ae28318821906f68ad63803ca24eecb1115bf24aa4f3df497392357dce",
+      "common.scala": "ea83cdfac50db84f372d624ce4e0d45188207164a6a1eae5d42d8174241925cb",
+      "fNFromRecFN.scala": "7a114540c32ef9e43152e37d1610dd5bbb68dba6b3bbd1aa5600fa3bc411fa6d",
+      "CompareRecFN.scala": "9f7d050ff8e605cbc7575b342eff3c2dd5e8a3aa7b87572aaa5fc58174badeec",
+      "DivSqrtRecFN_small.scala": "f715cae79b0a58496f717731a27939fb4aa6f8eb70dcf1770af84e6121281a15",
+      "INToRecFN.scala": "1ea78cf0b78dd9fb8af5643b601801d2b5e263aaf89beab012a6362c50020c5f",
+      "MulAddRecFN.scala": "b16c030f8545d032b1b58a7cc09c73f3a49404c3367630ee3e88de1a2e880ab6",
+      "MulRecFN.scala": "a665f8a23a7f490a7c8d5cce8f96cfb69047106c6d3b8275f44826af95cb1a32",
+      "RecFNToIN.scala": "c08160e4a8a23a14ec6d791db2590f7506228be9f74a0f03a2a13edfc162a7e4",
+      "RecFNToRecFN.scala": "c3f3c4f8551b20f5bb3d8c9c5dc0563f70077910df2ba8e401a131db903e8dca",
+      "classifyRecFN.scala": "0d7c3b2828d0ad87cc95a7cd0b28c6add9645cdb495756fb611381e88c6bd524",
+      "rawFloatFromIN.scala": "b404a8a21aaa09a876c5d92b87c0db85e2946a318a39b33ffb6477933cd257d8",
+      "resizeRawFloat.scala": "6a12a1d9a7c64c10786d99cb81897f4de6adb6004cf1149eb9fbaf3b70a10655"
+    },
+    "source_modifications": [
+      "patches/0001-unsigned-alignment-distance.patch: bit-equivalent unsigned alignment to avoid pinned GSIM signed-slice lowering error",
+      "Ten newly imported files omit only the final blank line; separate original/local hashes preserve this formatting difference"
+    ],
+    "copied_from_Valence_revision": "6c8977f684830137fae088d4679f9d84e5ce4a11",
+    "license_sha256": "8e0236c9027ba0a243febb71f0e3dce559b50658f8d14fab31a626c9f214fdf3",
+    "softfloat": {
+      "repository": "https://github.com/ucb-bar/berkeley-softfloat-3",
+      "revision": "a0c6494cdc11865811dec815d5c0049fba9d82a8",
+      "archive_sha256": "90493f9ad6c9760b2b1ca91251b8e7a3bb616b2935808d243e158a432a514f98",
+      "license": "third_party/licenses/berkeley-softfloat.LICENSE",
+      "specialization": "8086-SSE; canonicalize output NaNs; explicit flags mapping; after-rounding tininess"
+    }
+  },
+  "DSP_model": {
+    "repository": "https://github.com/Xilinx/XilinxUnisimLibrary",
+    "revision": "1c8e05fd1e9a79ceb8b996a0996674122eed086f",
+    "license": "Apache-2.0",
+    "scope": "Unmodified DSP48E2 functional simulation model; no device speed files or SDF",
+    "sha256": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "DSP48E2.v": "d2ab5e8f0bbb6c99183d559fcab3bcdb6f49c1c2961e5896c27b054b32d10c04",
+      "README.md": "11450a4eb3bdd681aa0edaaaf625033d0080c4761273f399d07319cdda10c9ad"
+    }
+  },
+  "baseline_M3_resources": [
+    {
+      "top": "FloatingPointLane",
+      "logic_LUT": 5937,
+      "FF": 1267,
+      "DSP48E2": 12,
+      "RAM64M8": 0,
+      "RAM32M16": 0,
+      "CARRY4_logical": 297,
+      "storage_LUT": 0
+    },
+    {
+      "top": "RamVectorFp",
+      "logic_LUT": 9090,
+      "FF": 3330,
+      "DSP48E2": 12,
+      "RAM64M8": 32,
+      "RAM32M16": 5,
+      "CARRY4_logical": 348,
+      "storage_LUT": 296
+    }
+  ],
+  "resources": [
+    {
+      "top": "FloatingPointLane",
+      "logic_LUT": 6397,
+      "FF": 4801,
+      "DSP48E2": 8,
+      "RAM64M8": 0,
+      "RAM32M16": 0,
+      "CARRY4_logical": 121,
+      "storage_LUT": 0
+    },
+    {
+      "top": "RamVectorFp",
+      "logic_LUT": 9616,
+      "FF": 6877,
+      "DSP48E2": 8,
+      "RAM64M8": 32,
+      "RAM32M16": 5,
+      "CARRY4_logical": 167,
+      "storage_LUT": 296
+    }
+  ],
+  "RapidWright_probe": {
+    "status": "PASS_CAPABILITY_PROBE",
+    "version": "v2026.1.1-beta",
+    "target": "xczu15eg-ffvb1156-2-i",
+    "device_loaded": true,
+    "family_model": "UltraScalePlus",
+    "family_logic_arcs_ps": {
+      "A6LUT:A1->O6": 150,
+      "A6LUT:A2->O6": 125,
+      "A6LUT:A3->O6": 100,
+      "A6LUT:A4->O6": 90,
+      "A6LUT:A5->O6": 50,
+      "A6LUT:A6->O6": 35,
+      "AFF:CLK->Q": 77
+    },
+    "placed_or_routed_VPU": false,
+    "device_speed_grade_calibrated": false,
+    "DSP_delays_available": false,
+    "passes_300MHz": null,
+    "passes_500MHz": null,
+    "input_sha256": {
+      "tools/rapidwright-research/rapidwright-2026.1.1-standalone-lin64.jar": "b3bd8e98a026fec792347b9d007af1fc054e9376789186a3721c400ed52e9955",
+      "tools/rapidwright-research/data/parts.db": "d3a8ff8d73d7f355c8307a2f25bbbfde260d47e5c464ed86d9de9efbec66d343",
+      "tools/rapidwright-research/data/parts.db.md5": "115bc3c0d874f11f0c4e4dee87803fdf9dfc488ee4c4bfd3659d65a26b8f13e2",
+      "tools/rapidwright-research/timing/ultrascaleplus/intrasite_delay_terms.txt": "ff08ce9041da649f2bf886d900f033dd23de8ad54eb4db55d37ce032dc0ec0a0",
+      "tools/rapidwright-research/timing/ultrascaleplus/intersite_delay_terms.txt": "3b122837c4a1b5f3c212fc6353bee3a0854a204f2f69e2bc1cac4a2a1f9d7333",
+      "tools/rapidwright-research/data/devices/zynquplus/xczu15eg_db.dat": "b7578487158e0b1a628a76ca027647f58c4ce89ada100631c94989dbdc124504"
+    }
+  },
+  "lane_test": {
+    "vectors": 6811,
+    "known_answer_anchors": 52,
+    "flush_reset_cases": 205,
+    "precision": [
+      "FP32",
+      "FP64"
+    ],
+    "rounding_modes": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "corrupt_result_rejected": true,
+    "observed_latency_cycles": {
+      "FP32_op0": [
+        30
+      ],
+      "FP32_op1": [
+        30
+      ],
+      "FP32_op2": [
+        30
+      ],
+      "FP32_op3": [
+        13,
+        278,
+        283
+      ],
+      "FP32_op4": [
+        13,
+        273,
+        278
+      ],
+      "FP32_op5": [
+        30
+      ],
+      "FP32_op6": [
+        30
+      ],
+      "FP32_op7": [
+        30
+      ],
+      "FP32_op8": [
+        30
+      ],
+      "FP32_op9": [
+        4
+      ],
+      "FP32_op10": [
+        4
+      ],
+      "FP32_op11": [
+        4
+      ],
+      "FP32_op12": [
+        4
+      ],
+      "FP32_op13": [
+        4
+      ],
+      "FP32_op14": [
+        4
+      ],
+      "FP32_op15": [
+        4
+      ],
+      "FP32_op16": [
+        4
+      ],
+      "FP32_op17": [
+        4
+      ],
+      "FP32_op18": [
+        4
+      ],
+      "FP32_op19": [
+        4
+      ],
+      "FP32_op20": [
+        4
+      ],
+      "FP32_op0_illegal": [
+        1
+      ],
+      "FP32_op21_illegal": [
+        1
+      ],
+      "FP32_op31_illegal": [
+        1
+      ],
+      "FP64_op0": [
+        30
+      ],
+      "FP64_op1": [
+        30
+      ],
+      "FP64_op2": [
+        30
+      ],
+      "FP64_op3": [
+        13,
+        278,
+        283
+      ],
+      "FP64_op4": [
+        13,
+        273,
+        278
+      ],
+      "FP64_op5": [
+        30
+      ],
+      "FP64_op6": [
+        30
+      ],
+      "FP64_op7": [
+        30
+      ],
+      "FP64_op8": [
+        30
+      ],
+      "FP64_op9": [
+        4
+      ],
+      "FP64_op10": [
+        4
+      ],
+      "FP64_op11": [
+        4
+      ],
+      "FP64_op12": [
+        4
+      ],
+      "FP64_op13": [
+        4
+      ],
+      "FP64_op14": [
+        4
+      ],
+      "FP64_op15": [
+        4
+      ],
+      "FP64_op16": [
+        4
+      ],
+      "FP64_op17": [
+        4
+      ],
+      "FP64_op18": [
+        4
+      ],
+      "FP64_op19": [
+        4
+      ],
+      "FP64_op20": [
+        4
+      ],
+      "FP64_op0_illegal": [
+        1
+      ],
+      "FP64_op21_illegal": [
+        1
+      ],
+      "FP64_op31_illegal": [
+        1
+      ]
+    },
+    "status": "PASS",
+    "test_summary": "PASS fp-lane vectors=6811 stalls=16972 cancels=205 cycles=296362"
+  },
+  "vector_test": {
+    "status": "PASS",
+    "mapped": false,
+    "commands": 1649,
+    "coverage": {
+      "FP32": 690,
+      "FP64": 545,
+      "vf": 656,
+      "vv": 579,
+      "masked": 608,
+      "alias": 131,
+      "illegal": 8,
+      "flushes": 12,
+      "ops": {
+        "vfadd": 52,
+        "vfsub": 45,
+        "vfmin": 45,
+        "vfmax": 45,
+        "vfsgnj": 45,
+        "vfsgnjn": 45,
+        "vfsgnjx": 45,
+        "vmfeq": 45,
+        "vmfle": 45,
+        "vmflt": 45,
+        "vmfne": 45,
+        "vfdiv": 56,
+        "vfmul": 45,
+        "vfmadd": 45,
+        "vfnmadd": 45,
+        "vfmsub": 45,
+        "vfnmsub": 45,
+        "vfmacc": 45,
+        "vfnmacc": 45,
+        "vfmsac": 45,
+        "vfnmsac": 45,
+        "vfsqrt": 45,
+        "vfclass": 45,
+        "vfrdiv": 45,
+        "vfrsub": 45,
+        "vmfgt": 46,
+        "vmfge": 45,
+        "bad-unary": 1
+      },
+      "lmul_types": [
+        16,
+        17,
+        18,
+        19,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "rounding_modes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "csr": 219,
+      "integer_interleave": 1
+    },
+    "known_answer_anchors": 52,
+    "test_summary": "PASS fp-vector commands=1649 reads=7176 cycles=160130\n/workspace/zu15-vpu/build/test/fp_vector_tb.sv:10777: $finish called at 1610359 (1s)"
+  },
+  "DSP_mapped_test": {
+    "status": "PASS",
+    "mapped": true,
+    "commands": 1649,
+    "coverage": {
+      "FP32": 690,
+      "FP64": 545,
+      "vf": 656,
+      "vv": 579,
+      "masked": 608,
+      "alias": 131,
+      "illegal": 8,
+      "flushes": 12,
+      "ops": {
+        "vfadd": 52,
+        "vfsub": 45,
+        "vfmin": 45,
+        "vfmax": 45,
+        "vfsgnj": 45,
+        "vfsgnjn": 45,
+        "vfsgnjx": 45,
+        "vmfeq": 45,
+        "vmfle": 45,
+        "vmflt": 45,
+        "vmfne": 45,
+        "vfdiv": 56,
+        "vfmul": 45,
+        "vfmadd": 45,
+        "vfnmadd": 45,
+        "vfmsub": 45,
+        "vfnmsub": 45,
+        "vfmacc": 45,
+        "vfnmacc": 45,
+        "vfmsac": 45,
+        "vfnmsac": 45,
+        "vfsqrt": 45,
+        "vfclass": 45,
+        "vfrdiv": 45,
+        "vfrsub": 45,
+        "vmfgt": 46,
+        "vmfge": 45,
+        "bad-unary": 1
+      },
+      "lmul_types": [
+        16,
+        17,
+        18,
+        19,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "rounding_modes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "csr": 219,
+      "integer_interleave": 1
+    },
+    "known_answer_anchors": 52,
+    "test_summary": "PASS fp-vector commands=1649 reads=7176 cycles=160130\n/workspace/zu15-vpu/build/test/fp_vector_tb.sv:10777: $finish called at 1610359000000000000 (1ps)"
+  },
+  "integer_regression": {
+    "coverage": {
+      "vector_ops": 553,
+      "csr_ops": 137,
+      "configs": 99,
+      "flushes": 7,
+      "illegal_ops": 26,
+      "group_regs": [
+        1,
+        2,
+        4,
+        8
+      ]
+    },
+    "commands": 789,
+    "models": {
+      "RamVectorFp": "PASS ram-vector commands=789 reads=2968 cycles=73298\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 736815 (1s)"
+    }
+  },
+  "integer_only_regression": {
+    "coverage": {
+      "vector_ops": 553,
+      "csr_ops": 137,
+      "configs": 99,
+      "flushes": 7,
+      "illegal_ops": 26,
+      "group_regs": [
+        1,
+        2,
+        4,
+        8
+      ]
+    },
+    "commands": 789,
+    "models": {
+      "RamVector": "PASS ram-vector commands=789 reads=2968 cycles=72744\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 731275 (1s)",
+      "RamVector16": "PASS ram-vector commands=789 reads=2968 cycles=77329\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 777125 (1s)",
+      "RamVectorFlops": "PASS ram-vector commands=789 reads=2968 cycles=72744\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 731275 (1s)"
+    }
+  },
+  "source_sha256": {
+    ".gitignore": "3bbadb69749a640571e0cf1761cfc7a5e0b19516fdd0a72580481fb436b7973d",
+    ".mill-jvm-opts": "831f88c764ec55beb7ded7feae36621cd94ef5adff2f10e8abc27070f555ce45",
+    ".mill-version": "f2fb797db5b32c15ac4c67b2180b593bf46c768ba1d69971fecbef1d9afb1975",
+    "Makefile": "4495801aebc26eadcab6e2f4f32e13daa58545ca6ba4c5516043040e8f374cf5",
+    "README.md": "538077918489bfecf6e3735bced3c327b92f8a1a3f23e369343b24dde8209dd7",
+    "build.mill": "8e5c7b714181909d8ee091cd3deac58a434a82bd462a920c1ede9524870d9e2b",
+    "docs/architecture.md": "c8bbdc72f24714a3d214c9208cd31af08dd44f686bd15f9a065da311c9a7559e",
+    "docs/rapidwright.md": "8cfe65f4f128eacf5bd359e0dae4e0f0bd721532b0b42b10824c16bac3f194d8",
+    "mill": "b5635cf8933e52ce3d743eb2cc2dd22fe02004f084568040943ca9cde946aa5b",
+    "scripts/bootstrap.py": "a3e3f6050ebfd9310cbbea09c242f2383651430f60e9554673314ae57ce1dd9a",
+    "scripts/bootstrap_fp.py": "bf3015ea21d43e8f161f922360264a18f75fe85169a80de68ceb2d23a84215eb",
+    "scripts/java/RapidWrightProbe.java": "cdf72c368aceef0501b112946dd2fd64574bb72a267c03c07dee1037911cbd92",
+    "scripts/package.py": "84d9530496b17e380b1f120b083932756d9dfb7ebdc39f59137440dcbcba0482",
+    "scripts/path_depth.py": "c9e4ec2273676b734db8e387c7169ebf26881359436780b7c523d9eb65e280c6",
+    "scripts/rapidwright_probe.py": "16bd6778865f09fccbe53d0bff1a028c27741fdda6793de4bad6fbab342caa9d",
+    "scripts/record_tested_rtl.py": "e1b300b759b4d7e4622d5e966d8a474e2c4061c34940958ecfcdd53667adb83b",
+    "scripts/report.py": "6a2c26daa084ac9190a621fec8bcbfa962749ed1be33ad0f9bc6884bb0c36d15",
+    "scripts/report_m2.py": "eaf90f3b616b74c09ebe1ad6120ecd8654cfbe0fa06ed9844dc729a55d187d35",
+    "scripts/report_m3.py": "83b91d95c4644cc9c969046f467e6d3a7c1068d24718dc67ae76bd690bdaa064",
+    "scripts/report_m4.py": "7bb509f4e1b5f08f59bdf5efbc666ae92ebd8a04bd406ad7364e01eab389980c",
+    "scripts/synth.py": "7bf590cad96a361e61133bae6f02dbe9058ab03e05a128e3b72d9ad5c8b3c30d",
+    "scripts/timing_reference.py": "cc6be306d1595da893b97d2455d8fe567de8f80a00759d4b7ec17539bcf023b5",
+    "src/main/scala/vpu/FloatingPointLane.scala": "f8390abc1df912450c4db2a06c56d7d73a37ebf05a82d3b3b7bd5cc7203a4f8d",
+    "src/main/scala/vpu/Generate.scala": "d9380d733275f17876b31c552a75182bc5312ff1eab23d58b18c34208cc53e03",
+    "src/main/scala/vpu/IntegerLane.scala": "cf8782cd7de9448bcfcf3929b03503a242e6c0273efd93a3858deb2d81c2a500",
+    "src/main/scala/vpu/Parameters.scala": "82cc24eaf0415b7284589c4b8a4c04f8fd0dca3e36d0a304e815e93adca76f31",
+    "src/main/scala/vpu/Protocol.scala": "16889bd63c8b3ae8950953166d98c4dc1dd399039438f979e3bd6f82f5cf4ab9",
+    "src/main/scala/vpu/RamVector.scala": "fac7f14c1e3107b79f15efa54027470784405da49058f768773cb399084f3738",
+    "src/main/scala/vpu/StagedDivSqrt.scala": "38bd98dbcc248fc1cf17121c92447154e0428f0f754c0e71912f41097a3e1332",
+    "src/main/scala/vpu/StagedFmaPost.scala": "ddefaa1c4edbe41b227676983dd6a18c68e9ba309f86555fe1b8bc8fc94f6b28",
+    "src/main/scala/vpu/StagedFmaPre.scala": "2990c617db70bbe26a8ddf01872621271c9d832f49930ce342de8e3bf8df289e",
+    "src/main/scala/vpu/StagedRound.scala": "f87e6023ed442d9eca343e7da7b0753c0d79311362ce279700cbf319f61f05ee",
+    "src/main/scala/vpu/ValenceBoundary.scala": "5868b26214c0da022db9228e519ec02e17f39565dbfcc1d731131a73e68c94f3",
+    "src/main/scala/vpu/VectorPrototype.scala": "e687b0d280df0507cd039a10d3c11cc5cbe8330554ec9799ef47baf1406ffe4d",
+    "src/main/scala/vpu/VectorRegisterFile.scala": "efeea731e0897798574b75304cfae1cc1426f781f1550c61ce2a32ffee0d6946",
+    "src/main/scala/vpu/VersionedRegisterFile.scala": "19a0c8f12bbb14445136840fd9afab81545a0916b3bec2ea81d31cd84db54ca5",
+    "tests/benchmark.py": "a9144205418b89924ccac5e95b5f144de144bdb1cff6e45e11ced14f6248eeb0",
+    "tests/boundary_tb.sv": "e5158664bbbb69316df2aa72f3e18683aba7dc53dc3f48d4b553b9e6e59f90a7",
+    "tests/fp_mapped_global.sv": "ef3686be07c9b869d13b0f1590bc8fd31e6af57ff77199931c909faedf0c0d4e",
+    "tests/fp_reference.c": "8521c00024f00d411bca0c90c0be6ba6d513f5f78484ed9d73f9500854d5b140",
+    "tests/lane_tb.sv": "546fe65d4fd60409f27a3d7bc222c39c48fd2f2d0e8118efea685f2d50ca2099",
+    "tests/reference_fp.py": "4aeff2bd62580fdee7af8edcf82be4cef7e7460c4cbe6f0ddb054e362ca6ad6a",
+    "tests/test_boundary.py": "4255e43e24e45b78507d1e0401461f8a6ca383b174a7b3b90d804f9609ed1e36",
+    "tests/test_fp_lane.py": "f4673469d0a6426779a495ec17d9d0d7a6e4f82015540f817fc201a216b4b082",
+    "tests/test_fp_vector.py": "cd12463ef327e47aa93c4863bbd124c12dbe0559ad72170e882f694cd52d80d6",
+    "tests/test_lane.py": "f7510a300038921d4f5c594ed67e1e08a07545cc6c04dec2ef41e947031f5e18",
+    "tests/test_ram_vector.py": "3cb2e804fadb1d6487539cb484ed2431293846306c4672f643c77484d6dcf601",
+    "tests/test_vector.py": "a0f2fefdcb28bbb6d3ac040fa99c902f34f1d06d5f04d1ce997b5875cc56fa08",
+    "tests/test_versioned_rf.py": "cbbe5a7d18ec02a5a35d6cb5d13737de1786d39b23effad672dde54df7a292b0",
+    "tests/timing_lane_tb.sv": "77ffe4f202d72c1fdfb5319e0c8c98ffc055d89fd1ccf22ac8f512e89e02cd22",
+    "tests/timing_model_check.sv": "3ae1238b65166546e2270695a24f00e50340ac5a5a83d8da392fd9a4983d774c",
+    "tests/timing_reference_cells.sv": "f7ced45b0f9ef1b8dbf4300e59559d5f2ebee4c13618a9a41d7dc6b3987e6777",
+    "tests/versioned_rf_tb.sv": "9682514ae3125c596bf1cc370b59f8bcad66cb12a3ca992a4aaeeac96b545f67",
+    "third_party/berkeley-hardfloat/README.md": "c55bcef6ad1a7aa6f979fe4c3f42e740fb98bc9ebd7e4ad36aaf459bcbf49802",
+    "third_party/berkeley-hardfloat/patches/0001-unsigned-alignment-distance.patch": "1ad6d08a11f2fd86de77acba07436fb6037d6987f0f42271dd4cb4a2ebcb7178",
+    "third_party/berkeley-hardfloat/patches/verify-alignment.py": "ab1d94838545a6d08ec7365ca0be399dafd50b1dc49b18faa8b92ecd166e084b",
+    "third_party/berkeley-hardfloat/src/main/scala/AddRecFN.scala": "a0dec1dd3476eb42250529817e8d53b4efe327f08849fe130e475bf4963a779a",
+    "third_party/berkeley-hardfloat/src/main/scala/CompareRecFN.scala": "9f7d050ff8e605cbc7575b342eff3c2dd5e8a3aa7b87572aaa5fc58174badeec",
+    "third_party/berkeley-hardfloat/src/main/scala/DivSqrtRecFN_small.scala": "f715cae79b0a58496f717731a27939fb4aa6f8eb70dcf1770af84e6121281a15",
+    "third_party/berkeley-hardfloat/src/main/scala/INToRecFN.scala": "1ea78cf0b78dd9fb8af5643b601801d2b5e263aaf89beab012a6362c50020c5f",
+    "third_party/berkeley-hardfloat/src/main/scala/MulAddRecFN.scala": "b16c030f8545d032b1b58a7cc09c73f3a49404c3367630ee3e88de1a2e880ab6",
+    "third_party/berkeley-hardfloat/src/main/scala/MulRecFN.scala": "a665f8a23a7f490a7c8d5cce8f96cfb69047106c6d3b8275f44826af95cb1a32",
+    "third_party/berkeley-hardfloat/src/main/scala/RecFNToIN.scala": "c08160e4a8a23a14ec6d791db2590f7506228be9f74a0f03a2a13edfc162a7e4",
+    "third_party/berkeley-hardfloat/src/main/scala/RecFNToRecFN.scala": "c3f3c4f8551b20f5bb3d8c9c5dc0563f70077910df2ba8e401a131db903e8dca",
+    "third_party/berkeley-hardfloat/src/main/scala/RoundAnyRawFNToRecFN.scala": "31cdb3be147471d52e721f14914031c19b915bd7aaffe5c0e333393a0c7fb67d",
+    "third_party/berkeley-hardfloat/src/main/scala/classifyRecFN.scala": "0d7c3b2828d0ad87cc95a7cd0b28c6add9645cdb495756fb611381e88c6bd524",
+    "third_party/berkeley-hardfloat/src/main/scala/common.scala": "ea83cdfac50db84f372d624ce4e0d45188207164a6a1eae5d42d8174241925cb",
+    "third_party/berkeley-hardfloat/src/main/scala/fNFromRecFN.scala": "7a114540c32ef9e43152e37d1610dd5bbb68dba6b3bbd1aa5600fa3bc411fa6d",
+    "third_party/berkeley-hardfloat/src/main/scala/primitives.scala": "134cfae67052244a836aebbae3f9252b0e9bf4800ab5cbcba4b92eb1c56e7c31",
+    "third_party/berkeley-hardfloat/src/main/scala/rawFloatFromFN.scala": "39fb14ae28318821906f68ad63803ca24eecb1115bf24aa4f3df497392357dce",
+    "third_party/berkeley-hardfloat/src/main/scala/rawFloatFromIN.scala": "b404a8a21aaa09a876c5d92b87c0db85e2946a318a39b33ffb6477933cd257d8",
+    "third_party/berkeley-hardfloat/src/main/scala/rawFloatFromRecFN.scala": "bf7e4b0e453569c91f6a9d8c414feb3a5fed6dc7354ba31cdc8c7c0f1ffd8317",
+    "third_party/berkeley-hardfloat/src/main/scala/recFNFromFN.scala": "90060c571a38718330f8781ecc4f555096ac45a0c75abb3fe5219e06dacdbd2d",
+    "third_party/berkeley-hardfloat/src/main/scala/resizeRawFloat.scala": "6a12a1d9a7c64c10786d99cb81897f4de6adb6004cf1149eb9fbaf3b70a10655",
+    "third_party/fp-dependencies.json": "c7368141af56d4ee40540bcdd1be59803743cf7f8aa6a4179172304529500c6a",
+    "third_party/licenses/berkeley-hardfloat.LICENSE": "8e0236c9027ba0a243febb71f0e3dce559b50658f8d14fab31a626c9f214fdf3",
+    "third_party/licenses/berkeley-softfloat.LICENSE": "145ea96b4a4a04a1a7738d2a2bf9e830f861971e69606187b018d9e8fc0b95c7",
+    "third_party/rvv-opcodes-reference.json": "4b3d05d2008641e4443589ce33feabae5a96997555272db3bbdd3491dff69d23",
+    "third_party/xilinx-unisim/DSP48E2.v": "d2ab5e8f0bbb6c99183d559fcab3bcdb6f49c1c2961e5896c27b054b32d10c04",
+    "third_party/xilinx-unisim/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "third_party/xilinx-unisim/README.md": "11450a4eb3bdd681aa0edaaaf625033d0080c4761273f399d07319cdda10c9ad",
+    "third_party/xilinx-unisim/manifest.json": "5dce8026e2bb032fa6c1efebdcbdf0f25eb6319b672d287e7bf835323989575e",
+    "tools.lock.json": "5a9bbdbf5c8fa4396fb7417ace87032157af49a1c6db41e4f311300eab545636"
+  },
+  "artifact_sha256": {
+    "build/rapidwright/probe.json": "359e1df359a635fac400796ff242d64a64658c357f5cada4cd3e336c2b910b88",
+    "build/rapidwright/probe.log": "7802a5be6faa0ecc1625e626e8682b5619652193825572eff8794621b535ef65",
+    "build/rtl/FloatingPointLane.sv": "bf5b4f0ccbbd3fd59f099a34f4500b4eb41356596590ed275d0000bf803a53d6",
+    "build/rtl/IntegerLaneBaseline.sv": "4b42f17bed0a48e5583674987f510f8beeedffe63cdd3bdfc0906ed67e561c21",
+    "build/rtl/IntegerLaneSplit.sv": "8b7c87467783577bcaa81796618efdbecc30ef50f1156d7ef174066dfcec725e",
+    "build/rtl/IntegerLaneSplit16.sv": "29d193085356a0825b9db000c2b8c2c870925d2c22d54fede4f58d74b215583f",
+    "build/rtl/RamVector.sv": "c835c1d62e9d1ae7529d9fda90c0cdfe20d6464c9c4596300482adb2972e0fde",
+    "build/rtl/RamVector16.sv": "e7390bc97c582b1c25f24d5af84da5afe7c4a2bb3df0826f5bfbf846b15223e4",
+    "build/rtl/RamVectorFlops.sv": "acac7a7e8d328ae7805683102c7fe92a964d4ae8490df67eea53a438bad38364",
+    "build/rtl/RamVectorFp.sv": "3471651a9ef0c57f855b1b022d51c75abb9f2a3dc82e6f51f4a2a8d02be5bccb",
+    "build/rtl/ValenceBoundary.sv": "2ad86aba8df3f6f282189b9492dfebd073d5edf920d012240b42efad507da98a",
+    "build/rtl/VectorPrototype.sv": "212f20b963a05a098a4dc5566c9258e5bd192bca56cc2ade51ac94872926efe2",
+    "build/rtl/VectorPrototype16.sv": "f48f7cc47b5bcf4419dd74f3a73d98eb92593f7bc638b0622d168861690ff19c",
+    "build/rtl/VectorPrototypeBaseline.sv": "6bf0558bec34ae9a74f4b4e2acc6e6363088388421622649e2ef935d24d316ce",
+    "build/rtl/VectorPrototypeFlops.sv": "877290f1a7c9e8fc73e9c1cb09517bec5951c56c6fa7412279c9ab04de6f5913",
+    "build/rtl/VersionedRegisterFileRam.sv": "fccd97226675ccbc979df763b2316bf6055e90a17f21b5e368e84547506cef6c",
+    "build/rtl/verification/assert/layers-FloatingPointLane-Verification-Assert.sv": "af299e02b046c2203c7efb2da801fe772dbc3245e71ca42a366ca469695af6d8",
+    "build/rtl/verification/assert/layers-IntegerLaneBaseline-Verification-Assert.sv": "170e7325ddd875971ab66f1d7dc5403e94aa99b4ccd9dfca13c852cbd94cac86",
+    "build/rtl/verification/assert/layers-IntegerLaneSplit-Verification-Assert.sv": "7df219aa5f1f895b68499a71b6e0f5a89fe813e29e1f4ba3b71e0d94757035a2",
+    "build/rtl/verification/assert/layers-IntegerLaneSplit16-Verification-Assert.sv": "0d2ac4bee88cc7c5e0fcb24ad5a59c72f949a89a10ee08b8932f59718ea82a83",
+    "build/rtl/verification/assert/layers-RamVector-Verification-Assert.sv": "bc03753ed757abe19535c869b415fdc30d2da51ea808080d78eecba85aa4a125",
+    "build/rtl/verification/assert/layers-RamVector16-Verification-Assert.sv": "44fc1552dcdef25d3661f887d4d1774d0e945e590917a71679ecb99baef9b6d6",
+    "build/rtl/verification/assert/layers-RamVectorFlops-Verification-Assert.sv": "50b8b9f2e3de4a13b5ce0bb817cde59ffda7822e4ab59c01b20e1a05738eab47",
+    "build/rtl/verification/assert/layers-RamVectorFp-Verification-Assert.sv": "890fe54a73f81435dabeb2bc6d56f512f7f66a2378d6fd37714e7bdd8cb04f7c",
+    "build/rtl/verification/assert/layers-ValenceBoundary-Verification-Assert.sv": "b79855e6bd6f164808e9abdc45f758fdd029d15f72315b40d1b4d863013c2dc5",
+    "build/rtl/verification/assert/layers-VectorPrototype-Verification-Assert.sv": "cf9979ab84c0f697932e0dc86b57ad6f4bfb7c1e990d16387d14bbc18c272ccd",
+    "build/rtl/verification/assert/layers-VectorPrototype16-Verification-Assert.sv": "45d6c9fe9d2830793de0a779f0ea3867cba73895124b38408b8a1b0c3e1b1ee3",
+    "build/rtl/verification/assert/layers-VectorPrototypeBaseline-Verification-Assert.sv": "11765c9372556c2a72de2edf6bf94b31a34174ce4a559d74e357e13a00bd8b0f",
+    "build/rtl/verification/assert/layers-VectorPrototypeFlops-Verification-Assert.sv": "5ea5ed8bb7892644498ac7ff03fa1cfdbac24def8749ec9f177e52d53674dec6",
+    "build/rtl/verification/assert/layers-VersionedRegisterFileRam-Verification-Assert.sv": "90f20d4ea45dba5ccf855a9495be279f8f6f27951d353beade2a27a0d04f2142",
+    "build/rtl/verification/assume/layers-FloatingPointLane-Verification-Assume.sv": "7702908ce4a6e043b5007897d044d6f11383492971dcf29ed0a9eae8967cfc97",
+    "build/rtl/verification/assume/layers-IntegerLaneBaseline-Verification-Assume.sv": "e4479d2011281817becd81559f99635834d97f1c78eac30aea81d1253c15e9cf",
+    "build/rtl/verification/assume/layers-IntegerLaneSplit-Verification-Assume.sv": "9a7c8e9616096f30114bd3384ac0f19cadf538e3220ade5741d2b0cce8c0c5c9",
+    "build/rtl/verification/assume/layers-IntegerLaneSplit16-Verification-Assume.sv": "36c016d62fb3330e34091948bcb0bc3f97ff70a5f5d656d3cd9e2fc1a8fc0b26",
+    "build/rtl/verification/assume/layers-RamVector-Verification-Assume.sv": "581ac68f2ea70fb4fbb21cb29f13f9e53ae4c907e7a3b9af6337f5cc2fa455c9",
+    "build/rtl/verification/assume/layers-RamVector16-Verification-Assume.sv": "e1280b826bb1a853f9252337198630aebf44a8f2dc8f4fbcc52b3b3b0ede3212",
+    "build/rtl/verification/assume/layers-RamVectorFlops-Verification-Assume.sv": "0be16693bca4ea11d628a777c234676db48930d54b7002fd6de3655734103347",
+    "build/rtl/verification/assume/layers-RamVectorFp-Verification-Assume.sv": "d0b0df77345ca9739dc1d472c1ba57aec95977376c39b6294fa8279b916e60b3",
+    "build/rtl/verification/assume/layers-ValenceBoundary-Verification-Assume.sv": "3eaf32806685f084a105fb2882f8d054f5c067455a22cfb4ae9a1ad573bab995",
+    "build/rtl/verification/assume/layers-VectorPrototype-Verification-Assume.sv": "62e7e598ade34ea12577f7fa3011b68c5e472dd70af49901e1556a2694383d97",
+    "build/rtl/verification/assume/layers-VectorPrototype16-Verification-Assume.sv": "8a8d66ac6f543410350dca76818519f16621011d8c2d20a72f36bfda56240524",
+    "build/rtl/verification/assume/layers-VectorPrototypeBaseline-Verification-Assume.sv": "dad80fb077957169bc4cbb000735ce2047a4101f38fb35c955dc3a7f44ffe533",
+    "build/rtl/verification/assume/layers-VectorPrototypeFlops-Verification-Assume.sv": "a16a4685dfafe0ac3ea64f3638dc51e5173bb2baf86e5cf971796cd6fea9369c",
+    "build/rtl/verification/assume/layers-VersionedRegisterFileRam-Verification-Assume.sv": "53ee55611b09fad2837b699740d83310a42badf1034f553dd59f46344ec02c38",
+    "build/rtl/verification/cover/layers-FloatingPointLane-Verification-Cover.sv": "4c32c855f6d50413814226c204e0604a32fd29ff2d581288dd7852d4bb3f15ac",
+    "build/rtl/verification/cover/layers-IntegerLaneBaseline-Verification-Cover.sv": "64a3057b3cb22f388a9ebe2179f144bc6d6538d5834c9c2e32ee8543187b3eb7",
+    "build/rtl/verification/cover/layers-IntegerLaneSplit-Verification-Cover.sv": "0e4c8ed93f49de6eb8e63c23d7520bffaeed6f4bc9275152607ca51662209fa3",
+    "build/rtl/verification/cover/layers-IntegerLaneSplit16-Verification-Cover.sv": "3c12da3f074d245ae4767049875ca4badc95dbf79f86bd20cb8cfe46762d0e54",
+    "build/rtl/verification/cover/layers-RamVector-Verification-Cover.sv": "5240d4d62c836148d27498e764a560a4231ff5d745cd190ebb7b18f7eedc5d64",
+    "build/rtl/verification/cover/layers-RamVector16-Verification-Cover.sv": "6edb50cd6765a1a5774d4015aedcfd5933dc1b8ca6c477f7587e6b080af50422",
+    "build/rtl/verification/cover/layers-RamVectorFlops-Verification-Cover.sv": "9284e471ef12f9eed91806682c67d10b65cbe0d43707d4f9c51be64c6407dbee",
+    "build/rtl/verification/cover/layers-RamVectorFp-Verification-Cover.sv": "405e6f1c9988a54feb3750f8fbb51465c2cb3c8c69c21c9971fe46076db5306d",
+    "build/rtl/verification/cover/layers-ValenceBoundary-Verification-Cover.sv": "26928991e95287b45b1e8567aefcb8789d66b9589ed58e9329a3f1a48c6c9e1c",
+    "build/rtl/verification/cover/layers-VectorPrototype-Verification-Cover.sv": "af44b258a1ccd67b630578725a4002b6e2f593c0ab774118fe6581adf6cd31bc",
+    "build/rtl/verification/cover/layers-VectorPrototype16-Verification-Cover.sv": "2205f6b6b53ac6a347b9045fbe5db99f6e3f4e94e61126e8d755f0ba39ffc4e1",
+    "build/rtl/verification/cover/layers-VectorPrototypeBaseline-Verification-Cover.sv": "eb4566af70fb446f1138e50c98aa4884999f23bec639fea48526a509ebeb021a",
+    "build/rtl/verification/cover/layers-VectorPrototypeFlops-Verification-Cover.sv": "9aa334bc306ce40871cb14ffa8974bbaf9836832b9b4412e003d8f199498e83d",
+    "build/rtl/verification/cover/layers-VersionedRegisterFileRam-Verification-Cover.sv": "627ae203a1eabe47a5ca1f8f0eae0c99c0b71958645ef8b74621f9a36b6a1e3d",
+    "build/rtl/verification/layers-FloatingPointLane-Verification.sv": "a406dc957ffc7b2716e6e4cafece42948590b5f70f3c272259ea22a8e8892ca4",
+    "build/rtl/verification/layers-IntegerLaneBaseline-Verification.sv": "22fad3920100dea94a5692592351242c3d4600dac37cf4bb7ba56c86337d0e04",
+    "build/rtl/verification/layers-IntegerLaneSplit-Verification.sv": "02e506a159a4f4db8120ac8396453197749ac37c75f664b4660d3d6cf725a426",
+    "build/rtl/verification/layers-IntegerLaneSplit16-Verification.sv": "8e3a3bd462dcde31fdf473db2437d96d78b8a465396a366631c529d035dd2f4f",
+    "build/rtl/verification/layers-RamVector-Verification.sv": "d2407f679fc2bac4ff1f22d4389f86f82bda94afb34eaaaaafd5f5dd4ae49a4c",
+    "build/rtl/verification/layers-RamVector16-Verification.sv": "02ee3c1ba509435de5111853b01253a814b0747b214c4f0f32983a5987b21500",
+    "build/rtl/verification/layers-RamVectorFlops-Verification.sv": "ded19ac1299e7ee1f1e8fd71a5b4aeb49df745ff69c62e91d327bb27b0369e39",
+    "build/rtl/verification/layers-RamVectorFp-Verification.sv": "630ff57e80c31564767bbf76a84086a885a00a19095a1c02925543fb406283df",
+    "build/rtl/verification/layers-ValenceBoundary-Verification.sv": "75fc072351be42189df410349ff5e393aaf901684c3a0bae3394c69a7f9c43ba",
+    "build/rtl/verification/layers-VectorPrototype-Verification.sv": "884a5f4b316ddd7947b610639852a758b7c99bee589b0363a07b9356e6945244",
+    "build/rtl/verification/layers-VectorPrototype16-Verification.sv": "0b987bb340d6f1730fa586b8c9f046954eafee3bb652e78acea403cd4f8d9e25",
+    "build/rtl/verification/layers-VectorPrototypeBaseline-Verification.sv": "d14337061949a4cc05335e231eaced248c91cc83879a04f0e77931b22822c91e",
+    "build/rtl/verification/layers-VectorPrototypeFlops-Verification.sv": "d9b42a6082318d432d84eedd31e30964e96810cc5d6bde76d2a4bcc27caf656f",
+    "build/rtl/verification/layers-VersionedRegisterFileRam-Verification.sv": "15f491c1b85ccc1c5b49699af74ed3073e0371634c1fb013567728ca26e4d780",
+    "build/synth/FloatingPointLane/mapped.json": "7f9a885be4d07c0801a2b2383b9d8c2772dd9ee70d8fc3427fe7cb4c120d151b",
+    "build/synth/FloatingPointLane/mapped.v": "517bd67914d781759fc92a989b6ee2c33f759b2651ada1893299769cfe44ae74",
+    "build/synth/FloatingPointLane/paths.json": "3d0d58daa06ff5fe331666707750e4ffb29b7fdf0bd4387137981474050a1168",
+    "build/synth/FloatingPointLane/stat.json": "57f125405cec3059e18fcfc2acff7aa8d84fc8e0ff17919ddd5ed41aecc8f1f4",
+    "build/synth/FloatingPointLane/summary.json": "97d99a2d3b0ee012db566dd37bc7e5bf3353e7c75daff7d6565b6b11ed81fbb1",
+    "build/synth/FloatingPointLane/synth.log": "dadf1b7b75b7ff35028ba19af0f2ef49d341e2392c1199ff151b278a5308f1ed",
+    "build/synth/RamVectorFp/mapped.json": "00046ccb0d4a224f235221ba001e4231d6e1794991e4e3be5df378d758d23892",
+    "build/synth/RamVectorFp/mapped.v": "26c1195562d8c56036e7e375d30dc410469b5c91cf73ae23464fdafba7636ff7",
+    "build/synth/RamVectorFp/paths.json": "7b2d83f5bb61b393942f413df7a512b8b2ffceb28c54aa4213256bb369ed7114",
+    "build/synth/RamVectorFp/stat.json": "ac5da68086875a8fedfb85376e0b23206d8f99aa8080316c7b8b2c4c31fc0f34",
+    "build/synth/RamVectorFp/summary.json": "b5f6fa75e8e01ce3a9d34b60238a87f374ec22022052768ae27931821487cd46",
+    "build/synth/RamVectorFp/synth.log": "2f8221b7b501f598ca6616708706d71c337e7ce5b948c07c11402eb2cbc47d7a",
+    "build/test/RamVectorFp.log": "839bf8f7aca680d4c0985e1680a211e28c07a0efd19f0d94f2a286273723d463",
+    "build/test/fp-integer-results.json": "609f8b615d86c14c9812df8df213c9378df2aaf859dfc40ea5f65794ab771199",
+    "build/test/fp-lane-results.json": "a5e9a659b3c6059b9c2859f8f9d9143ef3a83491a93ad1166f55dd9870b50a33",
+    "build/test/fp-lane.log": "e07da7d78b8dd356e91c7548a26b356b463b15cf562aa2cd0c8b454ff113cad2",
+    "build/test/fp-vector-mapped-results.json": "7aeeb7e87a4256b80cbb618cf5114cdea8b019f16c26905863f717279a9fc84d",
+    "build/test/fp-vector-mapped.compile.log": "443a1b79df03ba49bd3cfdfe8430b8868dd158800fd1d3e99b817aa9659771a9",
+    "build/test/fp-vector-mapped.log": "97c573a755d3f751ff7af1af0d5e431dae5eee0149b2415ce2cbf1f1d8cf1d4b",
+    "build/test/fp-vector-results.json": "c81fb24a2d7f95abfc0d77e438bbf141c13575a7bc76698b2eceb31a62ab8896",
+    "build/test/fp-vector.log": "4cb10ecc623386538e919837975550f205f4e07908b6cf724461cf2ee481f066",
+    "build/test/fp_lane_tb.sv": "f101972ee4ba7cc5dfdb259e27544a38a5125abd7a2f7611fde7d62ec4007917",
+    "build/test/fp_vector_tb.sv": "4243b0aeb9ee6507098889906929bd9b343b9d2b493994c3de389201d1ee9211",
+    "build/test/ram-vector-results.json": "38868a21e1f61faab7a2782162b8efd7fcb7f26c050150ffe64ae60756e45f17",
+    "build/test/ram_vector_tb.sv": "9a6a93cf84ae98882c8c507bd56d1a038c7820f3dbd30ec62e47b0e7fbdf8c42",
+    "tools/fp/libfp-reference.so": "85ba9ef1a9e542a7062f6f19a29d3766a9720c4d14ace14d20e5c46657c8bb39",
+    "tools/fp/oracle-source-hashes.json": "a77e5b0a4c34c1e2c6c497733af083c369bc5b443a9d019b6bccb54ecf0b226c",
+    "tools/fp/softfloat/build/Linux-x86_64-GCC/softfloat.a": "cdcbe9ae5d18fdce12b6a9de33314ceccde6ab4c6d092408ee142f7fb726b4f1",
+    "tools/m4-tested-rtl-sha256.json": "4ee9a196ae93095c3d7490489747cf056bc10e64c22dc90d3490a08f3f29bb2b",
+    "tools/mill-generate.log": "3863be2df8d2f07a16b29449eeac122ebe4d0dc5e36c0feb11ad6f790e097edb",
+    "archive/m1/reports/IntegerLaneBaseline/paths.json": "ed6d156cff96615f46967c300ebfa48259e4a4a6713b45b050d1e3f9cb343fec",
+    "archive/m1/reports/IntegerLaneBaseline/stat.json": "dd7b21e5c941db9712f09a441d2b30ca33c3e1dfb9ab6b0ed2a02fcd6d3020da",
+    "archive/m1/reports/IntegerLaneBaseline/summary.json": "7c9c17dc5ba1849a099d360a58312bf293eae4f56e87217df22c167b3ea1098a",
+    "archive/m1/reports/IntegerLaneBaseline/synth.ys": "41ecb0c3929b010065c421a1d1071a8316ec01f542e13cf8bd606bdee09830f0",
+    "archive/m1/reports/IntegerLaneSplit/paths.json": "1a9c5bf67279548a716578e9ce39c649277c94c5a404e1781949098ef52d0006",
+    "archive/m1/reports/IntegerLaneSplit/stat.json": "2b371ef54eccbcd1c5b6e1bfd90aa7bc390de468f1b8e3c477b38224ead37857",
+    "archive/m1/reports/IntegerLaneSplit/summary.json": "21875a5b5edf70ca41045fcf8c2e9f403b6d518fc129e87b629f99d8ba2d655f",
+    "archive/m1/reports/IntegerLaneSplit/synth.ys": "51de06d339bf91d2b853ab80fa92ddf9160d826075f4153f33d6bbf53786450c",
+    "archive/m1/reports/IntegerLaneSplit16/paths.json": "c2986743274659b2b26a0baa8526bf8dc59f170683cae1eb473be59f2b26538b",
+    "archive/m1/reports/IntegerLaneSplit16/stat.json": "4dd785ec9e766f2a77cf1d611d448d492918ac73f56f19ccaf5eacb8609c6c0a",
+    "archive/m1/reports/IntegerLaneSplit16/summary.json": "29879106c039aacaf1dd6c0f14868518d8c17b4762341b809d7e541127a5f6d6",
+    "archive/m1/reports/IntegerLaneSplit16/synth.ys": "352407d82fb9ff415c866fb35bc6d8cc620c78e85b7afed1fde8f94e7ea7bbbe",
+    "archive/m1/reports/ValenceBoundary/stat.json": "8e10be273c6b11c205b267f9522e39f1ca5ba9e625e06203140ba19b02d904f8",
+    "archive/m1/reports/ValenceBoundary/summary.json": "90f74d1cad2935e5afcd28ae8e4caa83cc26de3a5020a3a2566d33228093ce56",
+    "archive/m1/reports/ValenceBoundary/synth.ys": "e57eb08d6d6d4f81e953d3d14da319376167ecbdc52283c9e1bdce0b49b6d3c1",
+    "archive/m1/reports/ValenceBoundary.log": "e6e366f50d5304c9718dc19181fe498740b3dc1812ee93920f23cc6730135608",
+    "archive/m1/reports/VectorPrototype/paths.json": "4010a06a00a117590f5846e465eb70eaf9367a82434d6ebd66c8e09f92b2d4db",
+    "archive/m1/reports/VectorPrototype/stat.json": "cd1792ddd655fa29947885d5be50ab8ea98b479a9fb52a9e31a5c2fc9208061a",
+    "archive/m1/reports/VectorPrototype/summary.json": "035167cd3766375cd49940c78cad72db275e95361b8ed1f5c4e78847207b0115",
+    "archive/m1/reports/VectorPrototype/synth.ys": "87bde571d8d25f9f133bb974d867e576b23f1104d5bcd395fcee938b8339b7c8",
+    "archive/m1/reports/VectorPrototype16/paths.json": "58c1828f7b13765d5449c3188da48195137ea90fbb2cedf04397c1667293460a",
+    "archive/m1/reports/VectorPrototype16/stat.json": "301d6841e37812ae9a1562074116a2d6b65e4705830f02d619c5bedb0db599a7",
+    "archive/m1/reports/VectorPrototype16/summary.json": "40ad205818bdb398c0034d2a22fa8bf7817f23fd39ecc324274de6a49962c2d0",
+    "archive/m1/reports/VectorPrototype16/synth.ys": "ab6e3c91f55cfa2f3af091bb82acbc8e8feda8536cf9b224b1ad7bfaab82fc86",
+    "archive/m1/reports/VectorPrototypeBram/stat.json": "fe9fc0e249646245c371b6b60b65b8c435b0f9f598fbaa95369b40e38af478cb",
+    "archive/m1/reports/VectorPrototypeBram/summary.json": "f3b1d1c921cbea0cc9577cfac56754128d8bc2b0007f00d81402c723dda65393",
+    "archive/m1/reports/VectorPrototypeBram/synth.ys": "28e779379a86ae9f6ee9d9eb144ee909d481d9b5ad65250c15d9350b76060703",
+    "archive/m1/reports/VectorPrototypeFlops/paths.json": "b18a89456b28ec821f98acf1c022733d41a43a88830060880d802627bbb3a386",
+    "archive/m1/reports/VectorPrototypeFlops/stat.json": "b521e9a7b19915bbcfcab926fb943e8d7558e407229f260afe4ceec2683c7c6e",
+    "archive/m1/reports/VectorPrototypeFlops/summary.json": "0e35275e6283a192f1d57df875a58c1e0a7a91a597d80f25aae957c3bc476ff4",
+    "archive/m1/reports/VectorPrototypeFlops/synth.ys": "97dde06eb84a20850399fe97f28a834d807ef0e7a300ba94bba28393c71fde85",
+    "archive/m1/reports/benchmark.json": "c8bf8d29f91618269195459b8f00652c9241c2b1bcacffa791867a257744c3d1",
+    "archive/m1/reports/evaluation.md": "16824a27f071720ffbc514edad184961f2ffc6abbfcde28ed947dd6b6364284a",
+    "archive/m1/reports/lane-results.json": "8315f28ae3605347132d4c2b639847a77d562604883f3fd3dc7b6eec369ef9f0",
+    "archive/m1/reports/mill-generate.log": "7569261bdc52260d437a2ab0247e2b35a6b1a9d696aa154dfa29d97785878d81",
+    "archive/m1/reports/receipt.json": "1a9e0f2381328554172157f1bf9586279f2147747a70a9a6f72b580fea46b417",
+    "archive/m1/reports/vector-results.json": "a49419d21ad18a852a25d951699b52054d9eb8649e68baf23bded1f18d95eb32",
+    "archive/m2/reports/IntegerLaneBaseline/paths.json": "ed6d156cff96615f46967c300ebfa48259e4a4a6713b45b050d1e3f9cb343fec",
+    "archive/m2/reports/IntegerLaneBaseline/stat.json": "dd7b21e5c941db9712f09a441d2b30ca33c3e1dfb9ab6b0ed2a02fcd6d3020da",
+    "archive/m2/reports/IntegerLaneBaseline/summary.json": "5db6588d0b23430feb53bc9f39448f790160f000a08356125904ac442e30c5b6",
+    "archive/m2/reports/IntegerLaneBaseline/synth.ys": "41ecb0c3929b010065c421a1d1071a8316ec01f542e13cf8bd606bdee09830f0",
+    "archive/m2/reports/IntegerLaneSplit/paths.json": "1a9c5bf67279548a716578e9ce39c649277c94c5a404e1781949098ef52d0006",
+    "archive/m2/reports/IntegerLaneSplit/stat.json": "2b371ef54eccbcd1c5b6e1bfd90aa7bc390de468f1b8e3c477b38224ead37857",
+    "archive/m2/reports/IntegerLaneSplit/summary.json": "0021920ae4ae83bf2748cda94f85edec734a4a6bcfc3d04326b7a93598ae7865",
+    "archive/m2/reports/IntegerLaneSplit/synth.ys": "51de06d339bf91d2b853ab80fa92ddf9160d826075f4153f33d6bbf53786450c",
+    "archive/m2/reports/IntegerLaneSplit16/paths.json": "c2986743274659b2b26a0baa8526bf8dc59f170683cae1eb473be59f2b26538b",
+    "archive/m2/reports/IntegerLaneSplit16/stat.json": "4dd785ec9e766f2a77cf1d611d448d492918ac73f56f19ccaf5eacb8609c6c0a",
+    "archive/m2/reports/IntegerLaneSplit16/summary.json": "ad74fef7e15f12529c009133aee2f9d3c909a1f67155e464159c6e1b61cada05",
+    "archive/m2/reports/IntegerLaneSplit16/synth.ys": "352407d82fb9ff415c866fb35bc6d8cc620c78e85b7afed1fde8f94e7ea7bbbe",
+    "archive/m2/reports/RamVector/paths.json": "2af85bf92e5469a8593e7d57962c5169b40ea1b22f0c61773789258eb088b6f3",
+    "archive/m2/reports/RamVector/stat.json": "176ee92ca44356f68775a0678a823b656ff584bc24b612f619da1238103de15a",
+    "archive/m2/reports/RamVector/summary.json": "d40af99b6c07b93d3e1af4214b6faf2c56a83e2ca3157daacff3f9534eb02d01",
+    "archive/m2/reports/RamVector/synth.ys": "04e10133c3ad2badef37e6e36b4c1ea555928fbb54bfaf43ce4b8855e9a8555f",
+    "archive/m2/reports/RamVector16/paths.json": "214927b9649b5fd80855f46d30cb1f98b06804e73c41002b40ce1d3fcd283db7",
+    "archive/m2/reports/RamVector16/stat.json": "ff1a9ab0618db972ce2c140db8b976342a39c06d00bea5538a9f866c9d82cc7d",
+    "archive/m2/reports/RamVector16/summary.json": "eaabc36db7eafc771cd7935d286e8af4be8f357d883806478bfd3e5bb2fa24aa",
+    "archive/m2/reports/RamVector16/synth.ys": "81c5b51253005382f29970e41e188ea093a249d5baa8527fad88612b847f6c5e",
+    "archive/m2/reports/RamVectorBram/stat.json": "f56c8411660ced02421be320e9aab2dea26b92af056388fc5bdc82968a33cb6d",
+    "archive/m2/reports/RamVectorBram/summary.json": "20adeda4b1c36a4d662ff2f9b8b4759ab91c58b46059bfe5f78dbff58bebfa55",
+    "archive/m2/reports/RamVectorBram/synth.ys": "27b215816e39d4582c99e3e8eb9e3661c4c74d11460a62d4a97443b839b3911d",
+    "archive/m2/reports/RamVectorFlops/paths.json": "23d276df92b40bf85e795125b3a13390a4c28dfc6212513848adce4e9b331980",
+    "archive/m2/reports/RamVectorFlops/stat.json": "0b47425ad30e6697318cf3e30e626f238f00be4bd712f1cf2d1a18a654c1fd53",
+    "archive/m2/reports/RamVectorFlops/summary.json": "c963f0d26e47b94c076aa1cb838c34e2fb28829bf342e2924989ebe5342ce2d1",
+    "archive/m2/reports/RamVectorFlops/synth.ys": "a6a61cc24716492ec7c0be22ca25afc880c747f046568eb6bac7169df5a56eb1",
+    "archive/m2/reports/VersionedRegisterFileRam/paths.json": "6415291e74e17d862dfbab7de6da3cff3821b340f150946bfc489d440a0533dc",
+    "archive/m2/reports/VersionedRegisterFileRam/stat.json": "9b1f9bba72849c1e5ff6b9adc77c926bf2553bb9e2a6eca37cdb24b5c89bcec4",
+    "archive/m2/reports/VersionedRegisterFileRam/summary.json": "259cc1a71e35b1e3822907775e565111f5fd157792aa8e983bd6be8ac4fcd304",
+    "archive/m2/reports/VersionedRegisterFileRam/synth.ys": "00aa15d32d1fa674f11a60d4c187c49d902633fbf37c39772775277896babb7d",
+    "archive/m2/reports/evaluation.md": "225ce70e2db2f57f3adc47c63f1f9da89979fca89ea5187566804de791ee74a7",
+    "archive/m2/reports/mill-generate.log": "2b78bc01980f9b6991e92fdc074d2bd450e8977b69e56693914d940d4dc2333d",
+    "archive/m2/reports/model-check.log": "abade3bc8e38a6c72908c02cb3ba2235c406dc8dc6f89654cd761a5d5e9c2e31",
+    "archive/m2/reports/ram-benchmark.json": "a50a9740d01e7f5e402cc7ba858a197acf9a9e7317b6e2d9965be01c26a23b9c",
+    "archive/m2/reports/ram-vector-results.json": "8c0e40b4a6d8bd752f1b23fff410e2a7f7df620753aa4ca12cbe766c8491a736",
+    "archive/m2/reports/receipt.json": "885be18cf3f5533b34767fa1c421aa86994125bc82106ac775d6229430b1ff6e",
+    "archive/m2/reports/timing-reference.json": "72cc8c618f224f05123b39ad94182ba10c1c4c518da8f6afcd45e6ae4c273c67",
+    "archive/m2/reports/versioned-rf.json": "6708aec851fc12aeefa36105f7184e8431a593ef070f1848ba33d394f514cc2e",
+    "archive/m3/reports/FloatingPointLane/paths.json": "f194d40b8e2b8acf6776c8e3b704959f1657b1b534ab83b9d976e69e438ab6aa",
+    "archive/m3/reports/FloatingPointLane/stat.json": "01473830e72f7871700edfd4d838899f6ba6b21907aadb13441c36c2998e8576",
+    "archive/m3/reports/FloatingPointLane/summary.json": "2aa1a31c1bcc8febeb567bea3325bfb74566bc23e1ad8a97c851e5cccd5ede40",
+    "archive/m3/reports/FloatingPointLane/synth.ys": "5ccb65d028e7ecb8212db52469c63b1db26eff25a8ce0d1c8a218de1948f39c2",
+    "archive/m3/reports/RamVectorFp/paths.json": "bb9501117c6e1c8046f6c319f9b67a2476f282ecbd5130d25432c5d0e0e627a1",
+    "archive/m3/reports/RamVectorFp/stat.json": "b9e8295553641a1bfc446486cd0172a29dc530e8b609ca7770c8d4a165fe5a1d",
+    "archive/m3/reports/RamVectorFp/summary.json": "b1213d6c9b234825d48aa47f9bb3f083196c0e73f958df6d71ec75c13e35115b",
+    "archive/m3/reports/RamVectorFp/synth.ys": "260a243eff374a6de937cb6f22db05f0b4d8e39849528226d62fc43514617a04",
+    "archive/m3/reports/RamVectorFpNoDsp/paths.json": "75d91984a914d9cf4ead874509ba0e4b3941a84a26a31729e50fa71173e7563a",
+    "archive/m3/reports/RamVectorFpNoDsp/stat.json": "56f3d487812a880705c1ffa44991b3c89166d288cd888694e92946c2f38c0c12",
+    "archive/m3/reports/RamVectorFpNoDsp/summary.json": "ce76d09e265e28bf24b5546371c3bc6aa8a2efa28507db1288521b126086bfc0",
+    "archive/m3/reports/RamVectorFpNoDsp/synth.ys": "4aead3e7a2314f5c4644a9a610e427e1b9714a961a9485d0eeb945ef4d9f1a3a",
+    "archive/m3/reports/evaluation.md": "728aae0a81e14805c0ce78be95c1cea45fcd7da5a3edf369408f7855e364b324",
+    "archive/m3/reports/fp-integer-results.json": "5dd4e657a08b35bda06e64314ffe660e11861d8daecd8092b5efc563dd1b7770",
+    "archive/m3/reports/fp-lane-results.json": "30df366496fcbd8b31db0b0e08ac95eb5de3bb6ef5e597542b9f5df597b21b6b",
+    "archive/m3/reports/fp-vector-mapped-results.json": "f0781eca09f958512569540cf8a2c14e971be4ec39a6af237634645df339b4ba",
+    "archive/m3/reports/fp-vector-results.json": "82c2a11fb3d18a759c37bad58aa19ad9a7845b4e45619b2d71a7cd2fc2e1094a",
+    "archive/m3/reports/m3-tested-rtl-sha256.json": "3fda5d147737affe739beee70f876213826fad60bba06da4c744bfc9cb335161",
+    "archive/m3/reports/mill-generate.log": "d8c684c37ac175887be24f3406493b60cd99678dcb6be3c718292a77709fcbb4",
+    "archive/m3/reports/oracle-source-hashes.json": "a77e5b0a4c34c1e2c6c497733af083c369bc5b443a9d019b6bccb54ecf0b226c",
+    "archive/m3/reports/receipt.json": "6d689d217c1852a99e06c14b350ee06038a18461cde63fda7dcae67b592474c1",
+    "reports/m4/FloatingPointLane/paths.json": "3d0d58daa06ff5fe331666707750e4ffb29b7fdf0bd4387137981474050a1168",
+    "reports/m4/FloatingPointLane/stat.json": "57f125405cec3059e18fcfc2acff7aa8d84fc8e0ff17919ddd5ed41aecc8f1f4",
+    "reports/m4/FloatingPointLane/summary.json": "97d99a2d3b0ee012db566dd37bc7e5bf3353e7c75daff7d6565b6b11ed81fbb1",
+    "reports/m4/FloatingPointLane/synth.ys": "5ccb65d028e7ecb8212db52469c63b1db26eff25a8ce0d1c8a218de1948f39c2",
+    "reports/m4/RamVectorFp/paths.json": "7b2d83f5bb61b393942f413df7a512b8b2ffceb28c54aa4213256bb369ed7114",
+    "reports/m4/RamVectorFp/stat.json": "ac5da68086875a8fedfb85376e0b23206d8f99aa8080316c7b8b2c4c31fc0f34",
+    "reports/m4/RamVectorFp/summary.json": "b5f6fa75e8e01ce3a9d34b60238a87f374ec22022052768ae27931821487cd46",
+    "reports/m4/RamVectorFp/synth.ys": "260a243eff374a6de937cb6f22db05f0b4d8e39849528226d62fc43514617a04",
+    "reports/m4/evaluation.md": "dd3b0f4b82cab7b71795b510812a175df1997a5cf46ea6b42093f9852a7ee737",
+    "reports/m4/fp-integer-results.json": "609f8b615d86c14c9812df8df213c9378df2aaf859dfc40ea5f65794ab771199",
+    "reports/m4/fp-lane-results.json": "a5e9a659b3c6059b9c2859f8f9d9143ef3a83491a93ad1166f55dd9870b50a33",
+    "reports/m4/fp-vector-mapped-results.json": "7aeeb7e87a4256b80cbb618cf5114cdea8b019f16c26905863f717279a9fc84d",
+    "reports/m4/fp-vector-results.json": "c81fb24a2d7f95abfc0d77e438bbf141c13575a7bc76698b2eceb31a62ab8896",
+    "reports/m4/m4-tested-rtl-sha256.json": "4ee9a196ae93095c3d7490489747cf056bc10e64c22dc90d3490a08f3f29bb2b",
+    "reports/m4/mill-generate.log": "3863be2df8d2f07a16b29449eeac122ebe4d0dc5e36c0feb11ad6f790e097edb",
+    "reports/m4/oracle-source-hashes.json": "a77e5b0a4c34c1e2c6c497733af083c369bc5b443a9d019b6bccb54ecf0b226c",
+    "reports/m4/probe.json": "359e1df359a635fac400796ff242d64a64658c357f5cada4cd3e336c2b910b88",
+    "reports/m4/probe.log": "7802a5be6faa0ecc1625e626e8682b5619652193825572eff8794621b535ef65",
+    "reports/m4/ram-vector-results.json": "38868a21e1f61faab7a2782162b8efd7fcb7f26c050150ffe64ae60756e45f17"
+  }
+}

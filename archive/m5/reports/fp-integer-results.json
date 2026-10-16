@@ -1,0 +1,19 @@
+{
+  "coverage": {
+    "vector_ops": 553,
+    "csr_ops": 137,
+    "configs": 99,
+    "flushes": 7,
+    "illegal_ops": 26,
+    "group_regs": [
+      1,
+      2,
+      4,
+      8
+    ]
+  },
+  "commands": 789,
+  "models": {
+    "RamVectorFp": "PASS ram-vector commands=789 reads=2968 cycles=73298\n/workspace/zu15-vpu/build/test/ram_vector_fp_integer_tb.sv:5482: $finish called at 736815 (1s)"
+  }
+}

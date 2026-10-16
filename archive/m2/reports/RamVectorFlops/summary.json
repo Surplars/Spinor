@@ -1,0 +1,22 @@
+{
+  "top": "RamVectorFlops",
+  "elapsed_seconds": 26.28,
+  "mapped_cells": {
+    "$scopeinfo": 4,
+    "CARRY4": 48,
+    "FDRE": 10295,
+    "FDSE": 3,
+    "INV": 9,
+    "LUT2": 775,
+    "LUT3": 463,
+    "LUT4": 2268,
+    "LUT5": 3444,
+    "LUT6": 1850,
+    "RAM32M16": 5
+  },
+  "scope": "out-of-context mapping, no IOB/clock buffers",
+  "family": "xcup",
+  "target_device": "xczu15eg-ffvb1156-2-i",
+  "vrf_mapping": "automatic",
+  "timing_status": "NO_DEVICE_PLACE_ROUTE_OR_SIGNOFF"
+}

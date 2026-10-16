@@ -1,0 +1,21 @@
+{
+  "top": "IntegerLaneSplit",
+  "elapsed_seconds": 6.29,
+  "mapped_cells": {
+    "$scopeinfo": 2,
+    "CARRY4": 28,
+    "FDRE": 1111,
+    "INV": 6,
+    "LUT2": 154,
+    "LUT3": 223,
+    "LUT4": 179,
+    "LUT5": 266,
+    "LUT6": 359,
+    "RAM32M16": 6
+  },
+  "scope": "out-of-context mapping, no IOB/clock buffers",
+  "family": "xcup",
+  "target_device": "xczu15eg-ffvb1156-2-i",
+  "vrf_mapping": "automatic",
+  "timing_status": "NO_DEVICE_PLACE_ROUTE_OR_SIGNOFF"
+}

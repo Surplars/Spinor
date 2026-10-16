@@ -1,0 +1,13 @@
+{
+  "status": "PASS",
+  "scope": "ALL_64_BIT_PATTERNS_COMBINATIONAL_FP32_AND_FP64_ENCODING_EQUIVALENCE; PIPELINE_SEQUENCING_CHECKED_SEPARATELY",
+  "input_sha256": {
+    "scripts/prove_recode.py": "eca8d9408f8e6150ce824418940e2493cd07f4d414f8b9e9a1f5e0e7b42b9a1c",
+    "src/main/scala/vpu/IeeeRecode.scala": "c2f023318d1e2f54f6adc0fd2b645c92e95d60a6b284fdcd1f0aca2a7d3c3c81",
+    "src/main/scala/vpu/GenerateRecodeProof.scala": "b59871bdd908f76fb76b5e0734a92e67562fe26325590150f60344191099ec6b",
+    "third_party/berkeley-hardfloat/src/main/scala/rawFloatFromFN.scala": "39fb14ae28318821906f68ad63803ca24eecb1115bf24aa4f3df497392357dce",
+    "third_party/berkeley-hardfloat/src/main/scala/recFNFromFN.scala": "90060c571a38718330f8781ecc4f555096ac45a0c75abb3fe5219e06dacdbd2d",
+    "build/recode-proof/IeeeRecodeProof.sv": "776691620e02e17700639bb84f351f587794084c4d9fe7b382caf83ab1880032",
+    "build/recode-proof/proof.ys": "27defa4aea6f115014e3b59e8eca18b9e688abb615faaa88166d9afb883b9ff3"
+  }
+}

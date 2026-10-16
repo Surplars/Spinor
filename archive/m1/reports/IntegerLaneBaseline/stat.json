@@ -1,0 +1,53 @@
+{
+   "creator": "Yosys 0.70+16 (git sha1 3bb533450, Release, Clang /usr/bin/clang++ 21.1.8)",
+   "invocation": "stat -json ",
+   "modules": {
+      "\\IntegerLaneBaseline": {
+         "num_wires":         1342,
+         "num_wire_bits":     4601,
+         "num_pub_wires":     28,
+         "num_pub_wire_bits": 633,
+         "num_ports":         15,
+         "num_port_bits":     223,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         1953,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "CARRY4": 44,
+            "FDRE": 218,
+            "INV": 1,
+            "LUT2": 283,
+            "LUT3": 321,
+            "LUT4": 162,
+            "LUT5": 584,
+            "LUT6": 340
+         }
+      }
+   },
+      "design": {
+         "num_wires":         1342,
+         "num_wire_bits":     4601,
+         "num_pub_wires":     28,
+         "num_pub_wire_bits": 633,
+         "num_ports":         15,
+         "num_port_bits":     223,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         1953,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "CARRY4": 44,
+            "FDRE": 218,
+            "INV": 1,
+            "LUT2": 283,
+            "LUT3": 321,
+            "LUT4": 162,
+            "LUT5": 584,
+            "LUT6": 340
+         }
+      }
+}
+

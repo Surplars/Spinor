@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+"""SAT proof of modulo increments and split 64-bit vector address arithmetic."""
+import hashlib,json,subprocess
+from pathlib import Path
+ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'build/increment-proof';OUT.mkdir(parents=True,exist_ok=True)
+result=OUT/'results.json';result.unlink(missing_ok=True)
+rtl=OUT/'IncrementProof.sv'
+subprocess.run([str(ROOT/'mill'),'Vpu.runMain','vpu.GenerateIncrementProof',str(rtl)],cwd=ROOT,check=True,stdout=(OUT/'generate.log').open('w'),stderr=subprocess.STDOUT)
+script=OUT/'proof.ys';script.write_text(f'read_verilog -sv {rtl}\nprep -top IncrementProof -flatten\nsat -verify -prove io_mismatch 0 -show-inputs\n')
+with (OUT/'proof.log').open('w') as log:subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/yosys'),'-T','-s',str(script)],stdout=log,stderr=log,check=True)
+assert 'SUCCESS!' in (OUT/'proof.log').read_text()
+files=[ROOT/'scripts/prove_increment.py',ROOT/'src/main/scala/vpu/ParallelIncrement.scala',ROOT/'src/main/scala/vpu/VectorConfig.scala',ROOT/'src/main/scala/vpu/RamVector.scala',ROOT/'src/main/scala/vpu/CarrySelect.scala',ROOT/'src/main/scala/vpu/GenerateIncrementProof.scala',ROOT/'src/main/scala/vpu/VectorMemoryEngine.scala',rtl,script]
+d=dict(status='PASS',scope='ALL_INPUTS_MODULO_INCREMENT_WIDTHS_32_55_109_AND_COMBINATIONAL_SPLIT_64_BIT_ADDRESS_AND_CONFIGURATION_COMPARISON; PIPELINE_CHECKED_SEPARATELY',input_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files})
+result.write_text(json.dumps(d,indent=2)+'\n');print('PASS all-pattern increment and split-address equivalence')

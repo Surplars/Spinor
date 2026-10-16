@@ -1,0 +1,9 @@
+{
+  "rtl_or_netlist_sha256": "fd473a29a40cf8691c2e4b690709c718c6815f3c66fa7ac5cabec741b1fe6080",
+  "testbench_sha256": "2b68754727c41ae34e1e90515b02118dc0ce1eea1d67111dcbe3562c9726474c",
+  "status": "PASS",
+  "checks": 2734,
+  "flushes": 110,
+  "model": "integer-multiply-mapped",
+  "trace": "PASS multiplier checks=2734 flushes=110 cycles=129533\n/workspace/zu15-vpu/build/test/integer-multiply-tb.sv:2876: $finish called at 1295440000000000000 (1ps)"
+}

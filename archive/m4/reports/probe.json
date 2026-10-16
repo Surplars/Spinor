@@ -1,0 +1,29 @@
+{
+  "status": "PASS_CAPABILITY_PROBE",
+  "version": "v2026.1.1-beta",
+  "target": "xczu15eg-ffvb1156-2-i",
+  "device_loaded": true,
+  "family_model": "UltraScalePlus",
+  "family_logic_arcs_ps": {
+    "A6LUT:A1->O6": 150,
+    "A6LUT:A2->O6": 125,
+    "A6LUT:A3->O6": 100,
+    "A6LUT:A4->O6": 90,
+    "A6LUT:A5->O6": 50,
+    "A6LUT:A6->O6": 35,
+    "AFF:CLK->Q": 77
+  },
+  "placed_or_routed_VPU": false,
+  "device_speed_grade_calibrated": false,
+  "DSP_delays_available": false,
+  "passes_300MHz": null,
+  "passes_500MHz": null,
+  "input_sha256": {
+    "tools/rapidwright-research/rapidwright-2026.1.1-standalone-lin64.jar": "b3bd8e98a026fec792347b9d007af1fc054e9376789186a3721c400ed52e9955",
+    "tools/rapidwright-research/data/parts.db": "d3a8ff8d73d7f355c8307a2f25bbbfde260d47e5c464ed86d9de9efbec66d343",
+    "tools/rapidwright-research/data/parts.db.md5": "115bc3c0d874f11f0c4e4dee87803fdf9dfc488ee4c4bfd3659d65a26b8f13e2",
+    "tools/rapidwright-research/timing/ultrascaleplus/intrasite_delay_terms.txt": "ff08ce9041da649f2bf886d900f033dd23de8ad54eb4db55d37ce032dc0ec0a0",
+    "tools/rapidwright-research/timing/ultrascaleplus/intersite_delay_terms.txt": "3b122837c4a1b5f3c212fc6353bee3a0854a204f2f69e2bc1cac4a2a1f9d7333",
+    "tools/rapidwright-research/data/devices/zynquplus/xczu15eg_db.dat": "b7578487158e0b1a628a76ca027647f58c4ce89ada100631c94989dbdc124504"
+  }
+}

@@ -1,0 +1,12 @@
+read_verilog -sv /workspace/zu15-vpu/build/rtl/VectorPrototype.sv
+rename VectorPrototype VectorPrototypeBram
+proc
+memory_collect
+select -assert-count 1 banks_memory_32x64/t:$mem_v2
+setattr -set ram_style "block" banks_memory_32x64/t:$mem_v2
+
+synth_xilinx -family xcup -top VectorPrototypeBram -flatten -noiopad -noclkbuf -nosrl -nowidelut
+tee -o /workspace/zu15-vpu/build/synth/VectorPrototypeBram/stat.json stat -json
+check -assert
+write_json /workspace/zu15-vpu/build/synth/VectorPrototypeBram/mapped.json
+write_verilog -noattr /workspace/zu15-vpu/build/synth/VectorPrototypeBram/mapped.v

@@ -1,0 +1,609 @@
+{
+  "scope": "M2_RAM_FIRST_INTEGER_VECTOR_SUBSET_ONLY",
+  "target": "xczu15eg-ffvb1156-2-i",
+  "design_targets_MHz": [
+    300,
+    500
+  ],
+  "full_RVV_implemented": false,
+  "Valence_core_integrated": false,
+  "device_place_route_performed": false,
+  "passes_300MHz": null,
+  "passes_500MHz": null,
+  "bitstream_generated": false,
+  "tools": {
+    "chisel": "7.16.0",
+    "scala": "2.13.18",
+    "mill": "1.1.7",
+    "firtool_observed": "1.160.0",
+    "artifacts": {
+      "mill-dist": {
+        "url": "https://repo.maven.apache.org/maven2/com/lihaoyi/mill-dist/1.1.7/mill-dist-1.1.7.exe",
+        "sha256": "49c1c575ad44efba1b9103ca1d6042624ef341aad9d8f4cb58fbfc56cf930e0d"
+      },
+      "oss-cad-suite.tgz": {
+        "url": "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-10-14/oss-cad-suite-linux-x64-20261014.tgz",
+        "sha256": "a6ccc6b96b2d985336a1061c78b2fd2bdd73e0f68690da17db88e00457881a11"
+      }
+    },
+    "references": {
+      "Valence": {
+        "url": "https://github.com/Surplars/Valence",
+        "revision": "6c8977f684830137fae088d4679f9d84e5ce4a11",
+        "use": "read-only interface study; no scalar-core edits or integration claim"
+      },
+      "NaxRiscv": {
+        "url": "https://github.com/SpinalHDL/NaxRiscv",
+        "revision": "9f452d50560d02fb391bc8039f5453c54e0911af",
+        "use": "RAM/register-file implementation study; no source copied"
+      }
+    }
+  },
+  "resources": [
+    {
+      "top": "RamVector",
+      "logic_LUT": 2793,
+      "FF": 1984,
+      "RAM32M16": 5,
+      "RAM64M8": 32,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 48,
+      "storage_LUT": 296,
+      "unpacked_LUT_sum": 3089
+    },
+    {
+      "top": "RamVector16",
+      "logic_LUT": 2867,
+      "FF": 2193,
+      "RAM32M16": 5,
+      "RAM64M8": 32,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 50,
+      "storage_LUT": 296,
+      "unpacked_LUT_sum": 3163
+    },
+    {
+      "top": "RamVectorFlops",
+      "logic_LUT": 8800,
+      "FF": 10298,
+      "RAM32M16": 5,
+      "RAM64M8": 0,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 48,
+      "storage_LUT": 40,
+      "unpacked_LUT_sum": 8840
+    },
+    {
+      "top": "RamVectorBram",
+      "logic_LUT": 2938,
+      "FF": 2122,
+      "RAM32M16": 5,
+      "RAM64M8": 0,
+      "RAMB36E2": 2,
+      "CARRY4_logical": 48,
+      "storage_LUT": 40,
+      "unpacked_LUT_sum": 2978
+    },
+    {
+      "top": "VersionedRegisterFileRam",
+      "logic_LUT": 80,
+      "FF": 38,
+      "RAM32M16": 0,
+      "RAM64M8": 32,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 0,
+      "storage_LUT": 256,
+      "unpacked_LUT_sum": 336
+    },
+    {
+      "top": "IntegerLaneBaseline",
+      "logic_LUT": 1690,
+      "FF": 218,
+      "RAM32M16": 0,
+      "RAM64M8": 0,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 44,
+      "storage_LUT": 0,
+      "unpacked_LUT_sum": 1690
+    },
+    {
+      "top": "IntegerLaneSplit",
+      "logic_LUT": 1181,
+      "FF": 1111,
+      "RAM32M16": 6,
+      "RAM64M8": 0,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 28,
+      "storage_LUT": 48,
+      "unpacked_LUT_sum": 1229
+    },
+    {
+      "top": "IntegerLaneSplit16",
+      "logic_LUT": 1295,
+      "FF": 1328,
+      "RAM32M16": 6,
+      "RAM64M8": 0,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 30,
+      "storage_LUT": 48,
+      "unpacked_LUT_sum": 1343
+    }
+  ],
+  "versioned_rf_tests": {
+    "transactions": 4160,
+    "reads_checked": 3295,
+    "random_atomic_commits": 605,
+    "status": "PASS"
+  },
+  "vector_tests": {
+    "coverage": {
+      "vector_ops": 553,
+      "csr_ops": 137,
+      "configs": 99,
+      "flushes": 7,
+      "illegal_ops": 26,
+      "group_regs": [
+        1,
+        2,
+        4,
+        8
+      ]
+    },
+    "commands": 789,
+    "models": {
+      "RamVector": "PASS ram-vector commands=789 reads=2968 cycles=72744\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 731275 (1s)",
+      "RamVector16": "PASS ram-vector commands=789 reads=2968 cycles=77329\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 777125 (1s)",
+      "RamVectorFlops": "PASS ram-vector commands=789 reads=2968 cycles=72744\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 731275 (1s)",
+      "RamVector-mapped": "PASS ram-vector commands=789 reads=2968 cycles=72744\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 731275 (1s)"
+    }
+  },
+  "dependent_vadd_benchmark": {
+    "RamVector": [
+      {
+        "sew": 8,
+        "instructions": 64,
+        "cycles": 13824,
+        "cycles_per_instruction": 216.0
+      },
+      {
+        "sew": 16,
+        "instructions": 64,
+        "cycles": 7168,
+        "cycles_per_instruction": 112.0
+      },
+      {
+        "sew": 32,
+        "instructions": 64,
+        "cycles": 3840,
+        "cycles_per_instruction": 60.0
+      },
+      {
+        "sew": 64,
+        "instructions": 64,
+        "cycles": 2176,
+        "cycles_per_instruction": 34.0
+      }
+    ],
+    "RamVector16": [
+      {
+        "sew": 8,
+        "instructions": 64,
+        "cycles": 14848,
+        "cycles_per_instruction": 232.0
+      },
+      {
+        "sew": 16,
+        "instructions": 64,
+        "cycles": 7680,
+        "cycles_per_instruction": 120.0
+      },
+      {
+        "sew": 32,
+        "instructions": 64,
+        "cycles": 4096,
+        "cycles_per_instruction": 64.0
+      },
+      {
+        "sew": 64,
+        "instructions": 64,
+        "cycles": 2304,
+        "cycles_per_instruction": 36.0
+      }
+    ],
+    "RamVectorFlops": [
+      {
+        "sew": 8,
+        "instructions": 64,
+        "cycles": 13824,
+        "cycles_per_instruction": 216.0
+      },
+      {
+        "sew": 16,
+        "instructions": 64,
+        "cycles": 7168,
+        "cycles_per_instruction": 112.0
+      },
+      {
+        "sew": 32,
+        "instructions": 64,
+        "cycles": 3840,
+        "cycles_per_instruction": 60.0
+      },
+      {
+        "sew": 64,
+        "instructions": 64,
+        "cycles": 2176,
+        "cycles_per_instruction": 34.0
+      }
+    ]
+  },
+  "reference_timing": {
+    "scope": "UNCALIBRATED_REFERENCE_TIMING_SIMULATION_OF_INTEGER_LANES_ONLY",
+    "not_AMD_SDF": true,
+    "not_device_STA": true,
+    "not_full_VPU_timing_simulation": true,
+    "assumptions_ns": {
+      "zero": {
+        "LUT": 0.0,
+        "LINK": 0.0,
+        "CARRY": 0.0,
+        "CQ": 0.0,
+        "SETUP": 0.0,
+        "HOLD": 0.0,
+        "RAM": 0.0
+      },
+      "assumption_A": {
+        "LUT": 0.1,
+        "LINK": 0.05,
+        "CARRY": 0.025,
+        "CQ": 0.12,
+        "SETUP": 0.06,
+        "HOLD": 0.02,
+        "RAM": 0.2
+      },
+      "assumption_B": {
+        "LUT": 0.16,
+        "LINK": 0.1,
+        "CARRY": 0.035,
+        "CQ": 0.18,
+        "SETUP": 0.1,
+        "HOLD": 0.03,
+        "RAM": 0.3
+      }
+    },
+    "monitor_negative_control": "REF_SETUP tb.dut t=4.050 D_age=0.050 CE_age=10004.050\nPASS reference checker deliberate setup=1 hold=1\n/workspace/zu15-vpu/tests/timing_model_check.sv:14: $finish called at 5060000 (1fs)",
+    "stimulus_cycles": 1108,
+    "results": [
+      {
+        "top": "IntegerLaneBaseline",
+        "scenario": "zero",
+        "clock_MHz": 300,
+        "period_ns": 3.3333333333333335,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": true,
+        "first_trace_mismatch": null,
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneSplit",
+        "scenario": "zero",
+        "clock_MHz": 300,
+        "period_ns": 3.3333333333333335,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": true,
+        "first_trace_mismatch": null,
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneSplit16",
+        "scenario": "zero",
+        "clock_MHz": 300,
+        "period_ns": 3.3333333333333335,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": true,
+        "first_trace_mismatch": null,
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneBaseline",
+        "scenario": "assumption_A",
+        "clock_MHz": 300,
+        "period_ns": 3.3333333333333335,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": true,
+        "first_trace_mismatch": null,
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneSplit",
+        "scenario": "assumption_A",
+        "clock_MHz": 300,
+        "period_ns": 3.3333333333333335,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": true,
+        "first_trace_mismatch": null,
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneSplit16",
+        "scenario": "assumption_A",
+        "clock_MHz": 300,
+        "period_ns": 3.3333333333333335,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": true,
+        "first_trace_mismatch": null,
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneBaseline",
+        "scenario": "assumption_A",
+        "clock_MHz": 500,
+        "period_ns": 2.0,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 2,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": false,
+        "first_trace_mismatch": "('244', 'data', '800000ffffffffff', (9223372036854775807, 242))",
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneSplit",
+        "scenario": "assumption_A",
+        "clock_MHz": 500,
+        "period_ns": 2.0,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": true,
+        "first_trace_mismatch": null,
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneSplit16",
+        "scenario": "assumption_A",
+        "clock_MHz": 500,
+        "period_ns": 2.0,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": true,
+        "first_trace_mismatch": null,
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneBaseline",
+        "scenario": "assumption_B",
+        "clock_MHz": 300,
+        "period_ns": 3.3333333333333335,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 1,
+        "ram_write_violations": 0,
+        "functional_trace_matches": false,
+        "first_trace_mismatch": "('244', 'data', '800000ffffffffff', (9223372036854775807, 242))",
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneSplit",
+        "scenario": "assumption_B",
+        "clock_MHz": 300,
+        "period_ns": 3.3333333333333335,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": true,
+        "first_trace_mismatch": null,
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneSplit16",
+        "scenario": "assumption_B",
+        "clock_MHz": 300,
+        "period_ns": 3.3333333333333335,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 0,
+        "hold_violations": 0,
+        "ram_write_violations": 0,
+        "functional_trace_matches": true,
+        "first_trace_mismatch": null,
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneBaseline",
+        "scenario": "assumption_B",
+        "clock_MHz": 500,
+        "period_ns": 2.0,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 2,
+        "hold_violations": 165,
+        "ram_write_violations": 0,
+        "functional_trace_matches": false,
+        "first_trace_mismatch": "('22', 'data', '00000000000000d8', (0, 20))",
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneSplit",
+        "scenario": "assumption_B",
+        "clock_MHz": 500,
+        "period_ns": 2.0,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 146,
+        "hold_violations": 7,
+        "ram_write_violations": 0,
+        "functional_trace_matches": false,
+        "first_trace_mismatch": "('169', 'data', '000000008fffffff', (2147483647, 162))",
+        "device_frequency_qualified": false
+      },
+      {
+        "top": "IntegerLaneSplit16",
+        "scenario": "assumption_B",
+        "clock_MHz": 500,
+        "period_ns": 2.0,
+        "source_launch_delay_ns": 0.25,
+        "setup_violations": 24,
+        "hold_violations": 8,
+        "ram_write_violations": 0,
+        "functional_trace_matches": false,
+        "first_trace_mismatch": "('92', 'data', '0000000000008000', (0, 84))",
+        "device_frequency_qualified": false
+      }
+    ],
+    "stimulus_sha256": "1ca867904002323a34db3613dc5ec359257f9fad95764a4b451dd34db1c837f5"
+  },
+  "reference_checker_test": "REF_SETUP tb.dut t=4.050 D_age=0.050 CE_age=10004.050\nPASS reference checker deliberate setup=1 hold=1\n/workspace/zu15-vpu/tests/timing_model_check.sv:14: $finish called at 5060000 (1fs)\n",
+  "source_sha256": {
+    ".gitignore": "3bbadb69749a640571e0cf1761cfc7a5e0b19516fdd0a72580481fb436b7973d",
+    ".mill-jvm-opts": "831f88c764ec55beb7ded7feae36621cd94ef5adff2f10e8abc27070f555ce45",
+    ".mill-version": "f2fb797db5b32c15ac4c67b2180b593bf46c768ba1d69971fecbef1d9afb1975",
+    "Makefile": "4e16be5f219d46337f379bb8cbee4fadebc285ef791ce28c68eeb78e85b3eb19",
+    "README.md": "730f7e251135ffb671fd072d2a59ec620ff57e5876b04487812dfa8e35ae9a5a",
+    "build.mill": "dc6053643a67fcaeffd93b133052ceea15766c459eed9b2df6dfc78216f2ef1a",
+    "docs/architecture.md": "0620a9c6c4c9af4af94bfaaf38c53721daf905360347f6e7560a207006a4de13",
+    "mill": "b5635cf8933e52ce3d743eb2cc2dd22fe02004f084568040943ca9cde946aa5b",
+    "scripts/bootstrap.py": "a3e3f6050ebfd9310cbbea09c242f2383651430f60e9554673314ae57ce1dd9a",
+    "scripts/package.py": "826048ad8c281e46cef632c34ed4b8c1b548530bdde2bdf637124b49d07f5d70",
+    "scripts/path_depth.py": "8de00cc8278dde1994ce0270a656905b4452eb56aac259a5cf2445d059865539",
+    "scripts/report.py": "6a2c26daa084ac9190a621fec8bcbfa962749ed1be33ad0f9bc6884bb0c36d15",
+    "scripts/report_m2.py": "eaf90f3b616b74c09ebe1ad6120ecd8654cfbe0fa06ed9844dc729a55d187d35",
+    "scripts/synth.py": "8fad52bbf55c450e1356c66a68f16759ce3ef5f5cfbb0b7c6e50c0f01657c387",
+    "scripts/timing_reference.py": "cc6be306d1595da893b97d2455d8fe567de8f80a00759d4b7ec17539bcf023b5",
+    "src/main/scala/vpu/Generate.scala": "353b8acd5d61251f945115af04928136b6032aede940b80fc690cd0370ae553a",
+    "src/main/scala/vpu/IntegerLane.scala": "cf8782cd7de9448bcfcf3929b03503a242e6c0273efd93a3858deb2d81c2a500",
+    "src/main/scala/vpu/Parameters.scala": "82cc24eaf0415b7284589c4b8a4c04f8fd0dca3e36d0a304e815e93adca76f31",
+    "src/main/scala/vpu/Protocol.scala": "559dace7275c46fa46f452f0a6fbc40a2214792e188582fffc53635fb13477cf",
+    "src/main/scala/vpu/RamVector.scala": "269ae43c220f9ad2aac83ec3f169f4fdcf2cbc45a297117d211d0956d213fe61",
+    "src/main/scala/vpu/ValenceBoundary.scala": "5868b26214c0da022db9228e519ec02e17f39565dbfcc1d731131a73e68c94f3",
+    "src/main/scala/vpu/VectorPrototype.scala": "e687b0d280df0507cd039a10d3c11cc5cbe8330554ec9799ef47baf1406ffe4d",
+    "src/main/scala/vpu/VectorRegisterFile.scala": "efeea731e0897798574b75304cfae1cc1426f781f1550c61ce2a32ffee0d6946",
+    "src/main/scala/vpu/VersionedRegisterFile.scala": "19a0c8f12bbb14445136840fd9afab81545a0916b3bec2ea81d31cd84db54ca5",
+    "tests/benchmark.py": "a9144205418b89924ccac5e95b5f144de144bdb1cff6e45e11ced14f6248eeb0",
+    "tests/boundary_tb.sv": "e5158664bbbb69316df2aa72f3e18683aba7dc53dc3f48d4b553b9e6e59f90a7",
+    "tests/lane_tb.sv": "546fe65d4fd60409f27a3d7bc222c39c48fd2f2d0e8118efea685f2d50ca2099",
+    "tests/test_boundary.py": "4255e43e24e45b78507d1e0401461f8a6ca383b174a7b3b90d804f9609ed1e36",
+    "tests/test_lane.py": "f7510a300038921d4f5c594ed67e1e08a07545cc6c04dec2ef41e947031f5e18",
+    "tests/test_ram_vector.py": "801ca4e0f85cc544e4e32e76e641653eebfea518057ffad355190385d3b4cc3c",
+    "tests/test_vector.py": "a0f2fefdcb28bbb6d3ac040fa99c902f34f1d06d5f04d1ce997b5875cc56fa08",
+    "tests/test_versioned_rf.py": "cbbe5a7d18ec02a5a35d6cb5d13737de1786d39b23effad672dde54df7a292b0",
+    "tests/timing_lane_tb.sv": "77ffe4f202d72c1fdfb5319e0c8c98ffc055d89fd1ccf22ac8f512e89e02cd22",
+    "tests/timing_model_check.sv": "3ae1238b65166546e2270695a24f00e50340ac5a5a83d8da392fd9a4983d774c",
+    "tests/timing_reference_cells.sv": "f7ced45b0f9ef1b8dbf4300e59559d5f2ebee4c13618a9a41d7dc6b3987e6777",
+    "tests/versioned_rf_tb.sv": "9682514ae3125c596bf1cc370b59f8bcad66cb12a3ca992a4aaeeac96b545f67",
+    "tools.lock.json": "d6ac4b6f924ae3d84d305be2f7b14a51c994340f71c4341e79acde9e4f7df72b"
+  },
+  "artifact_sha256": {
+    "build/rtl/IntegerLaneBaseline.sv": "4b42f17bed0a48e5583674987f510f8beeedffe63cdd3bdfc0906ed67e561c21",
+    "build/rtl/IntegerLaneSplit.sv": "8b7c87467783577bcaa81796618efdbecc30ef50f1156d7ef174066dfcec725e",
+    "build/rtl/IntegerLaneSplit16.sv": "29d193085356a0825b9db000c2b8c2c870925d2c22d54fede4f58d74b215583f",
+    "build/rtl/RamVector.sv": "748ee7245aadfff5ea52756dce19be2abbdeab66bdcfc2a6756c96889b70a128",
+    "build/rtl/RamVector16.sv": "3ae6248931e5040d39219727110136487a3aec671d22ec66c453692b2f7b1f3e",
+    "build/rtl/RamVectorFlops.sv": "3a25c3745dbab1047a339c5aad50fbaab8a0d0d954e1864ea34cc6c8a4646d6e",
+    "build/rtl/ValenceBoundary.sv": "2ad86aba8df3f6f282189b9492dfebd073d5edf920d012240b42efad507da98a",
+    "build/rtl/VectorPrototype.sv": "212f20b963a05a098a4dc5566c9258e5bd192bca56cc2ade51ac94872926efe2",
+    "build/rtl/VectorPrototype16.sv": "f48f7cc47b5bcf4419dd74f3a73d98eb92593f7bc638b0622d168861690ff19c",
+    "build/rtl/VectorPrototypeBaseline.sv": "6bf0558bec34ae9a74f4b4e2acc6e6363088388421622649e2ef935d24d316ce",
+    "build/rtl/VectorPrototypeFlops.sv": "877290f1a7c9e8fc73e9c1cb09517bec5951c56c6fa7412279c9ab04de6f5913",
+    "build/rtl/VersionedRegisterFileRam.sv": "fccd97226675ccbc979df763b2316bf6055e90a17f21b5e368e84547506cef6c",
+    "build/synth/IntegerLaneBaseline/mapped.json": "5ccf547c500132c426e8010a1fad6c5984bd8535747124fb75cf9a9805f4560b",
+    "build/synth/IntegerLaneBaseline/mapped.v": "34d0e6afda65f4def558eb41e9c99212689dfdceebbcea55a000a230df2e4f2b",
+    "build/synth/IntegerLaneBaseline/stat.json": "dd7b21e5c941db9712f09a441d2b30ca33c3e1dfb9ab6b0ed2a02fcd6d3020da",
+    "build/synth/IntegerLaneBaseline/summary.json": "5db6588d0b23430feb53bc9f39448f790160f000a08356125904ac442e30c5b6",
+    "build/synth/IntegerLaneBaseline/synth.log": "d35f8a829a3a616be96ec56a1bbc2fa85bbe0e3a7d4db9ed85fedfce5488f735",
+    "build/synth/IntegerLaneSplit/mapped.json": "4c0e50a038bd673baefbe2aa6f3f501da0851cdc1e2b4b5217505401faf2c7a3",
+    "build/synth/IntegerLaneSplit/mapped.v": "24ccd3c6d77f1b88daf2876c90acb341f1d9ac2695e0370059ada0d7ba0dee8b",
+    "build/synth/IntegerLaneSplit/stat.json": "2b371ef54eccbcd1c5b6e1bfd90aa7bc390de468f1b8e3c477b38224ead37857",
+    "build/synth/IntegerLaneSplit/summary.json": "0021920ae4ae83bf2748cda94f85edec734a4a6bcfc3d04326b7a93598ae7865",
+    "build/synth/IntegerLaneSplit/synth.log": "0d58e91826af93ed6fc78bbf98567147a9c700ce1b007ce6c4030ef129bcca26",
+    "build/synth/IntegerLaneSplit16/mapped.json": "9072fd1a0323cbfcd01788e8d0bf6430ff13e79ad5d672b34b60bf82a7682020",
+    "build/synth/IntegerLaneSplit16/mapped.v": "a5456b4782b44c8a01ea7dd37834bf35b8a3d6dc0832715f80cade532331c0e4",
+    "build/synth/IntegerLaneSplit16/stat.json": "4dd785ec9e766f2a77cf1d611d448d492918ac73f56f19ccaf5eacb8609c6c0a",
+    "build/synth/IntegerLaneSplit16/summary.json": "ad74fef7e15f12529c009133aee2f9d3c909a1f67155e464159c6e1b61cada05",
+    "build/synth/IntegerLaneSplit16/synth.log": "002c7f8a25a5c2a1542d776322393aa364be6d83da64a24246bd388485340d1e",
+    "build/synth/RamVector/mapped.json": "9d250dcccefc13164a72582a0909f258f6a530e9c32cfa6251e2dd0a876062fe",
+    "build/synth/RamVector/mapped.v": "293caf4654cfe1b20496ebfc4f7791685bf7958431cbcdcf3a533e19449e21d2",
+    "build/synth/RamVector/stat.json": "176ee92ca44356f68775a0678a823b656ff584bc24b612f619da1238103de15a",
+    "build/synth/RamVector/summary.json": "d40af99b6c07b93d3e1af4214b6faf2c56a83e2ca3157daacff3f9534eb02d01",
+    "build/synth/RamVector/synth.log": "38c534b3fb059a282c6c8a65f66995c03661625f5c4e20849d4d2ace2dd16b0c",
+    "build/synth/RamVector16/mapped.json": "102e9252150c9d603ae290333f452a0e7764432f6844328bd919beec58690004",
+    "build/synth/RamVector16/mapped.v": "88e29a2b504e23ffcb819a36b5ff2516f1d3129979c38297fc65a0357516a38a",
+    "build/synth/RamVector16/stat.json": "ff1a9ab0618db972ce2c140db8b976342a39c06d00bea5538a9f866c9d82cc7d",
+    "build/synth/RamVector16/summary.json": "eaabc36db7eafc771cd7935d286e8af4be8f357d883806478bfd3e5bb2fa24aa",
+    "build/synth/RamVector16/synth.log": "93323166bd763c3ed05b8b1c277a0d35ea650e5c5be0908b243f80c009fa70f9",
+    "build/synth/RamVectorBram/mapped.json": "3318ce7e1c3793dc4532ede5610419a77963e6440177d315654cfb50575d4def",
+    "build/synth/RamVectorBram/mapped.v": "19319dc7bd45574a3fd67d6e3ebaccae02dd149da2534f6b0b4c094c2dabaae9",
+    "build/synth/RamVectorBram/stat.json": "f56c8411660ced02421be320e9aab2dea26b92af056388fc5bdc82968a33cb6d",
+    "build/synth/RamVectorBram/summary.json": "20adeda4b1c36a4d662ff2f9b8b4759ab91c58b46059bfe5f78dbff58bebfa55",
+    "build/synth/RamVectorBram/synth.log": "20783a801cf44859b8bafee7da745f7146f8bbcafaea38c7489f4c0706842f10",
+    "build/synth/RamVectorFlops/mapped.json": "769d3b73709112898163532a937b0218f54b9cb1dbba2821bdda524cecb264bb",
+    "build/synth/RamVectorFlops/mapped.v": "1587ae545370be7bcdbeafc29162c4037f51a4e1607b6d52776c185e88733e24",
+    "build/synth/RamVectorFlops/stat.json": "0b47425ad30e6697318cf3e30e626f238f00be4bd712f1cf2d1a18a654c1fd53",
+    "build/synth/RamVectorFlops/summary.json": "c963f0d26e47b94c076aa1cb838c34e2fb28829bf342e2924989ebe5342ce2d1",
+    "build/synth/RamVectorFlops/synth.log": "532cccb95b164db076547477ca6d6f47c4771b3f153264e889131878d03c2427",
+    "build/synth/VersionedRegisterFileRam/mapped.json": "b278073d5a311f003627fef2b40c1fbe092613ac5f68fe59565dd6c1a7d595d7",
+    "build/synth/VersionedRegisterFileRam/mapped.v": "d4e816a1e029825133259ebea3169ff49993f3e14572c9e303e8cd88232aa82a",
+    "build/synth/VersionedRegisterFileRam/stat.json": "9b1f9bba72849c1e5ff6b9adc77c926bf2553bb9e2a6eca37cdb24b5c89bcec4",
+    "build/synth/VersionedRegisterFileRam/summary.json": "259cc1a71e35b1e3822907775e565111f5fd157792aa8e983bd6be8ac4fcd304",
+    "build/synth/VersionedRegisterFileRam/synth.log": "1e01264dbb79231f41e0cf0d077ec30a7e1ca3f6e41ecd8698bb2b298d69e596",
+    "build/test/ram-benchmark.json": "a50a9740d01e7f5e402cc7ba858a197acf9a9e7317b6e2d9965be01c26a23b9c",
+    "build/test/ram-vector-results.json": "8c0e40b4a6d8bd752f1b23fff410e2a7f7df620753aa4ca12cbe766c8491a736",
+    "build/test/ram_vector_tb.sv": "9a6a93cf84ae98882c8c507bd56d1a038c7820f3dbd30ec62e47b0e7fbdf8c42",
+    "build/test/timing-reference.stim": "1ca867904002323a34db3613dc5ec359257f9fad95764a4b451dd34db1c837f5",
+    "build/test/versioned-rf.json": "6708aec851fc12aeefa36105f7184e8431a593ef070f1848ba33d394f514cc2e",
+    "build/timing-reference/IntegerLaneBaseline-assumption_A-300MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneBaseline-assumption_A-300MHz.log": "2940d965c66a7cc7c70721865e9e0b3c2e5e6b3925ff5a8f6adb4f643c1a1225",
+    "build/timing-reference/IntegerLaneBaseline-assumption_A-500MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneBaseline-assumption_A-500MHz.log": "ff5b91c3585081cf88d111f1ede02132dad5ba7dff4e7a15a1ccfd53d2ff08c1",
+    "build/timing-reference/IntegerLaneBaseline-assumption_B-300MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneBaseline-assumption_B-300MHz.log": "b6ecc8199ee6f600a7eaea79cc71a161b0a44e40ba229afc8c6e4b7f1f4735f9",
+    "build/timing-reference/IntegerLaneBaseline-assumption_B-500MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneBaseline-assumption_B-500MHz.log": "7fb7f1d566c32ede279884193c18ba5bf6f7019dda803547b8c1ba40d21f1621",
+    "build/timing-reference/IntegerLaneBaseline-zero-300MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneBaseline-zero-300MHz.log": "2940d965c66a7cc7c70721865e9e0b3c2e5e6b3925ff5a8f6adb4f643c1a1225",
+    "build/timing-reference/IntegerLaneSplit-assumption_A-300MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneSplit-assumption_A-300MHz.log": "415566b81687c48087b6adfc0a9efcb9a5720d0c42cea8a416f9818b25caf05a",
+    "build/timing-reference/IntegerLaneSplit-assumption_A-500MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneSplit-assumption_A-500MHz.log": "2008bb3a7664c8a6df7be2ed98abcbeaf48b235829c8e2a2be06fc358a204807",
+    "build/timing-reference/IntegerLaneSplit-assumption_B-300MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneSplit-assumption_B-300MHz.log": "415566b81687c48087b6adfc0a9efcb9a5720d0c42cea8a416f9818b25caf05a",
+    "build/timing-reference/IntegerLaneSplit-assumption_B-500MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneSplit-assumption_B-500MHz.log": "2425d59c3c3561626a59c9451ff8485d4880a59efdec97aa6686a088d01cebd8",
+    "build/timing-reference/IntegerLaneSplit-zero-300MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneSplit-zero-300MHz.log": "415566b81687c48087b6adfc0a9efcb9a5720d0c42cea8a416f9818b25caf05a",
+    "build/timing-reference/IntegerLaneSplit16-assumption_A-300MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneSplit16-assumption_A-300MHz.log": "87f7731ccaee342cf5e22bdf06e9730f708e26d13ea6cea98324b4ab60950961",
+    "build/timing-reference/IntegerLaneSplit16-assumption_A-500MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneSplit16-assumption_A-500MHz.log": "6c10b9384dbd29ec24cf423039d068b08d4c23043a45076cb23588da277d0bdb",
+    "build/timing-reference/IntegerLaneSplit16-assumption_B-300MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneSplit16-assumption_B-300MHz.log": "87f7731ccaee342cf5e22bdf06e9730f708e26d13ea6cea98324b4ab60950961",
+    "build/timing-reference/IntegerLaneSplit16-assumption_B-500MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneSplit16-assumption_B-500MHz.log": "26cf8f5bc3e12b3dbe15fe5b02d62cdc7a6459c636bc8096e269628dd9386964",
+    "build/timing-reference/IntegerLaneSplit16-zero-300MHz.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/IntegerLaneSplit16-zero-300MHz.log": "87f7731ccaee342cf5e22bdf06e9730f708e26d13ea6cea98324b4ab60950961",
+    "build/timing-reference/baseline-control.log": "ee8fbce0003af019a4cf3168b42bfbc1dd42def76e9118c5bdcda12495276456",
+    "build/timing-reference/model-check.compile.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "build/timing-reference/model-check.log": "abade3bc8e38a6c72908c02cb3ba2235c406dc8dc6f89654cd761a5d5e9c2e31",
+    "build/timing-reference/results.json": "72cc8c618f224f05123b39ad94182ba10c1c4c518da8f6afcd45e6ae4c273c67",
+    "tools/mill-generate.log": "2b78bc01980f9b6991e92fdc074d2bd450e8977b69e56693914d940d4dc2333d"
+  }
+}

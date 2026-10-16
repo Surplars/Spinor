@@ -1,0 +1,3 @@
+read_verilog -sv /workspace/zu15-vpu/build/divider-proof/DividerWordProof.sv
+prep -top DividerWordProof -flatten
+sat -verify -prove io_mismatch 0 -show-inputs

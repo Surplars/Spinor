@@ -1,0 +1,9 @@
+{
+  "rtl_or_netlist_sha256": "b9bda64ad377c94b0a88f4eb63d72ea7ff27ab88e1085196f405461dfd9717cc",
+  "testbench_sha256": "e1858cbf0c3f0ca75854817a2458ef5aa3b82da4d6c7dc7eb726dfc41e130e1c",
+  "status": "PASS",
+  "checks": 2894,
+  "flushes": 270,
+  "model": "integer-divide-mapped",
+  "trace": "PASS divider checks=2894 flushes=270 cycles=470900\n/workspace/zu15-vpu/build/test/integer-divide-tb.sv:3197: $finish called at 4709270000000000000 (1ps)"
+}

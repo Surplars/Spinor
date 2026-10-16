@@ -1,0 +1,21 @@
+{
+  "top": "FloatingPointConvert",
+  "elapsed_seconds": 9.4,
+  "mapped_cells": {
+    "$scopeinfo": 4,
+    "CARRY4": 86,
+    "FDRE": 929,
+    "INV": 26,
+    "LUT2": 360,
+    "LUT3": 572,
+    "LUT4": 242,
+    "LUT5": 524,
+    "LUT6": 196
+  },
+  "scope": "out-of-context mapping, no IOB/clock buffers",
+  "family": "xcup",
+  "target_device": "xczu15eg-ffvb1156-2-i",
+  "vrf_mapping": "automatic",
+  "DSP_mapping_disabled": false,
+  "timing_status": "NO_DEVICE_PLACE_ROUTE_OR_SIGNOFF"
+}

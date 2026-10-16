@@ -1,0 +1,7 @@
+{
+  "status": "PASS",
+  "checks": 2734,
+  "flushes": 110,
+  "model": "integer-multiply-rtl",
+  "trace": "PASS multiplier checks=2734 flushes=110 cycles=129533\n/workspace/zu15-vpu/build/test/integer-multiply-tb.sv:2876: $finish called at 1295440 (1s)"
+}

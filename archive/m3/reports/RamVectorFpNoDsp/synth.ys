@@ -1,0 +1,8 @@
+read_verilog -sv /workspace/zu15-vpu/build/rtl/RamVectorFp.sv
+rename RamVectorFp RamVectorFpNoDsp
+
+synth_xilinx -family xcup -top RamVectorFpNoDsp -flatten -noiopad -noclkbuf -nosrl -nowidelut -nodsp
+tee -o /workspace/zu15-vpu/build/synth/RamVectorFpNoDsp/stat.json stat -json
+check -assert
+write_json /workspace/zu15-vpu/build/synth/RamVectorFpNoDsp/mapped.json
+write_verilog -noattr /workspace/zu15-vpu/build/synth/RamVectorFpNoDsp/mapped.v

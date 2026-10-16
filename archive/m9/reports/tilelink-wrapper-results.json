@@ -1,0 +1,12 @@
+{
+  "status": "PASS",
+  "coverage": {
+    "transactions": 600,
+    "local_rejects": 36,
+    "same_cycle_D": 112,
+    "flush_cases": 459,
+    "protocol_errors": 41
+  },
+  "trace": "PASS tilelink checks=600 A=564 drainedD=564\n/workspace/zu15-vpu/build/test/tilelink-wrapper-tb.sv:682: $finish called at 60566 (1s)",
+  "rtl_or_netlist_sha256": "a2946e3a389079c19497dc00f93079869945b3bfa8fd3441c448abfbfefd4ba7"
+}

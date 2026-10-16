@@ -1,0 +1,25 @@
+{
+  "top": "LishiVpuMemory",
+  "elapsed_seconds": 35.55,
+  "mapped_cells": {
+    "$scopeinfo": 22,
+    "CARRY4": 445,
+    "DSP48E2": 9,
+    "FDRE": 9991,
+    "FDSE": 14,
+    "INV": 144,
+    "LUT2": 2193,
+    "LUT3": 2973,
+    "LUT4": 2080,
+    "LUT5": 4639,
+    "LUT6": 2187,
+    "RAM32M16": 6,
+    "RAM64M8": 32
+  },
+  "scope": "out-of-context mapping, no IOB/clock buffers",
+  "family": "xcup",
+  "target_device": "xczu15eg-ffvb1156-2-i",
+  "vrf_mapping": "automatic",
+  "DSP_mapping_disabled": false,
+  "timing_status": "NO_DEVICE_PLACE_ROUTE_OR_SIGNOFF"
+}

@@ -1,0 +1,59 @@
+{
+   "creator": "Yosys 0.70+16 (git sha1 3bb533450, Release, Clang /usr/bin/clang++ 21.1.8)",
+   "invocation": "stat -json ",
+   "modules": {
+      "\\RamVectorFlops": {
+         "num_wires":         6796,
+         "num_wire_bits":     30608,
+         "num_pub_wires":     1156,
+         "num_pub_wire_bits": 11523,
+         "num_ports":         31,
+         "num_port_bits":     742,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         19164,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "$scopeinfo": 4,
+            "CARRY4": 48,
+            "FDRE": 10295,
+            "FDSE": 3,
+            "INV": 9,
+            "LUT2": 775,
+            "LUT3": 463,
+            "LUT4": 2268,
+            "LUT5": 3444,
+            "LUT6": 1850,
+            "RAM32M16": 5
+         }
+      }
+   },
+      "design": {
+         "num_wires":         6796,
+         "num_wire_bits":     30608,
+         "num_pub_wires":     1156,
+         "num_pub_wire_bits": 11523,
+         "num_ports":         31,
+         "num_port_bits":     742,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         19164,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "$scopeinfo": 4,
+            "CARRY4": 48,
+            "FDRE": 10295,
+            "FDSE": 3,
+            "INV": 9,
+            "LUT2": 775,
+            "LUT3": 463,
+            "LUT4": 2268,
+            "LUT5": 3444,
+            "LUT6": 1850,
+            "RAM32M16": 5
+         }
+      }
+}
+

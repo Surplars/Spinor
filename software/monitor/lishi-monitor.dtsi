@@ -1,0 +1,11 @@
+/* Example only: address MUST match the TL decode and VpuMonitor(base).
+ * The parent bus here is assumed to use 2 address/size cells.
+ * Requires CONFIG_UIO, CONFIG_UIO_PDRV_GENIRQ and, where needed,
+ * boot argument uio_pdrv_genirq.of_id=generic-uio. No IRQ in ABI v1.
+ * Same clock/reset as VPU; insert a proper TL async bridge across domains.
+ */
+lishi_monitor: monitor@a0010000 {
+    compatible = "generic-uio";
+    reg = <0x0 0xa0010000 0x0 0x1000>;
+    linux,uio-name = "lishi-vpu-monitor";
+};

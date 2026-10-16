@@ -1,0 +1,367 @@
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.70+16 (git sha1 3bb533450, Release, Clang /usr/bin/clang++ 21.1.8)
+
+-- Executing script file `/workspace/zu15-vpu/build/recode-proof/proof.ys' --
+
+1. Executing Verilog-2005 frontend: /workspace/zu15-vpu/build/recode-proof/IeeeRecodeProof.sv
+Parsing SystemVerilog input from `/workspace/zu15-vpu/build/recode-proof/IeeeRecodeProof.sv' to AST representation.
+Generating RTLIL representation for module `\IeeeRecodeProof'.
+Successfully finished Verilog frontend.
+
+2. Executing PREP pass.
+
+2.1. Executing HIERARCHY pass (managing design hierarchy).
+
+2.1.1. Analyzing design hierarchy..
+Top module:  \IeeeRecodeProof
+
+2.1.2. Analyzing design hierarchy..
+Top module:  \IeeeRecodeProof
+Removed 0 unused modules.
+
+2.2. Executing PROC pass (convert processes to netlists).
+
+2.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+2.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Removed a total of 0 dead cases.
+
+2.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 0 redundant assignments.
+Promoted 0 assignments to connections.
+
+2.2.4. Executing PROC_INIT pass (extract init attributes).
+
+2.2.5. Executing PROC_ARST pass (detect async resets in processes).
+
+2.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+
+2.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+
+2.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+
+2.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+
+2.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+2.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+2.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module IeeeRecodeProof.
+<suppressed ~2 debug messages>
+
+2.3. Executing CHECK pass (checking for obvious problems).
+Checking module IeeeRecodeProof...
+Found and reported 0 problems.
+
+2.4. Executing FLATTEN pass (flatten design).
+
+2.5. Executing FUTURE pass.
+
+2.6. Executing OPT_EXPR pass (perform const folding).
+Optimizing module IeeeRecodeProof.
+
+2.7. Executing CHECK pass (checking for obvious problems).
+Checking module IeeeRecodeProof...
+Found and reported 0 problems.
+
+2.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \IeeeRecodeProof..
+Removed 0 unused cells and 24 unused wires.
+<suppressed ~1 debug messages>
+
+2.9. Executing OPT pass (performing simple optimizations).
+
+2.9.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module IeeeRecodeProof.
+
+2.9.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\IeeeRecodeProof'.
+Computing hashes of 202 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 198 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 196 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 195 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+<suppressed ~21 debug messages>
+Removed a total of 7 cells.
+
+2.9.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \IeeeRecodeProof..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~180 debug messages>
+
+2.9.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \IeeeRecodeProof.
+Performed a total of 0 changes.
+
+2.9.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\IeeeRecodeProof'.
+Computing hashes of 195 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 191 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 189 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 187 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 185 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 183 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 181 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 179 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 177 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 175 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 173 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 171 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 169 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 167 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 165 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 163 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 161 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 159 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 157 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 155 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 153 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 151 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 149 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 146 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 143 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 141 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 138 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 136 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 134 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 133 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 132 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 131 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 130 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 129 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 128 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 127 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 126 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 125 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 124 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 123 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 122 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 121 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 120 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 119 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 118 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 117 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 116 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 115 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 114 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 113 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 112 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 110 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 108 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 107 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 105 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 104 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Computing hashes of 103 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+<suppressed ~276 debug messages>
+Removed a total of 92 cells.
+
+2.9.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \IeeeRecodeProof..
+Removed 0 unused cells and 88 unused wires.
+<suppressed ~1 debug messages>
+
+2.9.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module IeeeRecodeProof.
+<suppressed ~3 debug messages>
+
+2.9.8. Rerunning OPT passes. (Maybe there is more to do..)
+
+2.9.9. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \IeeeRecodeProof..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+    dead port 1/2 on $mux $ternary$/workspace/zu15-vpu/build/recode-proof/IeeeRecodeProof.sv:352$184.
+    dead port 2/2 on $mux $ternary$/workspace/zu15-vpu/build/recode-proof/IeeeRecodeProof.sv:352$184.
+    dead port 1/2 on $mux $ternary$/workspace/zu15-vpu/build/recode-proof/IeeeRecodeProof.sv:373$197.
+    dead port 2/2 on $mux $ternary$/workspace/zu15-vpu/build/recode-proof/IeeeRecodeProof.sv:373$197.
+Removed 4 multiplexer ports.
+<suppressed ~86 debug messages>
+
+2.9.10. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \IeeeRecodeProof.
+Performed a total of 0 changes.
+
+2.9.11. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\IeeeRecodeProof'.
+Computing hashes of 98 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Removed a total of 0 cells.
+
+2.9.12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \IeeeRecodeProof..
+Removed 98 unused cells and 113 unused wires.
+<suppressed ~122 debug messages>
+
+2.9.13. Executing OPT_EXPR pass (perform const folding).
+Optimizing module IeeeRecodeProof.
+
+2.9.14. Rerunning OPT passes. (Maybe there is more to do..)
+
+2.9.15. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \IeeeRecodeProof..
+  Creating internal representation of mux trees.
+  No muxes found in this module.
+Removed 0 multiplexer ports.
+
+2.9.16. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \IeeeRecodeProof.
+Performed a total of 0 changes.
+
+2.9.17. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\IeeeRecodeProof'.
+Computing hashes of 0 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Removed a total of 0 cells.
+
+2.9.18. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \IeeeRecodeProof..
+
+2.9.19. Executing OPT_EXPR pass (perform const folding).
+Optimizing module IeeeRecodeProof.
+
+2.9.20. Finished fast OPT passes. (There is nothing left to do.)
+
+2.10. Executing WREDUCE pass (reducing word size of cells).
+Removed top 63 bits (of 115) from wire IeeeRecodeProof._GEN_0.
+Removed top 1 bits (of 12) from wire IeeeRecodeProof._GEN_1.
+
+2.11. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \IeeeRecodeProof..
+Removed 0 unused cells and 2 unused wires.
+<suppressed ~1 debug messages>
+
+2.12. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+2.13. Executing OPT pass (performing simple optimizations).
+
+2.13.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module IeeeRecodeProof.
+
+2.13.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\IeeeRecodeProof'.
+Computing hashes of 0 cells of `\IeeeRecodeProof'.
+Finding duplicate cells in `\IeeeRecodeProof'.
+Removed a total of 0 cells.
+
+2.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \IeeeRecodeProof..
+
+2.13.4. Finished fast OPT passes.
+
+2.14. Executing SORT pass.
+
+2.15. Printing statistics.
+
+=== IeeeRecodeProof ===
+
+        +----------Local Count, excluding submodules.
+        | 
+        6 wires
+      130 wire bits
+        6 public wires
+      130 public wire bits
+        4 ports
+       67 port bits
+
+2.16. Executing CHECK pass (checking for obvious problems).
+Checking module IeeeRecodeProof...
+Found and reported 0 problems.
+
+3. Executing SAT pass (solving SAT problems in the circuit).
+Using SAT solver `minisat`.
+
+Setting up SAT problem:
+Final constraint equation: { } = { }
+Imported 0 cells to SAT database.
+Import proof-constraint: \io_mismatch = 1'0
+Final proof equation: \io_mismatch = 1'0
+Import show expression: \clock
+Import show expression: \io_bits
+Import show expression: \reset
+
+Solving problem with 68 variables and 4 clauses..
+SAT proof finished - no model found: SUCCESS!
+
+                  /$$$$$$      /$$$$$$$$     /$$$$$$$    
+                 /$$__  $$    | $$_____/    | $$__  $$   
+                | $$  \ $$    | $$          | $$  \ $$   
+                | $$  | $$    | $$$$$       | $$  | $$   
+                | $$  | $$    | $$__/       | $$  | $$   
+                | $$/$$ $$    | $$          | $$  | $$   
+                |  $$$$$$/ /$$| $$$$$$$$ /$$| $$$$$$$//$$
+                 \____ $$$|__/|________/|__/|_______/|__/
+                       \__/                              
+

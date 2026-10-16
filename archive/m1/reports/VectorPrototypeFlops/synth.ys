@@ -1,0 +1,7 @@
+read_verilog -sv /workspace/zu15-vpu/build/rtl/VectorPrototypeFlops.sv
+
+synth_xilinx -family xcup -top VectorPrototypeFlops -flatten -noiopad -noclkbuf -nosrl -nowidelut
+tee -o /workspace/zu15-vpu/build/synth/VectorPrototypeFlops/stat.json stat -json
+check -assert
+write_json /workspace/zu15-vpu/build/synth/VectorPrototypeFlops/mapped.json
+write_verilog -noattr /workspace/zu15-vpu/build/synth/VectorPrototypeFlops/mapped.v

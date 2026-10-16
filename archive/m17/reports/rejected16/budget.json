@@ -1,0 +1,2471 @@
+{
+  "scope": "UNPLACED_FAMILY_MAX_CELL_AND_ASSUMED_LINK_BUDGET_NOT_STA",
+  "top": "LishiVpuMemory16",
+  "weights_ps": {
+    "LUT": 150,
+    "CARRY4": 241,
+    "RAM_READ": 165,
+    "CQ": 77,
+    "SETUP_ASSUMPTION": 100
+  },
+  "scenarios": [
+    {
+      "assumed_link_ps": 50,
+      "DSP_tainted_endpoints_excluded": 346,
+      "covered_endpoint_count": 18155,
+      "worst": {
+        "budget_ns": 3.3,
+        "start": "vpu.unit.request_b[6]",
+        "end": "vpu._unit_io_out_bits_data[0].D",
+        "kind": "data",
+        "hops": 14,
+        "types": {
+          "LUT6": 6,
+          "LUT3": 3,
+          "CARRY4": 3,
+          "LUT5": 1,
+          "LUT4": 1
+        },
+        "chain": [
+          {
+            "cell": "$abc$603259$lut$aiger603258$18472",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$18477",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$18482",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$18489",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$19460",
+            "type": "LUT3"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$19465",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+            "type": "LUT3"
+          },
+          {
+            "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+            "type": "CARRY4"
+          },
+          {
+            "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+            "type": "CARRY4"
+          },
+          {
+            "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+            "type": "CARRY4"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$26726",
+            "type": "LUT5"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$26731",
+            "type": "LUT3"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$26735",
+            "type": "LUT4"
+          },
+          {
+            "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606055",
+            "type": "LUT6"
+          }
+        ],
+        "budget_residual_300MHz_ns": 0.03333333333333366,
+        "budget_residual_500MHz_ns": -1.2999999999999998
+      },
+      "top_paths": [
+        {
+          "budget_ns": 3.3,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[0].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 6,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1,
+            "LUT4": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26735",
+              "type": "LUT4"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606055",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": 0.03333333333333366,
+          "budget_residual_500MHz_ns": -1.2999999999999998
+        },
+        {
+          "budget_ns": 3.3,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[1].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$65674",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603864",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": 0.03333333333333366,
+          "budget_residual_500MHz_ns": -1.2999999999999998
+        },
+        {
+          "budget_ns": 3.3,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[2].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$65938",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603863",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": 0.03333333333333366,
+          "budget_residual_500MHz_ns": -1.2999999999999998
+        },
+        {
+          "budget_ns": 3.3,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[3].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67051",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603862",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": 0.03333333333333366,
+          "budget_residual_500MHz_ns": -1.2999999999999998
+        },
+        {
+          "budget_ns": 3.3,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[4].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67091",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603861",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": 0.03333333333333366,
+          "budget_residual_500MHz_ns": -1.2999999999999998
+        },
+        {
+          "budget_ns": 3.3,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[5].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67114",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603860",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": 0.03333333333333366,
+          "budget_residual_500MHz_ns": -1.2999999999999998
+        },
+        {
+          "budget_ns": 3.3,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[6].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67139",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603859",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": 0.03333333333333366,
+          "budget_residual_500MHz_ns": -1.2999999999999998
+        },
+        {
+          "budget_ns": 3.3,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[7].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67158",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603858",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": 0.03333333333333366,
+          "budget_residual_500MHz_ns": -1.2999999999999998
+        },
+        {
+          "budget_ns": 3.3,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[8].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 6,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 2
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67177",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603857",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": 0.03333333333333366,
+          "budget_residual_500MHz_ns": -1.2999999999999998
+        },
+        {
+          "budget_ns": 3.3,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[9].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 6,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 2
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67200",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603856",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": 0.03333333333333366,
+          "budget_residual_500MHz_ns": -1.2999999999999998
+        }
+      ]
+    },
+    {
+      "assumed_link_ps": 100,
+      "DSP_tainted_endpoints_excluded": 346,
+      "covered_endpoint_count": 18155,
+      "worst": {
+        "budget_ns": 4.05,
+        "start": "vpu.unit.request_b[6]",
+        "end": "vpu._unit_io_out_bits_data[0].D",
+        "kind": "data",
+        "hops": 14,
+        "types": {
+          "LUT6": 6,
+          "LUT3": 3,
+          "CARRY4": 3,
+          "LUT5": 1,
+          "LUT4": 1
+        },
+        "chain": [
+          {
+            "cell": "$abc$603259$lut$aiger603258$18472",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$18477",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$18482",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$18489",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$19460",
+            "type": "LUT3"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$19465",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+            "type": "LUT3"
+          },
+          {
+            "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+            "type": "CARRY4"
+          },
+          {
+            "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+            "type": "CARRY4"
+          },
+          {
+            "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+            "type": "CARRY4"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$26726",
+            "type": "LUT5"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$26731",
+            "type": "LUT3"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$26735",
+            "type": "LUT4"
+          },
+          {
+            "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606055",
+            "type": "LUT6"
+          }
+        ],
+        "budget_residual_300MHz_ns": -0.7166666666666663,
+        "budget_residual_500MHz_ns": -2.05
+      },
+      "top_paths": [
+        {
+          "budget_ns": 4.05,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[0].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 6,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1,
+            "LUT4": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26735",
+              "type": "LUT4"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606055",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -0.7166666666666663,
+          "budget_residual_500MHz_ns": -2.05
+        },
+        {
+          "budget_ns": 4.05,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[1].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$65674",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603864",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -0.7166666666666663,
+          "budget_residual_500MHz_ns": -2.05
+        },
+        {
+          "budget_ns": 4.05,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[2].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$65938",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603863",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -0.7166666666666663,
+          "budget_residual_500MHz_ns": -2.05
+        },
+        {
+          "budget_ns": 4.05,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[3].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67051",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603862",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -0.7166666666666663,
+          "budget_residual_500MHz_ns": -2.05
+        },
+        {
+          "budget_ns": 4.05,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[4].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67091",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603861",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -0.7166666666666663,
+          "budget_residual_500MHz_ns": -2.05
+        },
+        {
+          "budget_ns": 4.05,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[5].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67114",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603860",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -0.7166666666666663,
+          "budget_residual_500MHz_ns": -2.05
+        },
+        {
+          "budget_ns": 4.05,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[6].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67139",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603859",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -0.7166666666666663,
+          "budget_residual_500MHz_ns": -2.05
+        },
+        {
+          "budget_ns": 4.05,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[7].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67158",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603858",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -0.7166666666666663,
+          "budget_residual_500MHz_ns": -2.05
+        },
+        {
+          "budget_ns": 4.05,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[8].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 6,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 2
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67177",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603857",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -0.7166666666666663,
+          "budget_residual_500MHz_ns": -2.05
+        },
+        {
+          "budget_ns": 4.05,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[9].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 6,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 2
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67200",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603856",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -0.7166666666666663,
+          "budget_residual_500MHz_ns": -2.05
+        }
+      ]
+    },
+    {
+      "assumed_link_ps": 200,
+      "DSP_tainted_endpoints_excluded": 346,
+      "covered_endpoint_count": 18155,
+      "worst": {
+        "budget_ns": 5.55,
+        "start": "vpu.unit.request_b[6]",
+        "end": "vpu._unit_io_out_bits_data[0].D",
+        "kind": "data",
+        "hops": 14,
+        "types": {
+          "LUT6": 6,
+          "LUT3": 3,
+          "CARRY4": 3,
+          "LUT5": 1,
+          "LUT4": 1
+        },
+        "chain": [
+          {
+            "cell": "$abc$603259$lut$aiger603258$18472",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$18477",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$18482",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$18489",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$19460",
+            "type": "LUT3"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$19465",
+            "type": "LUT6"
+          },
+          {
+            "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+            "type": "LUT3"
+          },
+          {
+            "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+            "type": "CARRY4"
+          },
+          {
+            "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+            "type": "CARRY4"
+          },
+          {
+            "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+            "type": "CARRY4"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$26726",
+            "type": "LUT5"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$26731",
+            "type": "LUT3"
+          },
+          {
+            "cell": "$abc$603259$lut$aiger603258$26735",
+            "type": "LUT4"
+          },
+          {
+            "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606055",
+            "type": "LUT6"
+          }
+        ],
+        "budget_residual_300MHz_ns": -2.2166666666666663,
+        "budget_residual_500MHz_ns": -3.55
+      },
+      "top_paths": [
+        {
+          "budget_ns": 5.55,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[0].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 6,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1,
+            "LUT4": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26735",
+              "type": "LUT4"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606055",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -2.2166666666666663,
+          "budget_residual_500MHz_ns": -3.55
+        },
+        {
+          "budget_ns": 5.55,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[1].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$65674",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603864",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -2.2166666666666663,
+          "budget_residual_500MHz_ns": -3.55
+        },
+        {
+          "budget_ns": 5.55,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[2].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$65938",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603863",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -2.2166666666666663,
+          "budget_residual_500MHz_ns": -3.55
+        },
+        {
+          "budget_ns": 5.55,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[3].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67051",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603862",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -2.2166666666666663,
+          "budget_residual_500MHz_ns": -3.55
+        },
+        {
+          "budget_ns": 5.55,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[4].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67091",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603861",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -2.2166666666666663,
+          "budget_residual_500MHz_ns": -3.55
+        },
+        {
+          "budget_ns": 5.55,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[5].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67114",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603860",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -2.2166666666666663,
+          "budget_residual_500MHz_ns": -3.55
+        },
+        {
+          "budget_ns": 5.55,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[6].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67139",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603859",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -2.2166666666666663,
+          "budget_residual_500MHz_ns": -3.55
+        },
+        {
+          "budget_ns": 5.55,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[7].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 7,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 1
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67158",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603858",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -2.2166666666666663,
+          "budget_residual_500MHz_ns": -3.55
+        },
+        {
+          "budget_ns": 5.55,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[8].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 6,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 2
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67177",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603857",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -2.2166666666666663,
+          "budget_residual_500MHz_ns": -3.55
+        },
+        {
+          "budget_ns": 5.55,
+          "start": "vpu.unit.request_b[6]",
+          "end": "vpu._unit_io_out_bits_data[9].D",
+          "kind": "data",
+          "hops": 14,
+          "types": {
+            "LUT6": 6,
+            "LUT3": 3,
+            "CARRY4": 3,
+            "LUT5": 2
+          },
+          "chain": [
+            {
+              "cell": "$abc$603259$lut$aiger603258$18472",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18477",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18482",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$18489",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19460",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$19465",
+              "type": "LUT6"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$606653",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[0].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[1].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$auto$alumacc.cc:578:replace_alu$12957.genblk1.slice[2].genblk1.carry4",
+              "type": "CARRY4"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26726",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$26731",
+              "type": "LUT3"
+            },
+            {
+              "cell": "$abc$603259$lut$aiger603258$67200",
+              "type": "LUT5"
+            },
+            {
+              "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$603856",
+              "type": "LUT6"
+            }
+          ],
+          "budget_residual_300MHz_ns": -2.2166666666666663,
+          "budget_residual_500MHz_ns": -3.55
+        }
+      ]
+    }
+  ],
+  "provenance": {
+    "jar_sha256": "b3bd8e98a026fec792347b9d007af1fc054e9376789186a3721c400ed52e9955",
+    "table_sha256": "ff08ce9041da649f2bf886d900f033dd23de8ad54eb4db55d37ce032dc0ec0a0"
+  },
+  "input_sha256": {
+    "build/synth/LishiVpuMemory16/mapped.json": "95c0d4f31a935a6060862f68eca0520369a1907c071d28e8c418e15f18b4662b",
+    "scripts/cloud_budget.py": "a4af6dba7d328077216e2ad28b6ab621edec8d6b9fca0d9e2dc2b15c39b6a4a7"
+  },
+  "uncharacterized_DSP_cells": 9,
+  "speed_grade_calibrated": false,
+  "placed": false,
+  "routed": false,
+  "passes_300MHz": null,
+  "passes_500MHz": null,
+  "limitations": [
+    "worst cell-class arcs independent of mapped pin and LUT permutation",
+    "CARRY4 charged worst full CARRY8 arc",
+    "link delay assumptions are not calibrated routing",
+    "FF setup 100ps assumed; no hold, clock, recovery or memory-write checks",
+    "primary input/output paths excluded",
+    "DSP-tainted endpoints excluded; not full VPU coverage"
+  ]
+}

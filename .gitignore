@@ -1,0 +1,14 @@
+tools/
+target/
+project/target/
+project/project/
+out/
+build/
+.bsp/
+.metals/
+__pycache__/
+/tools
+/build
+*.pyc
+/*-m*.zip
+/*-m*.zip.sha256

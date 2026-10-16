@@ -1,0 +1,9 @@
+Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
+Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
+mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl
+70] mill.javalib.JvmWorkerModule/internalWorker Compiling compiler interface...
+73] Vpu.compile compiling 1 Scala source to out/Vpu/compile.dest/classes ...
+73] done compiling
+79] Vpu.runMain
+Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
+79/79, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 18s

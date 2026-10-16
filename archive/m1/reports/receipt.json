@@ -1,0 +1,376 @@
+{
+  "scope": "M1_INTEGER_VECTOR_SUBSET_ONLY",
+  "target": "xczu15eg-ffvb1156-2-i",
+  "design_targets_MHz": [
+    300,
+    500
+  ],
+  "full_RVV_implemented": false,
+  "Valence_core_integrated": false,
+  "CDC_verified": false,
+  "device_place_route_performed": false,
+  "passes_300MHz": null,
+  "passes_500MHz": null,
+  "bitstream_generated": false,
+  "versions": {
+    "chisel": "7.16.0",
+    "scala": "2.13.18",
+    "mill": "1.1.7",
+    "firtool_observed": "1.160.0",
+    "artifacts": {
+      "mill-dist": {
+        "url": "https://repo.maven.apache.org/maven2/com/lihaoyi/mill-dist/1.1.7/mill-dist-1.1.7.exe",
+        "sha256": "49c1c575ad44efba1b9103ca1d6042624ef341aad9d8f4cb58fbfc56cf930e0d"
+      },
+      "oss-cad-suite.tgz": {
+        "url": "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-10-14/oss-cad-suite-linux-x64-20261014.tgz",
+        "sha256": "a6ccc6b96b2d985336a1061c78b2fd2bdd73e0f68690da17db88e00457881a11"
+      }
+    },
+    "references": {
+      "Valence": {
+        "url": "https://github.com/Surplars/Valence",
+        "revision": "6c8977f684830137fae088d4679f9d84e5ce4a11",
+        "use": "read-only interface study; no scalar-core edits or integration claim"
+      },
+      "NaxRiscv": {
+        "url": "https://github.com/SpinalHDL/NaxRiscv",
+        "revision": "9f452d50560d02fb391bc8039f5453c54e0911af",
+        "use": "RAM/register-file implementation study; no source copied"
+      }
+    }
+  },
+  "resources": [
+    {
+      "top": "IntegerLaneBaseline",
+      "logic_luts": 1690,
+      "flip_flops": 218,
+      "RAM32M16": 0,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 44,
+      "DSP48E2": 0,
+      "unpacked_logic_plus_memory_LUT_sites": 1690
+    },
+    {
+      "top": "IntegerLaneSplit",
+      "logic_luts": 1181,
+      "flip_flops": 1111,
+      "RAM32M16": 6,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 28,
+      "DSP48E2": 0,
+      "unpacked_logic_plus_memory_LUT_sites": 1229
+    },
+    {
+      "top": "IntegerLaneSplit16",
+      "logic_luts": 1295,
+      "flip_flops": 1328,
+      "RAM32M16": 6,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 30,
+      "DSP48E2": 0,
+      "unpacked_logic_plus_memory_LUT_sites": 1343
+    },
+    {
+      "top": "VectorPrototype",
+      "logic_luts": 2371,
+      "flip_flops": 2103,
+      "RAM32M16": 16,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 37,
+      "DSP48E2": 0,
+      "unpacked_logic_plus_memory_LUT_sites": 2499
+    },
+    {
+      "top": "VectorPrototype16",
+      "logic_luts": 2470,
+      "flip_flops": 2317,
+      "RAM32M16": 16,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 39,
+      "DSP48E2": 0,
+      "unpacked_logic_plus_memory_LUT_sites": 2598
+    },
+    {
+      "top": "VectorPrototypeFlops",
+      "logic_luts": 5054,
+      "flip_flops": 6322,
+      "RAM32M16": 6,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 37,
+      "DSP48E2": 0,
+      "unpacked_logic_plus_memory_LUT_sites": 5102
+    },
+    {
+      "top": "VectorPrototypeBram",
+      "logic_luts": 2510,
+      "flip_flops": 2228,
+      "RAM32M16": 6,
+      "RAMB36E2": 2,
+      "CARRY4_logical": 37,
+      "DSP48E2": 0,
+      "unpacked_logic_plus_memory_LUT_sites": 2558
+    },
+    {
+      "top": "ValenceBoundary",
+      "logic_luts": 215,
+      "flip_flops": 70,
+      "RAM32M16": 0,
+      "RAMB36E2": 0,
+      "CARRY4_logical": 0,
+      "DSP48E2": 0,
+      "unpacked_logic_plus_memory_LUT_sites": 215
+    }
+  ],
+  "lane_tests": {
+    "IntegerLaneBaseline": {
+      "accepted": 4017,
+      "retired": 3899,
+      "flushed": 118,
+      "output_stall_cycles": 1615,
+      "corrupt_result_rejected": true
+    },
+    "IntegerLaneSplit": {
+      "accepted": 4461,
+      "retired": 4012,
+      "flushed": 449,
+      "output_stall_cycles": 1670,
+      "corrupt_result_rejected": true
+    },
+    "IntegerLaneSplit16": {
+      "accepted": 4488,
+      "retired": 3983,
+      "flushed": 505,
+      "output_stall_cycles": 1659,
+      "corrupt_result_rejected": true
+    }
+  },
+  "vector_tests": {
+    "VectorPrototypeBaseline": "PASS commands=471 reads=956 cycles=12621\n/workspace/zu15-vpu/build/test/vector_tb.sv:1581: $finish called at 127743 (1s)",
+    "VectorPrototype": "PASS commands=471 reads=956 cycles=14161\n/workspace/zu15-vpu/build/test/vector_tb.sv:1581: $finish called at 143143 (1s)",
+    "VectorPrototype16": "PASS commands=471 reads=956 cycles=14479\n/workspace/zu15-vpu/build/test/vector_tb.sv:1581: $finish called at 146323 (1s)",
+    "VectorPrototypeFlops": "PASS commands=471 reads=956 cycles=14161\n/workspace/zu15-vpu/build/test/vector_tb.sv:1581: $finish called at 143143 (1s)",
+    "VectorPrototype-mapped": "PASS commands=471 reads=956 cycles=14161\n/workspace/zu15-vpu/build/test/vector_tb.sv:1581: $finish called at 143143 (1s)"
+  },
+  "boundary_tests": "PASS boundary transactions=128 stale_rejections=171 blocked_reply_cycles=640\n/workspace/zu15-vpu/tests/boundary_tb.sv:68: $finish called at 18466 (1s)\n",
+  "dependent_vadd_cycle_benchmark": {
+    "VectorPrototypeBaseline": [
+      {
+        "sew": 8,
+        "instructions": 64,
+        "cycles": 2944,
+        "cycles_per_instruction": 46.0
+      },
+      {
+        "sew": 16,
+        "instructions": 64,
+        "cycles": 1920,
+        "cycles_per_instruction": 30.0
+      },
+      {
+        "sew": 32,
+        "instructions": 64,
+        "cycles": 1408,
+        "cycles_per_instruction": 22.0
+      },
+      {
+        "sew": 64,
+        "instructions": 64,
+        "cycles": 1152,
+        "cycles_per_instruction": 18.0
+      }
+    ],
+    "VectorPrototype": [
+      {
+        "sew": 8,
+        "instructions": 64,
+        "cycles": 3264,
+        "cycles_per_instruction": 51.0
+      },
+      {
+        "sew": 16,
+        "instructions": 64,
+        "cycles": 2240,
+        "cycles_per_instruction": 35.0
+      },
+      {
+        "sew": 32,
+        "instructions": 64,
+        "cycles": 1728,
+        "cycles_per_instruction": 27.0
+      },
+      {
+        "sew": 64,
+        "instructions": 64,
+        "cycles": 1472,
+        "cycles_per_instruction": 23.0
+      }
+    ],
+    "VectorPrototype16": [
+      {
+        "sew": 8,
+        "instructions": 64,
+        "cycles": 3328,
+        "cycles_per_instruction": 52.0
+      },
+      {
+        "sew": 16,
+        "instructions": 64,
+        "cycles": 2304,
+        "cycles_per_instruction": 36.0
+      },
+      {
+        "sew": 32,
+        "instructions": 64,
+        "cycles": 1792,
+        "cycles_per_instruction": 28.0
+      },
+      {
+        "sew": 64,
+        "instructions": 64,
+        "cycles": 1536,
+        "cycles_per_instruction": 24.0
+      }
+    ],
+    "VectorPrototypeFlops": [
+      {
+        "sew": 8,
+        "instructions": 64,
+        "cycles": 3264,
+        "cycles_per_instruction": 51.0
+      },
+      {
+        "sew": 16,
+        "instructions": 64,
+        "cycles": 2240,
+        "cycles_per_instruction": 35.0
+      },
+      {
+        "sew": 32,
+        "instructions": 64,
+        "cycles": 1728,
+        "cycles_per_instruction": 27.0
+      },
+      {
+        "sew": 64,
+        "instructions": 64,
+        "cycles": 1472,
+        "cycles_per_instruction": 23.0
+      }
+    ]
+  },
+  "source_sha256": {
+    ".mill-jvm-opts": "831f88c764ec55beb7ded7feae36621cd94ef5adff2f10e8abc27070f555ce45",
+    ".mill-version": "f2fb797db5b32c15ac4c67b2180b593bf46c768ba1d69971fecbef1d9afb1975",
+    "Makefile": "2041cfeda61af9c99972155e820e0ad9ab1f559afb462e4f9a11bbd0a759c398",
+    "README.md": "984b1ed5589a9259e10279ebddd78219cb296b6117e0fe646202d4e56e4829a2",
+    "build.mill": "dc6053643a67fcaeffd93b133052ceea15766c459eed9b2df6dfc78216f2ef1a",
+    "docs/architecture.md": "3c28ed3cbc48e23ddc157a5b278044320882c4d398b234f0a2fb55fd301f9240",
+    "mill": "b5635cf8933e52ce3d743eb2cc2dd22fe02004f084568040943ca9cde946aa5b",
+    "scripts/bootstrap.py": "a3e3f6050ebfd9310cbbea09c242f2383651430f60e9554673314ae57ce1dd9a",
+    "scripts/package.py": "0c39f4c1a17617db9d39f6a425e1337673e48d8526da378e55209119d13e6b01",
+    "scripts/path_depth.py": "590c22d50e080d46555f8764eece8208dbb976223934bbd4e035c84214bbfcd6",
+    "scripts/report.py": "6a2c26daa084ac9190a621fec8bcbfa962749ed1be33ad0f9bc6884bb0c36d15",
+    "scripts/synth.py": "7e3c94c8224cc5fc3909767848cfec2df613a5f831b7f4825fbcf8265e21edbd",
+    "src/main/scala/vpu/Generate.scala": "5a4a5438af422debbc6429138bf27b48d83961c9730178ec454e299748c17ec1",
+    "src/main/scala/vpu/IntegerLane.scala": "cf8782cd7de9448bcfcf3929b03503a242e6c0273efd93a3858deb2d81c2a500",
+    "src/main/scala/vpu/Parameters.scala": "82cc24eaf0415b7284589c4b8a4c04f8fd0dca3e36d0a304e815e93adca76f31",
+    "src/main/scala/vpu/Protocol.scala": "559dace7275c46fa46f452f0a6fbc40a2214792e188582fffc53635fb13477cf",
+    "src/main/scala/vpu/ValenceBoundary.scala": "5868b26214c0da022db9228e519ec02e17f39565dbfcc1d731131a73e68c94f3",
+    "src/main/scala/vpu/VectorPrototype.scala": "e687b0d280df0507cd039a10d3c11cc5cbe8330554ec9799ef47baf1406ffe4d",
+    "src/main/scala/vpu/VectorRegisterFile.scala": "efeea731e0897798574b75304cfae1cc1426f781f1550c61ce2a32ffee0d6946",
+    "tests/benchmark.py": "7f4dc0aec8ff88d4b74c82e585d7449ab7871c87cd86db043abcb7410248b50e",
+    "tests/boundary_tb.sv": "e5158664bbbb69316df2aa72f3e18683aba7dc53dc3f48d4b553b9e6e59f90a7",
+    "tests/lane_tb.sv": "546fe65d4fd60409f27a3d7bc222c39c48fd2f2d0e8118efea685f2d50ca2099",
+    "tests/test_boundary.py": "4255e43e24e45b78507d1e0401461f8a6ca383b174a7b3b90d804f9609ed1e36",
+    "tests/test_lane.py": "f7510a300038921d4f5c594ed67e1e08a07545cc6c04dec2ef41e947031f5e18",
+    "tests/test_vector.py": "a0f2fefdcb28bbb6d3ac040fa99c902f34f1d06d5f04d1ce997b5875cc56fa08",
+    "tools.lock.json": "d6ac4b6f924ae3d84d305be2f7b14a51c994340f71c4341e79acde9e4f7df72b"
+  },
+  "artifact_sha256": {
+    "build/rtl/IntegerLaneBaseline.sv": "4b42f17bed0a48e5583674987f510f8beeedffe63cdd3bdfc0906ed67e561c21",
+    "build/rtl/IntegerLaneSplit.sv": "8b7c87467783577bcaa81796618efdbecc30ef50f1156d7ef174066dfcec725e",
+    "build/rtl/IntegerLaneSplit16.sv": "29d193085356a0825b9db000c2b8c2c870925d2c22d54fede4f58d74b215583f",
+    "build/rtl/ValenceBoundary.sv": "2ad86aba8df3f6f282189b9492dfebd073d5edf920d012240b42efad507da98a",
+    "build/rtl/VectorPrototype.sv": "212f20b963a05a098a4dc5566c9258e5bd192bca56cc2ade51ac94872926efe2",
+    "build/rtl/VectorPrototype16.sv": "f48f7cc47b5bcf4419dd74f3a73d98eb92593f7bc638b0622d168861690ff19c",
+    "build/rtl/VectorPrototypeBaseline.sv": "6bf0558bec34ae9a74f4b4e2acc6e6363088388421622649e2ef935d24d316ce",
+    "build/rtl/VectorPrototypeFlops.sv": "877290f1a7c9e8fc73e9c1cb09517bec5951c56c6fa7412279c9ab04de6f5913",
+    "build/rtl/verification/assert/layers-IntegerLaneBaseline-Verification-Assert.sv": "170e7325ddd875971ab66f1d7dc5403e94aa99b4ccd9dfca13c852cbd94cac86",
+    "build/rtl/verification/assert/layers-IntegerLaneSplit-Verification-Assert.sv": "7df219aa5f1f895b68499a71b6e0f5a89fe813e29e1f4ba3b71e0d94757035a2",
+    "build/rtl/verification/assert/layers-IntegerLaneSplit16-Verification-Assert.sv": "0d2ac4bee88cc7c5e0fcb24ad5a59c72f949a89a10ee08b8932f59718ea82a83",
+    "build/rtl/verification/assert/layers-ValenceBoundary-Verification-Assert.sv": "b79855e6bd6f164808e9abdc45f758fdd029d15f72315b40d1b4d863013c2dc5",
+    "build/rtl/verification/assert/layers-VectorPrototype-Verification-Assert.sv": "cf9979ab84c0f697932e0dc86b57ad6f4bfb7c1e990d16387d14bbc18c272ccd",
+    "build/rtl/verification/assert/layers-VectorPrototype16-Verification-Assert.sv": "45d6c9fe9d2830793de0a779f0ea3867cba73895124b38408b8a1b0c3e1b1ee3",
+    "build/rtl/verification/assert/layers-VectorPrototypeBaseline-Verification-Assert.sv": "11765c9372556c2a72de2edf6bf94b31a34174ce4a559d74e357e13a00bd8b0f",
+    "build/rtl/verification/assert/layers-VectorPrototypeFlops-Verification-Assert.sv": "5ea5ed8bb7892644498ac7ff03fa1cfdbac24def8749ec9f177e52d53674dec6",
+    "build/rtl/verification/assume/layers-IntegerLaneBaseline-Verification-Assume.sv": "e4479d2011281817becd81559f99635834d97f1c78eac30aea81d1253c15e9cf",
+    "build/rtl/verification/assume/layers-IntegerLaneSplit-Verification-Assume.sv": "9a7c8e9616096f30114bd3384ac0f19cadf538e3220ade5741d2b0cce8c0c5c9",
+    "build/rtl/verification/assume/layers-IntegerLaneSplit16-Verification-Assume.sv": "36c016d62fb3330e34091948bcb0bc3f97ff70a5f5d656d3cd9e2fc1a8fc0b26",
+    "build/rtl/verification/assume/layers-ValenceBoundary-Verification-Assume.sv": "3eaf32806685f084a105fb2882f8d054f5c067455a22cfb4ae9a1ad573bab995",
+    "build/rtl/verification/assume/layers-VectorPrototype-Verification-Assume.sv": "62e7e598ade34ea12577f7fa3011b68c5e472dd70af49901e1556a2694383d97",
+    "build/rtl/verification/assume/layers-VectorPrototype16-Verification-Assume.sv": "8a8d66ac6f543410350dca76818519f16621011d8c2d20a72f36bfda56240524",
+    "build/rtl/verification/assume/layers-VectorPrototypeBaseline-Verification-Assume.sv": "dad80fb077957169bc4cbb000735ce2047a4101f38fb35c955dc3a7f44ffe533",
+    "build/rtl/verification/assume/layers-VectorPrototypeFlops-Verification-Assume.sv": "a16a4685dfafe0ac3ea64f3638dc51e5173bb2baf86e5cf971796cd6fea9369c",
+    "build/rtl/verification/cover/layers-IntegerLaneBaseline-Verification-Cover.sv": "64a3057b3cb22f388a9ebe2179f144bc6d6538d5834c9c2e32ee8543187b3eb7",
+    "build/rtl/verification/cover/layers-IntegerLaneSplit-Verification-Cover.sv": "0e4c8ed93f49de6eb8e63c23d7520bffaeed6f4bc9275152607ca51662209fa3",
+    "build/rtl/verification/cover/layers-IntegerLaneSplit16-Verification-Cover.sv": "3c12da3f074d245ae4767049875ca4badc95dbf79f86bd20cb8cfe46762d0e54",
+    "build/rtl/verification/cover/layers-ValenceBoundary-Verification-Cover.sv": "26928991e95287b45b1e8567aefcb8789d66b9589ed58e9329a3f1a48c6c9e1c",
+    "build/rtl/verification/cover/layers-VectorPrototype-Verification-Cover.sv": "af44b258a1ccd67b630578725a4002b6e2f593c0ab774118fe6581adf6cd31bc",
+    "build/rtl/verification/cover/layers-VectorPrototype16-Verification-Cover.sv": "2205f6b6b53ac6a347b9045fbe5db99f6e3f4e94e61126e8d755f0ba39ffc4e1",
+    "build/rtl/verification/cover/layers-VectorPrototypeBaseline-Verification-Cover.sv": "eb4566af70fb446f1138e50c98aa4884999f23bec639fea48526a509ebeb021a",
+    "build/rtl/verification/cover/layers-VectorPrototypeFlops-Verification-Cover.sv": "9aa334bc306ce40871cb14ffa8974bbaf9836832b9b4412e003d8f199498e83d",
+    "build/rtl/verification/layers-IntegerLaneBaseline-Verification.sv": "22fad3920100dea94a5692592351242c3d4600dac37cf4bb7ba56c86337d0e04",
+    "build/rtl/verification/layers-IntegerLaneSplit-Verification.sv": "02e506a159a4f4db8120ac8396453197749ac37c75f664b4660d3d6cf725a426",
+    "build/rtl/verification/layers-IntegerLaneSplit16-Verification.sv": "8e3a3bd462dcde31fdf473db2437d96d78b8a465396a366631c529d035dd2f4f",
+    "build/rtl/verification/layers-ValenceBoundary-Verification.sv": "75fc072351be42189df410349ff5e393aaf901684c3a0bae3394c69a7f9c43ba",
+    "build/rtl/verification/layers-VectorPrototype-Verification.sv": "884a5f4b316ddd7947b610639852a758b7c99bee589b0363a07b9356e6945244",
+    "build/rtl/verification/layers-VectorPrototype16-Verification.sv": "0b987bb340d6f1730fa586b8c9f046954eafee3bb652e78acea403cd4f8d9e25",
+    "build/rtl/verification/layers-VectorPrototypeBaseline-Verification.sv": "d14337061949a4cc05335e231eaced248c91cc83879a04f0e77931b22822c91e",
+    "build/rtl/verification/layers-VectorPrototypeFlops-Verification.sv": "d9b42a6082318d432d84eedd31e30964e96810cc5d6bde76d2a4bcc27caf656f",
+    "build/synth/IntegerLaneBaseline/mapped.json": "5ccf547c500132c426e8010a1fad6c5984bd8535747124fb75cf9a9805f4560b",
+    "build/synth/IntegerLaneBaseline/mapped.v": "34d0e6afda65f4def558eb41e9c99212689dfdceebbcea55a000a230df2e4f2b",
+    "build/synth/IntegerLaneBaseline/stat.json": "dd7b21e5c941db9712f09a441d2b30ca33c3e1dfb9ab6b0ed2a02fcd6d3020da",
+    "build/synth/IntegerLaneBaseline/summary.json": "7c9c17dc5ba1849a099d360a58312bf293eae4f56e87217df22c167b3ea1098a",
+    "build/synth/IntegerLaneBaseline/synth.log": "5b643c0faddd901576da604114f51023b0ac82873847cc7c6371af63dd017438",
+    "build/synth/IntegerLaneSplit/mapped.json": "4c0e50a038bd673baefbe2aa6f3f501da0851cdc1e2b4b5217505401faf2c7a3",
+    "build/synth/IntegerLaneSplit/mapped.v": "24ccd3c6d77f1b88daf2876c90acb341f1d9ac2695e0370059ada0d7ba0dee8b",
+    "build/synth/IntegerLaneSplit/stat.json": "2b371ef54eccbcd1c5b6e1bfd90aa7bc390de468f1b8e3c477b38224ead37857",
+    "build/synth/IntegerLaneSplit/summary.json": "21875a5b5edf70ca41045fcf8c2e9f403b6d518fc129e87b629f99d8ba2d655f",
+    "build/synth/IntegerLaneSplit/synth.log": "898fcf24bb118ccbc6405e9b35446843b4c04beef7da17dc1ff9dce418909421",
+    "build/synth/IntegerLaneSplit16/mapped.json": "9072fd1a0323cbfcd01788e8d0bf6430ff13e79ad5d672b34b60bf82a7682020",
+    "build/synth/IntegerLaneSplit16/mapped.v": "a5456b4782b44c8a01ea7dd37834bf35b8a3d6dc0832715f80cade532331c0e4",
+    "build/synth/IntegerLaneSplit16/stat.json": "4dd785ec9e766f2a77cf1d611d448d492918ac73f56f19ccaf5eacb8609c6c0a",
+    "build/synth/IntegerLaneSplit16/summary.json": "29879106c039aacaf1dd6c0f14868518d8c17b4762341b809d7e541127a5f6d6",
+    "build/synth/IntegerLaneSplit16/synth.log": "823fc5626c7293f0ccc7583acca55e879293832e33e0a42ba1f4d2a5757908c9",
+    "build/synth/ValenceBoundary/mapped.json": "f8d4de46096e95197a0c3ebe6b48faf4294e359d9f402d81981390366d898546",
+    "build/synth/ValenceBoundary/mapped.v": "1bb761cdcf1830fb7c6d3e3d60ea307445e2e9979a4ea48251158126b42ceaca",
+    "build/synth/ValenceBoundary/stat.json": "8e10be273c6b11c205b267f9522e39f1ca5ba9e625e06203140ba19b02d904f8",
+    "build/synth/ValenceBoundary/summary.json": "90f74d1cad2935e5afcd28ae8e4caa83cc26de3a5020a3a2566d33228093ce56",
+    "build/synth/ValenceBoundary/synth.log": "56073776f7a8fafc24261ab2d8272de6889bf3a0c4c0e49fac9201f11ed66d9d",
+    "build/synth/VectorPrototype/mapped.json": "f5e58166fad2885a8f11a5aecedd59c14f8a3464d0632f62361d9c51a96f4c67",
+    "build/synth/VectorPrototype/mapped.v": "1044a1382ece738eab388aa4739382955a5f8e7d0ab889830039cce259b4757a",
+    "build/synth/VectorPrototype/stat.json": "cd1792ddd655fa29947885d5be50ab8ea98b479a9fb52a9e31a5c2fc9208061a",
+    "build/synth/VectorPrototype/summary.json": "035167cd3766375cd49940c78cad72db275e95361b8ed1f5c4e78847207b0115",
+    "build/synth/VectorPrototype/synth.log": "0d4f9e47e2f3aeb8839021e5bf8376fbdc1993faf5b1fa98587ced40a7a325da",
+    "build/synth/VectorPrototype16/mapped.json": "cf2bb3c81dd8f747d52e7f4487ed3ad0071325cce4d72b7bafca139dd14b5ccc",
+    "build/synth/VectorPrototype16/mapped.v": "847e6264888e070d8b73a99441d3a016f299d4864399a976b0ad7bdafefb025c",
+    "build/synth/VectorPrototype16/stat.json": "301d6841e37812ae9a1562074116a2d6b65e4705830f02d619c5bedb0db599a7",
+    "build/synth/VectorPrototype16/summary.json": "40ad205818bdb398c0034d2a22fa8bf7817f23fd39ecc324274de6a49962c2d0",
+    "build/synth/VectorPrototype16/synth.log": "2a5f6a3ef60557690060f00060de2f8aa268d4eac25b5dce70e467970b0099b1",
+    "build/synth/VectorPrototypeBram/mapped.json": "ef754a6070c3946efa67f04d8d349cef56ddddb8cddd7d55f2dd6e8c792d1756",
+    "build/synth/VectorPrototypeBram/mapped.v": "2d930f6a0924df1d3b5ed9031f933760115b02e4df9e4ee4cd2ef54b132d97b9",
+    "build/synth/VectorPrototypeBram/stat.json": "fe9fc0e249646245c371b6b60b65b8c435b0f9f598fbaa95369b40e38af478cb",
+    "build/synth/VectorPrototypeBram/summary.json": "f3b1d1c921cbea0cc9577cfac56754128d8bc2b0007f00d81402c723dda65393",
+    "build/synth/VectorPrototypeBram/synth.log": "af3faa14c2a38a4624649a50c16f42f29ee0d776e97a102941b4f072f7737e80",
+    "build/synth/VectorPrototypeFlops/mapped.json": "6fc837d6ff1c3d83a84cb4fc690ad81619ff8c5e5168ddb25938944d43e4dec2",
+    "build/synth/VectorPrototypeFlops/mapped.v": "d264d381748539f68317c41ee0d42f02b49f8284be8f135dafb332e43cc7a48c",
+    "build/synth/VectorPrototypeFlops/stat.json": "b521e9a7b19915bbcfcab926fb943e8d7558e407229f260afe4ceec2683c7c6e",
+    "build/synth/VectorPrototypeFlops/summary.json": "0e35275e6283a192f1d57df875a58c1e0a7a91a597d80f25aae957c3bc476ff4",
+    "build/synth/VectorPrototypeFlops/synth.log": "b89e0671efec693b69f3b2d0651c269c4041fcc06934d6dc4f4c01dd21d19903",
+    "build/test/ValenceBoundary.log": "e6e366f50d5304c9718dc19181fe498740b3dc1812ee93920f23cc6730135608",
+    "build/test/benchmark.json": "c8bf8d29f91618269195459b8f00652c9241c2b1bcacffa791867a257744c3d1",
+    "build/test/lane-results.json": "8315f28ae3605347132d4c2b639847a77d562604883f3fd3dc7b6eec369ef9f0",
+    "build/test/vector-results.json": "a49419d21ad18a852a25d951699b52054d9eb8649e68baf23bded1f18d95eb32"
+  }
+}

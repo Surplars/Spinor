@@ -1,0 +1,575 @@
+{
+  "top": "IntegerLaneSplit16",
+  "metric": "conservative mapped combinational cell hops between registers",
+  "NOT_FMAX": true,
+  "timing_ns": null,
+  "passes_300MHz": null,
+  "passes_500MHz": null,
+  "ram_read_hops_have_no_characterized_delay": true,
+  "memory_cells": {
+    "RAM32M16": 6
+  },
+  "longest_data": {
+    "hops": 8,
+    "start": "$auto$ff.cc:337:slice$13184",
+    "end": "$auto$ff.cc:337:slice$14332.D",
+    "end_net": "$abc$90397$aiger$o369[0]",
+    "kind": "data",
+    "cell_types": {
+      "LUT2": 1,
+      "LUT4": 1,
+      "LUT3": 1,
+      "CARRY4": 5
+    },
+    "chain": [
+      {
+        "cell": "$abc$90397$lut$aiger90396$2299",
+        "type": "LUT2"
+      },
+      {
+        "cell": "$abc$90397$lut$aiger90396$2302",
+        "type": "LUT4"
+      },
+      {
+        "cell": "$abc$90397$lut$aiger$o125",
+        "type": "LUT3"
+      },
+      {
+        "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[0].genblk1.carry4",
+        "type": "CARRY4"
+      },
+      {
+        "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[1].genblk1.carry4",
+        "type": "CARRY4"
+      },
+      {
+        "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[2].genblk1.carry4",
+        "type": "CARRY4"
+      },
+      {
+        "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[3].genblk1.carry4",
+        "type": "CARRY4"
+      },
+      {
+        "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[4].genblk1.carry4",
+        "type": "CARRY4"
+      }
+    ]
+  },
+  "longest_control": {
+    "hops": 5,
+    "start": "$auto$ff.cc:337:slice$2439",
+    "end": "$auto$ff.cc:337:slice$2419.CE",
+    "end_net": "$abc$90397$aiger$o824[0]",
+    "kind": "control",
+    "cell_types": {
+      "LUT4": 1,
+      "LUT5": 1,
+      "LUT3": 1,
+      "LUT2": 2
+    },
+    "chain": [
+      {
+        "cell": "$abc$90397$lut$aiger90396$1808",
+        "type": "LUT4"
+      },
+      {
+        "cell": "$abc$90397$lut$aiger90396$1816",
+        "type": "LUT5"
+      },
+      {
+        "cell": "$abc$90397$lut$aiger$o3342",
+        "type": "LUT3"
+      },
+      {
+        "cell": "$abc$90397$lut$aiger$o1059",
+        "type": "LUT2"
+      },
+      {
+        "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$90524",
+        "type": "LUT2"
+      }
+    ]
+  },
+  "top_paths": [
+    {
+      "hops": 8,
+      "start": "$auto$ff.cc:337:slice$13184",
+      "end": "$auto$ff.cc:337:slice$14332.D",
+      "end_net": "$abc$90397$aiger$o369[0]",
+      "kind": "data",
+      "cell_types": {
+        "LUT2": 1,
+        "LUT4": 1,
+        "LUT3": 1,
+        "CARRY4": 5
+      },
+      "chain": [
+        {
+          "cell": "$abc$90397$lut$aiger90396$2299",
+          "type": "LUT2"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger90396$2302",
+          "type": "LUT4"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger$o125",
+          "type": "LUT3"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[0].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[1].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[2].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[3].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[4].genblk1.carry4",
+          "type": "CARRY4"
+        }
+      ]
+    },
+    {
+      "hops": 8,
+      "start": "$auto$ff.cc:337:slice$13328",
+      "end": "$auto$ff.cc:337:slice$14333.D",
+      "end_net": "$abc$90397$aiger$o367[0]",
+      "kind": "data",
+      "cell_types": {
+        "LUT2": 1,
+        "LUT4": 1,
+        "LUT3": 1,
+        "CARRY4": 5
+      },
+      "chain": [
+        {
+          "cell": "$abc$90397$lut$aiger90396$2151",
+          "type": "LUT2"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger90396$2154",
+          "type": "LUT4"
+        },
+        {
+          "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$90601",
+          "type": "LUT3"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[0].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[1].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[2].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[3].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[4].genblk1.carry4",
+          "type": "CARRY4"
+        }
+      ]
+    },
+    {
+      "hops": 7,
+      "start": "$auto$ff.cc:337:slice$13328",
+      "end": "$auto$ff.cc:337:slice$14215.D",
+      "end_net": "$abc$90397$aiger$o1277[0]",
+      "kind": "data",
+      "cell_types": {
+        "LUT2": 1,
+        "LUT4": 1,
+        "LUT3": 1,
+        "CARRY4": 4
+      },
+      "chain": [
+        {
+          "cell": "$abc$90397$lut$aiger90396$2151",
+          "type": "LUT2"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger90396$2154",
+          "type": "LUT4"
+        },
+        {
+          "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$90601",
+          "type": "LUT3"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[0].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[1].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[2].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[3].genblk1.carry4",
+          "type": "CARRY4"
+        }
+      ]
+    },
+    {
+      "hops": 7,
+      "start": "$auto$ff.cc:337:slice$13328",
+      "end": "$auto$ff.cc:337:slice$14216.D",
+      "end_net": "$abc$90397$aiger$o1281[0]",
+      "kind": "data",
+      "cell_types": {
+        "LUT2": 1,
+        "LUT4": 1,
+        "LUT3": 1,
+        "CARRY4": 4
+      },
+      "chain": [
+        {
+          "cell": "$abc$90397$lut$aiger90396$2151",
+          "type": "LUT2"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger90396$2154",
+          "type": "LUT4"
+        },
+        {
+          "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$90601",
+          "type": "LUT3"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[0].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[1].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[2].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[3].genblk1.carry4",
+          "type": "CARRY4"
+        }
+      ]
+    },
+    {
+      "hops": 7,
+      "start": "$auto$ff.cc:337:slice$13328",
+      "end": "$auto$ff.cc:337:slice$14217.D",
+      "end_net": "$abc$90397$aiger$o1283[0]",
+      "kind": "data",
+      "cell_types": {
+        "LUT2": 1,
+        "LUT4": 1,
+        "LUT3": 1,
+        "CARRY4": 4
+      },
+      "chain": [
+        {
+          "cell": "$abc$90397$lut$aiger90396$2151",
+          "type": "LUT2"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger90396$2154",
+          "type": "LUT4"
+        },
+        {
+          "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$90601",
+          "type": "LUT3"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[0].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[1].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[2].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[3].genblk1.carry4",
+          "type": "CARRY4"
+        }
+      ]
+    },
+    {
+      "hops": 7,
+      "start": "$auto$ff.cc:337:slice$13328",
+      "end": "$auto$ff.cc:337:slice$14218.D",
+      "end_net": "$abc$90397$aiger$o1291[0]",
+      "kind": "data",
+      "cell_types": {
+        "LUT2": 1,
+        "LUT4": 1,
+        "LUT3": 1,
+        "CARRY4": 4
+      },
+      "chain": [
+        {
+          "cell": "$abc$90397$lut$aiger90396$2151",
+          "type": "LUT2"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger90396$2154",
+          "type": "LUT4"
+        },
+        {
+          "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$90601",
+          "type": "LUT3"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[0].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[1].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[2].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1729.genblk1.slice[3].genblk1.carry4",
+          "type": "CARRY4"
+        }
+      ]
+    },
+    {
+      "hops": 7,
+      "start": "$auto$ff.cc:337:slice$13475",
+      "end": "$auto$ff.cc:337:slice$14334.D",
+      "end_net": "$abc$90397$aiger$o365[0]",
+      "kind": "data",
+      "cell_types": {
+        "LUT5": 1,
+        "LUT3": 1,
+        "CARRY4": 5
+      },
+      "chain": [
+        {
+          "cell": "$abc$90397$lut$aiger90396$2006",
+          "type": "LUT5"
+        },
+        {
+          "cell": "$auto$abc_ops_reintegrate.cc:694:reintegrate$90585",
+          "type": "LUT3"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1735.genblk1.slice[0].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1735.genblk1.slice[1].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1735.genblk1.slice[2].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1735.genblk1.slice[3].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1735.genblk1.slice[4].genblk1.carry4",
+          "type": "CARRY4"
+        }
+      ]
+    },
+    {
+      "hops": 7,
+      "start": "$auto$ff.cc:337:slice$13184",
+      "end": "$auto$ff.cc:337:slice$2453.D",
+      "end_net": "$abc$90397$aiger$o3108[0]",
+      "kind": "data",
+      "cell_types": {
+        "LUT2": 1,
+        "LUT4": 1,
+        "LUT3": 1,
+        "CARRY4": 4
+      },
+      "chain": [
+        {
+          "cell": "$abc$90397$lut$aiger90396$2299",
+          "type": "LUT2"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger90396$2302",
+          "type": "LUT4"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger$o125",
+          "type": "LUT3"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[0].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[1].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[2].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[3].genblk1.carry4",
+          "type": "CARRY4"
+        }
+      ]
+    },
+    {
+      "hops": 7,
+      "start": "$auto$ff.cc:337:slice$13184",
+      "end": "$auto$ff.cc:337:slice$2454.D",
+      "end_net": "$abc$90397$aiger$o3110[0]",
+      "kind": "data",
+      "cell_types": {
+        "LUT2": 1,
+        "LUT4": 1,
+        "LUT3": 1,
+        "CARRY4": 4
+      },
+      "chain": [
+        {
+          "cell": "$abc$90397$lut$aiger90396$2299",
+          "type": "LUT2"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger90396$2302",
+          "type": "LUT4"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger$o125",
+          "type": "LUT3"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[0].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[1].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[2].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[3].genblk1.carry4",
+          "type": "CARRY4"
+        }
+      ]
+    },
+    {
+      "hops": 7,
+      "start": "$auto$ff.cc:337:slice$13184",
+      "end": "$auto$ff.cc:337:slice$2455.D",
+      "end_net": "$abc$90397$aiger$o3112[0]",
+      "kind": "data",
+      "cell_types": {
+        "LUT2": 1,
+        "LUT4": 1,
+        "LUT3": 1,
+        "CARRY4": 4
+      },
+      "chain": [
+        {
+          "cell": "$abc$90397$lut$aiger90396$2299",
+          "type": "LUT2"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger90396$2302",
+          "type": "LUT4"
+        },
+        {
+          "cell": "$abc$90397$lut$aiger$o125",
+          "type": "LUT3"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[0].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[1].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[2].genblk1.carry4",
+          "type": "CARRY4"
+        },
+        {
+          "cell": "$auto$alumacc.cc:578:replace_alu$1723.genblk1.slice[3].genblk1.carry4",
+          "type": "CARRY4"
+        }
+      ]
+    }
+  ],
+  "fanout": [
+    {
+      "net": "_GEN[0]",
+      "loads": 170
+    },
+    {
+      "net": "$techmap90745$abc$90397$lut$aiger90396$2505.A[3]",
+      "loads": 143
+    },
+    {
+      "net": "$techmap90745$abc$90397$lut$aiger90396$2505.A[4]",
+      "loads": 143
+    },
+    {
+      "net": "_GEN_0[2]",
+      "loads": 141
+    },
+    {
+      "net": "$techmap90751$abc$90397$lut$aiger90396$2525.A[4]",
+      "loads": 130
+    },
+    {
+      "net": "$techmap90696$abc$90397$lut$aiger90396$2654.A[4]",
+      "loads": 84
+    },
+    {
+      "net": "signedLess_4[0]",
+      "loads": 68
+    },
+    {
+      "net": "$techmap90745$abc$90397$lut$aiger90396$2505.A[5]",
+      "loads": 65
+    },
+    {
+      "net": "$techmap90797$abc$90397$lut$aiger90396$2989.A[3]",
+      "loads": 64
+    },
+    {
+      "net": "$techmap90797$abc$90397$lut$aiger90396$2989.A[2]",
+      "loads": 64
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "scope": "M4_ONLY_USER_VIVADO_2025_1_OOC",
+  "resources": {
+    "CLB_LUT_total": 7754,
+    "LUT_logic": 7676,
+    "LUT_memory_total": 78,
+    "LUT_distributed_RAM": 40,
+    "LUT_shift_register": 38,
+    "FF": 6309,
+    "CARRY8": 77,
+    "RAMB36E2": 2,
+    "DSP48E2": 6,
+    "BUFGCE": 0
+  },
+  "timing": {
+    "source": "Vivado routed OOC report, not a new RapidWright timing result",
+    "period_ns": 3.333,
+    "WNS_ns": 0.346,
+    "WHS_ns": 0.042,
+    "TNS_ns": 0.0,
+    "THS_ns": 0.0
+  },
+  "limitations": {
+    "HD_CLK_SRC_unspecified": true,
+    "actual_clock_tree_delay_skew_fully_modeled": false,
+    "host_IO_delays_constrained": false,
+    "passes_300MHz_full_system": null,
+    "passes_500MHz": null
+  },
+  "DSP_export_completed": true,
+  "DSP_arc_rows": 546,
+  "routed_dcp_sha256": "ed729c228e0df3342a81c6a4db0ce02212da3cb9e4514cc40af0655ee6366025",
+  "source_assessments_sha256": {
+    "/workspace/zu15-vpu-local-results/m4-300MHz-20261016-092014/assessment.json": "4afa61b34c74930543be6bcaafe4c60ef8a885f6b50d1fb17af2aa4addb54490",
+    "/workspace/zu15-vpu-local-results/m4-300MHz-resume-20261016-094747/assessment.json": "aed824ec24ee57949c6a9a93dbe820c6604e94838781690935f6102a7ee40e9c"
+  }
+}

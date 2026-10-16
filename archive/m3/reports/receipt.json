@@ -1,0 +1,626 @@
+{
+  "scope": "M3_SAME_WIDTH_FP32_FP64_VECTOR_SUBSET",
+  "target": "xczu15eg-ffvb1156-2-i",
+  "full_RVV_implemented": false,
+  "Valence_core_integrated": false,
+  "vector_LSU_implemented": false,
+  "scalar_vector_FCSR_unified_in_Valence": false,
+  "device_place_route_performed": false,
+  "passes_300MHz": null,
+  "passes_500MHz": null,
+  "FP_device_timing_simulation_performed": false,
+  "bitstream_generated": false,
+  "tools": {
+    "chisel": "7.16.0",
+    "scala": "2.13.18",
+    "mill": "1.1.7",
+    "firtool_observed": "1.160.0",
+    "artifacts": {
+      "mill-dist": {
+        "url": "https://repo.maven.apache.org/maven2/com/lihaoyi/mill-dist/1.1.7/mill-dist-1.1.7.exe",
+        "sha256": "49c1c575ad44efba1b9103ca1d6042624ef341aad9d8f4cb58fbfc56cf930e0d"
+      },
+      "oss-cad-suite.tgz": {
+        "url": "https://github.com/YosysHQ/oss-cad-suite-build/releases/download/2026-10-14/oss-cad-suite-linux-x64-20261014.tgz",
+        "sha256": "a6ccc6b96b2d985336a1061c78b2fd2bdd73e0f68690da17db88e00457881a11"
+      }
+    },
+    "references": {
+      "Valence": {
+        "url": "https://github.com/Surplars/Valence",
+        "revision": "6c8977f684830137fae088d4679f9d84e5ce4a11",
+        "use": "read-only interface study; no scalar-core edits or integration claim"
+      },
+      "NaxRiscv": {
+        "url": "https://github.com/SpinalHDL/NaxRiscv",
+        "revision": "9f452d50560d02fb391bc8039f5453c54e0911af",
+        "use": "RAM/register-file implementation study; no source copied"
+      }
+    }
+  },
+  "HardFloat_and_SoftFloat": {
+    "repository": "https://github.com/ucb-bar/berkeley-hardfloat",
+    "revision": "c1105e6ac6a0dd90fc80893efc4830ab609005d3",
+    "local_sources_sha256": {
+      "primitives.scala": "134cfae67052244a836aebbae3f9252b0e9bf4800ab5cbcba4b92eb1c56e7c31",
+      "recFNFromFN.scala": "90060c571a38718330f8781ecc4f555096ac45a0c75abb3fe5219e06dacdbd2d",
+      "AddRecFN.scala": "a0dec1dd3476eb42250529817e8d53b4efe327f08849fe130e475bf4963a779a",
+      "rawFloatFromRecFN.scala": "bf7e4b0e453569c91f6a9d8c414feb3a5fed6dc7354ba31cdc8c7c0f1ffd8317",
+      "RoundAnyRawFNToRecFN.scala": "31cdb3be147471d52e721f14914031c19b915bd7aaffe5c0e333393a0c7fb67d",
+      "rawFloatFromFN.scala": "39fb14ae28318821906f68ad63803ca24eecb1115bf24aa4f3df497392357dce",
+      "common.scala": "ea83cdfac50db84f372d624ce4e0d45188207164a6a1eae5d42d8174241925cb",
+      "fNFromRecFN.scala": "7a114540c32ef9e43152e37d1610dd5bbb68dba6b3bbd1aa5600fa3bc411fa6d",
+      "CompareRecFN.scala": "9f7d050ff8e605cbc7575b342eff3c2dd5e8a3aa7b87572aaa5fc58174badeec",
+      "DivSqrtRecFN_small.scala": "f715cae79b0a58496f717731a27939fb4aa6f8eb70dcf1770af84e6121281a15",
+      "INToRecFN.scala": "1ea78cf0b78dd9fb8af5643b601801d2b5e263aaf89beab012a6362c50020c5f",
+      "MulAddRecFN.scala": "b16c030f8545d032b1b58a7cc09c73f3a49404c3367630ee3e88de1a2e880ab6",
+      "MulRecFN.scala": "a665f8a23a7f490a7c8d5cce8f96cfb69047106c6d3b8275f44826af95cb1a32",
+      "RecFNToIN.scala": "c08160e4a8a23a14ec6d791db2590f7506228be9f74a0f03a2a13edfc162a7e4",
+      "RecFNToRecFN.scala": "c3f3c4f8551b20f5bb3d8c9c5dc0563f70077910df2ba8e401a131db903e8dca",
+      "classifyRecFN.scala": "0d7c3b2828d0ad87cc95a7cd0b28c6add9645cdb495756fb611381e88c6bd524",
+      "rawFloatFromIN.scala": "b404a8a21aaa09a876c5d92b87c0db85e2946a318a39b33ffb6477933cd257d8",
+      "resizeRawFloat.scala": "6a12a1d9a7c64c10786d99cb81897f4de6adb6004cf1149eb9fbaf3b70a10655"
+    },
+    "source_modifications": [
+      "patches/0001-unsigned-alignment-distance.patch: bit-equivalent unsigned alignment to avoid pinned GSIM signed-slice lowering error",
+      "Ten newly imported files omit only the final blank line; separate original/local hashes preserve this formatting difference"
+    ],
+    "copied_from_Valence_revision": "6c8977f684830137fae088d4679f9d84e5ce4a11",
+    "license_sha256": "8e0236c9027ba0a243febb71f0e3dce559b50658f8d14fab31a626c9f214fdf3",
+    "softfloat": {
+      "repository": "https://github.com/ucb-bar/berkeley-softfloat-3",
+      "revision": "a0c6494cdc11865811dec815d5c0049fba9d82a8",
+      "archive_sha256": "90493f9ad6c9760b2b1ca91251b8e7a3bb616b2935808d243e158a432a514f98",
+      "license": "third_party/licenses/berkeley-softfloat.LICENSE",
+      "specialization": "8086-SSE; canonicalize output NaNs; explicit flags mapping; after-rounding tininess"
+    }
+  },
+  "DSP_model": {
+    "repository": "https://github.com/Xilinx/XilinxUnisimLibrary",
+    "revision": "1c8e05fd1e9a79ceb8b996a0996674122eed086f",
+    "license": "Apache-2.0",
+    "scope": "Unmodified DSP48E2 functional simulation model; no device speed files or SDF",
+    "sha256": {
+      "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "DSP48E2.v": "d2ab5e8f0bbb6c99183d559fcab3bcdb6f49c1c2961e5896c27b054b32d10c04",
+      "README.md": "11450a4eb3bdd681aa0edaaaf625033d0080c4761273f399d07319cdda10c9ad"
+    }
+  },
+  "resources": [
+    {
+      "top": "FloatingPointLane",
+      "logic_LUT": 5937,
+      "FF": 1267,
+      "DSP48E2": 12,
+      "RAM64M8": 0,
+      "RAM32M16": 0,
+      "CARRY4_logical": 297,
+      "storage_LUT": 0
+    },
+    {
+      "top": "RamVectorFp",
+      "logic_LUT": 9090,
+      "FF": 3330,
+      "DSP48E2": 12,
+      "RAM64M8": 32,
+      "RAM32M16": 5,
+      "CARRY4_logical": 348,
+      "storage_LUT": 296
+    },
+    {
+      "top": "RamVectorFpNoDsp",
+      "logic_LUT": 15227,
+      "FF": 3330,
+      "DSP48E2": 0,
+      "RAM64M8": 32,
+      "RAM32M16": 5,
+      "CARRY4_logical": 258,
+      "storage_LUT": 296
+    }
+  ],
+  "lane_test": {
+    "vectors": 6811,
+    "known_answer_anchors": 52,
+    "flush_reset_cases": 85,
+    "precision": [
+      "FP32",
+      "FP64"
+    ],
+    "rounding_modes": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "corrupt_result_rejected": true,
+    "observed_latency_cycles": {
+      "FP32_op0": [
+        1,
+        10
+      ],
+      "FP32_op1": [
+        10
+      ],
+      "FP32_op2": [
+        10
+      ],
+      "FP32_op3": [
+        5,
+        58,
+        59
+      ],
+      "FP32_op4": [
+        5,
+        57,
+        58
+      ],
+      "FP32_op5": [
+        10
+      ],
+      "FP32_op6": [
+        10
+      ],
+      "FP32_op7": [
+        10
+      ],
+      "FP32_op8": [
+        10
+      ],
+      "FP32_op9": [
+        3
+      ],
+      "FP32_op10": [
+        3
+      ],
+      "FP32_op11": [
+        3
+      ],
+      "FP32_op12": [
+        3
+      ],
+      "FP32_op13": [
+        3
+      ],
+      "FP32_op14": [
+        3
+      ],
+      "FP32_op15": [
+        3
+      ],
+      "FP32_op16": [
+        3
+      ],
+      "FP32_op17": [
+        3
+      ],
+      "FP32_op18": [
+        3
+      ],
+      "FP32_op19": [
+        3
+      ],
+      "FP32_op20": [
+        3
+      ],
+      "FP32_op21": [
+        1
+      ],
+      "FP32_op31": [
+        1
+      ],
+      "FP64_op0": [
+        1,
+        10
+      ],
+      "FP64_op1": [
+        10
+      ],
+      "FP64_op2": [
+        10
+      ],
+      "FP64_op3": [
+        5,
+        58,
+        59
+      ],
+      "FP64_op4": [
+        5,
+        57,
+        58
+      ],
+      "FP64_op5": [
+        10
+      ],
+      "FP64_op6": [
+        10
+      ],
+      "FP64_op7": [
+        10
+      ],
+      "FP64_op8": [
+        10
+      ],
+      "FP64_op9": [
+        3
+      ],
+      "FP64_op10": [
+        3
+      ],
+      "FP64_op11": [
+        3
+      ],
+      "FP64_op12": [
+        3
+      ],
+      "FP64_op13": [
+        3
+      ],
+      "FP64_op14": [
+        3
+      ],
+      "FP64_op15": [
+        3
+      ],
+      "FP64_op16": [
+        3
+      ],
+      "FP64_op17": [
+        3
+      ],
+      "FP64_op18": [
+        3
+      ],
+      "FP64_op19": [
+        3
+      ],
+      "FP64_op20": [
+        3
+      ],
+      "FP64_op21": [
+        1
+      ],
+      "FP64_op31": [
+        1
+      ]
+    },
+    "status": "PASS",
+    "test_summary": "PASS fp-lane vectors=6811 stalls=16972 cancels=85 cycles=88401"
+  },
+  "vector_test": {
+    "status": "PASS",
+    "mapped": false,
+    "commands": 1649,
+    "coverage": {
+      "FP32": 690,
+      "FP64": 545,
+      "vf": 656,
+      "vv": 579,
+      "masked": 608,
+      "alias": 131,
+      "illegal": 8,
+      "flushes": 12,
+      "ops": {
+        "vfadd": 52,
+        "vfsub": 45,
+        "vfmin": 45,
+        "vfmax": 45,
+        "vfsgnj": 45,
+        "vfsgnjn": 45,
+        "vfsgnjx": 45,
+        "vmfeq": 45,
+        "vmfle": 45,
+        "vmflt": 45,
+        "vmfne": 45,
+        "vfdiv": 56,
+        "vfmul": 45,
+        "vfmadd": 45,
+        "vfnmadd": 45,
+        "vfmsub": 45,
+        "vfnmsub": 45,
+        "vfmacc": 45,
+        "vfnmacc": 45,
+        "vfmsac": 45,
+        "vfnmsac": 45,
+        "vfsqrt": 45,
+        "vfclass": 45,
+        "vfrdiv": 45,
+        "vfrsub": 45,
+        "vmfgt": 46,
+        "vmfge": 45,
+        "bad-unary": 1
+      },
+      "lmul_types": [
+        16,
+        17,
+        18,
+        19,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "rounding_modes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "csr": 219,
+      "integer_interleave": 1
+    },
+    "known_answer_anchors": 52,
+    "test_summary": "PASS fp-vector commands=1649 reads=7176 cycles=95064\n/workspace/zu15-vpu/build/test/fp_vector_tb.sv:10777: $finish called at 959699 (1s)"
+  },
+  "DSP_mapped_test": {
+    "status": "PASS",
+    "mapped": true,
+    "commands": 1649,
+    "coverage": {
+      "FP32": 690,
+      "FP64": 545,
+      "vf": 656,
+      "vv": 579,
+      "masked": 608,
+      "alias": 131,
+      "illegal": 8,
+      "flushes": 12,
+      "ops": {
+        "vfadd": 52,
+        "vfsub": 45,
+        "vfmin": 45,
+        "vfmax": 45,
+        "vfsgnj": 45,
+        "vfsgnjn": 45,
+        "vfsgnjx": 45,
+        "vmfeq": 45,
+        "vmfle": 45,
+        "vmflt": 45,
+        "vmfne": 45,
+        "vfdiv": 56,
+        "vfmul": 45,
+        "vfmadd": 45,
+        "vfnmadd": 45,
+        "vfmsub": 45,
+        "vfnmsub": 45,
+        "vfmacc": 45,
+        "vfnmacc": 45,
+        "vfmsac": 45,
+        "vfnmsac": 45,
+        "vfsqrt": 45,
+        "vfclass": 45,
+        "vfrdiv": 45,
+        "vfrsub": 45,
+        "vmfgt": 46,
+        "vmfge": 45,
+        "bad-unary": 1
+      },
+      "lmul_types": [
+        16,
+        17,
+        18,
+        19,
+        23,
+        24,
+        25,
+        26,
+        27
+      ],
+      "rounding_modes": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "csr": 219,
+      "integer_interleave": 1
+    },
+    "known_answer_anchors": 52,
+    "test_summary": "PASS fp-vector commands=1649 reads=7176 cycles=95064\n/workspace/zu15-vpu/build/test/fp_vector_tb.sv:10777: $finish called at 959699000000000000 (1ps)"
+  },
+  "integer_regression": {
+    "coverage": {
+      "vector_ops": 553,
+      "csr_ops": 137,
+      "configs": 99,
+      "flushes": 7,
+      "illegal_ops": 26,
+      "group_regs": [
+        1,
+        2,
+        4,
+        8
+      ]
+    },
+    "commands": 789,
+    "models": {
+      "RamVectorFp": "PASS ram-vector commands=789 reads=2968 cycles=72744\n/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 731275 (1s)"
+    }
+  },
+  "source_sha256": {
+    ".gitignore": "3bbadb69749a640571e0cf1761cfc7a5e0b19516fdd0a72580481fb436b7973d",
+    ".mill-jvm-opts": "831f88c764ec55beb7ded7feae36621cd94ef5adff2f10e8abc27070f555ce45",
+    ".mill-version": "f2fb797db5b32c15ac4c67b2180b593bf46c768ba1d69971fecbef1d9afb1975",
+    "Makefile": "dc2106d859526ac898ce1e45dc24ad8e35689b638a58dd50d045009d27edf1f2",
+    "README.md": "02d93842d73af9a7534675409f9483d95266c2755b99aaf99169cfcc183535b2",
+    "build.mill": "8e5c7b714181909d8ee091cd3deac58a434a82bd462a920c1ede9524870d9e2b",
+    "docs/architecture.md": "91ce1bf2235a9ca633b5de22f049dcdb8820b8420bdbaf55ac8298abadb98eae",
+    "mill": "b5635cf8933e52ce3d743eb2cc2dd22fe02004f084568040943ca9cde946aa5b",
+    "scripts/bootstrap.py": "a3e3f6050ebfd9310cbbea09c242f2383651430f60e9554673314ae57ce1dd9a",
+    "scripts/bootstrap_fp.py": "bf3015ea21d43e8f161f922360264a18f75fe85169a80de68ceb2d23a84215eb",
+    "scripts/package.py": "4ac51d1a0a7725c68608e830b77622cedc2a0fda273fc5bf876363d40a8a2d08",
+    "scripts/path_depth.py": "c9e4ec2273676b734db8e387c7169ebf26881359436780b7c523d9eb65e280c6",
+    "scripts/record_tested_rtl.py": "6153b372640787e847be1c157f6a1f614a795b990ae02dfa38a9335fc212331f",
+    "scripts/report.py": "6a2c26daa084ac9190a621fec8bcbfa962749ed1be33ad0f9bc6884bb0c36d15",
+    "scripts/report_m2.py": "eaf90f3b616b74c09ebe1ad6120ecd8654cfbe0fa06ed9844dc729a55d187d35",
+    "scripts/report_m3.py": "33732e458ffa35334d52fd5da34f8c62a378e1eb826b8e66c0836814bc2e78c3",
+    "scripts/synth.py": "7bf590cad96a361e61133bae6f02dbe9058ab03e05a128e3b72d9ad5c8b3c30d",
+    "scripts/timing_reference.py": "cc6be306d1595da893b97d2455d8fe567de8f80a00759d4b7ec17539bcf023b5",
+    "src/main/scala/vpu/FloatingPointLane.scala": "e33a3575afb72a892b53debdf87f383c06f32687894f20b907291e5ae13f86e3",
+    "src/main/scala/vpu/Generate.scala": "d9380d733275f17876b31c552a75182bc5312ff1eab23d58b18c34208cc53e03",
+    "src/main/scala/vpu/IntegerLane.scala": "cf8782cd7de9448bcfcf3929b03503a242e6c0273efd93a3858deb2d81c2a500",
+    "src/main/scala/vpu/Parameters.scala": "82cc24eaf0415b7284589c4b8a4c04f8fd0dca3e36d0a304e815e93adca76f31",
+    "src/main/scala/vpu/Protocol.scala": "16889bd63c8b3ae8950953166d98c4dc1dd399039438f979e3bd6f82f5cf4ab9",
+    "src/main/scala/vpu/RamVector.scala": "12f69503a74b9798ec1fd38c0a9c33f4b393c942681fcc6f6c61c2cccb9eea7d",
+    "src/main/scala/vpu/ValenceBoundary.scala": "5868b26214c0da022db9228e519ec02e17f39565dbfcc1d731131a73e68c94f3",
+    "src/main/scala/vpu/VectorPrototype.scala": "e687b0d280df0507cd039a10d3c11cc5cbe8330554ec9799ef47baf1406ffe4d",
+    "src/main/scala/vpu/VectorRegisterFile.scala": "efeea731e0897798574b75304cfae1cc1426f781f1550c61ce2a32ffee0d6946",
+    "src/main/scala/vpu/VersionedRegisterFile.scala": "19a0c8f12bbb14445136840fd9afab81545a0916b3bec2ea81d31cd84db54ca5",
+    "tests/benchmark.py": "a9144205418b89924ccac5e95b5f144de144bdb1cff6e45e11ced14f6248eeb0",
+    "tests/boundary_tb.sv": "e5158664bbbb69316df2aa72f3e18683aba7dc53dc3f48d4b553b9e6e59f90a7",
+    "tests/fp_mapped_global.sv": "ef3686be07c9b869d13b0f1590bc8fd31e6af57ff77199931c909faedf0c0d4e",
+    "tests/fp_reference.c": "8521c00024f00d411bca0c90c0be6ba6d513f5f78484ed9d73f9500854d5b140",
+    "tests/lane_tb.sv": "546fe65d4fd60409f27a3d7bc222c39c48fd2f2d0e8118efea685f2d50ca2099",
+    "tests/reference_fp.py": "4aeff2bd62580fdee7af8edcf82be4cef7e7460c4cbe6f0ddb054e362ca6ad6a",
+    "tests/test_boundary.py": "4255e43e24e45b78507d1e0401461f8a6ca383b174a7b3b90d804f9609ed1e36",
+    "tests/test_fp_lane.py": "93c14a66de1e1f7dd67188ae955290a1de561d2f62a6e588466f116e83a9c1b9",
+    "tests/test_fp_vector.py": "cd12463ef327e47aa93c4863bbd124c12dbe0559ad72170e882f694cd52d80d6",
+    "tests/test_lane.py": "f7510a300038921d4f5c594ed67e1e08a07545cc6c04dec2ef41e947031f5e18",
+    "tests/test_ram_vector.py": "3cb2e804fadb1d6487539cb484ed2431293846306c4672f643c77484d6dcf601",
+    "tests/test_vector.py": "a0f2fefdcb28bbb6d3ac040fa99c902f34f1d06d5f04d1ce997b5875cc56fa08",
+    "tests/test_versioned_rf.py": "cbbe5a7d18ec02a5a35d6cb5d13737de1786d39b23effad672dde54df7a292b0",
+    "tests/timing_lane_tb.sv": "77ffe4f202d72c1fdfb5319e0c8c98ffc055d89fd1ccf22ac8f512e89e02cd22",
+    "tests/timing_model_check.sv": "3ae1238b65166546e2270695a24f00e50340ac5a5a83d8da392fd9a4983d774c",
+    "tests/timing_reference_cells.sv": "f7ced45b0f9ef1b8dbf4300e59559d5f2ebee4c13618a9a41d7dc6b3987e6777",
+    "tests/versioned_rf_tb.sv": "9682514ae3125c596bf1cc370b59f8bcad66cb12a3ca992a4aaeeac96b545f67",
+    "third_party/berkeley-hardfloat/README.md": "1b2ecbb7131f704199b10d9cd199a885ea09076ca34beb888b5b65fb6c501fc4",
+    "third_party/berkeley-hardfloat/patches/0001-unsigned-alignment-distance.patch": "1ad6d08a11f2fd86de77acba07436fb6037d6987f0f42271dd4cb4a2ebcb7178",
+    "third_party/berkeley-hardfloat/patches/verify-alignment.py": "ab1d94838545a6d08ec7365ca0be399dafd50b1dc49b18faa8b92ecd166e084b",
+    "third_party/berkeley-hardfloat/src/main/scala/AddRecFN.scala": "a0dec1dd3476eb42250529817e8d53b4efe327f08849fe130e475bf4963a779a",
+    "third_party/berkeley-hardfloat/src/main/scala/CompareRecFN.scala": "9f7d050ff8e605cbc7575b342eff3c2dd5e8a3aa7b87572aaa5fc58174badeec",
+    "third_party/berkeley-hardfloat/src/main/scala/DivSqrtRecFN_small.scala": "f715cae79b0a58496f717731a27939fb4aa6f8eb70dcf1770af84e6121281a15",
+    "third_party/berkeley-hardfloat/src/main/scala/INToRecFN.scala": "1ea78cf0b78dd9fb8af5643b601801d2b5e263aaf89beab012a6362c50020c5f",
+    "third_party/berkeley-hardfloat/src/main/scala/MulAddRecFN.scala": "b16c030f8545d032b1b58a7cc09c73f3a49404c3367630ee3e88de1a2e880ab6",
+    "third_party/berkeley-hardfloat/src/main/scala/MulRecFN.scala": "a665f8a23a7f490a7c8d5cce8f96cfb69047106c6d3b8275f44826af95cb1a32",
+    "third_party/berkeley-hardfloat/src/main/scala/RecFNToIN.scala": "c08160e4a8a23a14ec6d791db2590f7506228be9f74a0f03a2a13edfc162a7e4",
+    "third_party/berkeley-hardfloat/src/main/scala/RecFNToRecFN.scala": "c3f3c4f8551b20f5bb3d8c9c5dc0563f70077910df2ba8e401a131db903e8dca",
+    "third_party/berkeley-hardfloat/src/main/scala/RoundAnyRawFNToRecFN.scala": "31cdb3be147471d52e721f14914031c19b915bd7aaffe5c0e333393a0c7fb67d",
+    "third_party/berkeley-hardfloat/src/main/scala/classifyRecFN.scala": "0d7c3b2828d0ad87cc95a7cd0b28c6add9645cdb495756fb611381e88c6bd524",
+    "third_party/berkeley-hardfloat/src/main/scala/common.scala": "ea83cdfac50db84f372d624ce4e0d45188207164a6a1eae5d42d8174241925cb",
+    "third_party/berkeley-hardfloat/src/main/scala/fNFromRecFN.scala": "7a114540c32ef9e43152e37d1610dd5bbb68dba6b3bbd1aa5600fa3bc411fa6d",
+    "third_party/berkeley-hardfloat/src/main/scala/primitives.scala": "134cfae67052244a836aebbae3f9252b0e9bf4800ab5cbcba4b92eb1c56e7c31",
+    "third_party/berkeley-hardfloat/src/main/scala/rawFloatFromFN.scala": "39fb14ae28318821906f68ad63803ca24eecb1115bf24aa4f3df497392357dce",
+    "third_party/berkeley-hardfloat/src/main/scala/rawFloatFromIN.scala": "b404a8a21aaa09a876c5d92b87c0db85e2946a318a39b33ffb6477933cd257d8",
+    "third_party/berkeley-hardfloat/src/main/scala/rawFloatFromRecFN.scala": "bf7e4b0e453569c91f6a9d8c414feb3a5fed6dc7354ba31cdc8c7c0f1ffd8317",
+    "third_party/berkeley-hardfloat/src/main/scala/recFNFromFN.scala": "90060c571a38718330f8781ecc4f555096ac45a0c75abb3fe5219e06dacdbd2d",
+    "third_party/berkeley-hardfloat/src/main/scala/resizeRawFloat.scala": "6a12a1d9a7c64c10786d99cb81897f4de6adb6004cf1149eb9fbaf3b70a10655",
+    "third_party/fp-dependencies.json": "c7368141af56d4ee40540bcdd1be59803743cf7f8aa6a4179172304529500c6a",
+    "third_party/licenses/berkeley-hardfloat.LICENSE": "8e0236c9027ba0a243febb71f0e3dce559b50658f8d14fab31a626c9f214fdf3",
+    "third_party/licenses/berkeley-softfloat.LICENSE": "145ea96b4a4a04a1a7738d2a2bf9e830f861971e69606187b018d9e8fc0b95c7",
+    "third_party/rvv-opcodes-reference.json": "4b3d05d2008641e4443589ce33feabae5a96997555272db3bbdd3491dff69d23",
+    "third_party/xilinx-unisim/DSP48E2.v": "d2ab5e8f0bbb6c99183d559fcab3bcdb6f49c1c2961e5896c27b054b32d10c04",
+    "third_party/xilinx-unisim/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "third_party/xilinx-unisim/README.md": "11450a4eb3bdd681aa0edaaaf625033d0080c4761273f399d07319cdda10c9ad",
+    "third_party/xilinx-unisim/manifest.json": "5dce8026e2bb032fa6c1efebdcbdf0f25eb6319b672d287e7bf835323989575e",
+    "tools.lock.json": "d6ac4b6f924ae3d84d305be2f7b14a51c994340f71c4341e79acde9e4f7df72b"
+  },
+  "artifact_sha256": {
+    "build/rtl/FloatingPointLane.sv": "686d626aa8540e1157bdef530fa71e173c0c7bbae9d16feb163b01e8a0fceaf0",
+    "build/rtl/IntegerLaneBaseline.sv": "4b42f17bed0a48e5583674987f510f8beeedffe63cdd3bdfc0906ed67e561c21",
+    "build/rtl/IntegerLaneSplit.sv": "8b7c87467783577bcaa81796618efdbecc30ef50f1156d7ef174066dfcec725e",
+    "build/rtl/IntegerLaneSplit16.sv": "29d193085356a0825b9db000c2b8c2c870925d2c22d54fede4f58d74b215583f",
+    "build/rtl/RamVector.sv": "c835c1d62e9d1ae7529d9fda90c0cdfe20d6464c9c4596300482adb2972e0fde",
+    "build/rtl/RamVector16.sv": "e7390bc97c582b1c25f24d5af84da5afe7c4a2bb3df0826f5bfbf846b15223e4",
+    "build/rtl/RamVectorFlops.sv": "acac7a7e8d328ae7805683102c7fe92a964d4ae8490df67eea53a438bad38364",
+    "build/rtl/RamVectorFp.sv": "1d13a14bafc60acaef2b6f6610740bdaf19cd88e7939e99d002423650f7213d6",
+    "build/rtl/ValenceBoundary.sv": "2ad86aba8df3f6f282189b9492dfebd073d5edf920d012240b42efad507da98a",
+    "build/rtl/VectorPrototype.sv": "212f20b963a05a098a4dc5566c9258e5bd192bca56cc2ade51ac94872926efe2",
+    "build/rtl/VectorPrototype16.sv": "f48f7cc47b5bcf4419dd74f3a73d98eb92593f7bc638b0622d168861690ff19c",
+    "build/rtl/VectorPrototypeBaseline.sv": "6bf0558bec34ae9a74f4b4e2acc6e6363088388421622649e2ef935d24d316ce",
+    "build/rtl/VectorPrototypeFlops.sv": "877290f1a7c9e8fc73e9c1cb09517bec5951c56c6fa7412279c9ab04de6f5913",
+    "build/rtl/VersionedRegisterFileRam.sv": "fccd97226675ccbc979df763b2316bf6055e90a17f21b5e368e84547506cef6c",
+    "build/rtl/verification/assert/layers-FloatingPointLane-Verification-Assert.sv": "af299e02b046c2203c7efb2da801fe772dbc3245e71ca42a366ca469695af6d8",
+    "build/rtl/verification/assert/layers-IntegerLaneBaseline-Verification-Assert.sv": "170e7325ddd875971ab66f1d7dc5403e94aa99b4ccd9dfca13c852cbd94cac86",
+    "build/rtl/verification/assert/layers-IntegerLaneSplit-Verification-Assert.sv": "7df219aa5f1f895b68499a71b6e0f5a89fe813e29e1f4ba3b71e0d94757035a2",
+    "build/rtl/verification/assert/layers-IntegerLaneSplit16-Verification-Assert.sv": "0d2ac4bee88cc7c5e0fcb24ad5a59c72f949a89a10ee08b8932f59718ea82a83",
+    "build/rtl/verification/assert/layers-RamVector-Verification-Assert.sv": "bc03753ed757abe19535c869b415fdc30d2da51ea808080d78eecba85aa4a125",
+    "build/rtl/verification/assert/layers-RamVector16-Verification-Assert.sv": "44fc1552dcdef25d3661f887d4d1774d0e945e590917a71679ecb99baef9b6d6",
+    "build/rtl/verification/assert/layers-RamVectorFlops-Verification-Assert.sv": "50b8b9f2e3de4a13b5ce0bb817cde59ffda7822e4ab59c01b20e1a05738eab47",
+    "build/rtl/verification/assert/layers-RamVectorFp-Verification-Assert.sv": "890fe54a73f81435dabeb2bc6d56f512f7f66a2378d6fd37714e7bdd8cb04f7c",
+    "build/rtl/verification/assert/layers-ValenceBoundary-Verification-Assert.sv": "b79855e6bd6f164808e9abdc45f758fdd029d15f72315b40d1b4d863013c2dc5",
+    "build/rtl/verification/assert/layers-VectorPrototype-Verification-Assert.sv": "cf9979ab84c0f697932e0dc86b57ad6f4bfb7c1e990d16387d14bbc18c272ccd",
+    "build/rtl/verification/assert/layers-VectorPrototype16-Verification-Assert.sv": "45d6c9fe9d2830793de0a779f0ea3867cba73895124b38408b8a1b0c3e1b1ee3",
+    "build/rtl/verification/assert/layers-VectorPrototypeBaseline-Verification-Assert.sv": "11765c9372556c2a72de2edf6bf94b31a34174ce4a559d74e357e13a00bd8b0f",
+    "build/rtl/verification/assert/layers-VectorPrototypeFlops-Verification-Assert.sv": "5ea5ed8bb7892644498ac7ff03fa1cfdbac24def8749ec9f177e52d53674dec6",
+    "build/rtl/verification/assert/layers-VersionedRegisterFileRam-Verification-Assert.sv": "90f20d4ea45dba5ccf855a9495be279f8f6f27951d353beade2a27a0d04f2142",
+    "build/rtl/verification/assume/layers-FloatingPointLane-Verification-Assume.sv": "7702908ce4a6e043b5007897d044d6f11383492971dcf29ed0a9eae8967cfc97",
+    "build/rtl/verification/assume/layers-IntegerLaneBaseline-Verification-Assume.sv": "e4479d2011281817becd81559f99635834d97f1c78eac30aea81d1253c15e9cf",
+    "build/rtl/verification/assume/layers-IntegerLaneSplit-Verification-Assume.sv": "9a7c8e9616096f30114bd3384ac0f19cadf538e3220ade5741d2b0cce8c0c5c9",
+    "build/rtl/verification/assume/layers-IntegerLaneSplit16-Verification-Assume.sv": "36c016d62fb3330e34091948bcb0bc3f97ff70a5f5d656d3cd9e2fc1a8fc0b26",
+    "build/rtl/verification/assume/layers-RamVector-Verification-Assume.sv": "581ac68f2ea70fb4fbb21cb29f13f9e53ae4c907e7a3b9af6337f5cc2fa455c9",
+    "build/rtl/verification/assume/layers-RamVector16-Verification-Assume.sv": "e1280b826bb1a853f9252337198630aebf44a8f2dc8f4fbcc52b3b3b0ede3212",
+    "build/rtl/verification/assume/layers-RamVectorFlops-Verification-Assume.sv": "0be16693bca4ea11d628a777c234676db48930d54b7002fd6de3655734103347",
+    "build/rtl/verification/assume/layers-RamVectorFp-Verification-Assume.sv": "d0b0df77345ca9739dc1d472c1ba57aec95977376c39b6294fa8279b916e60b3",
+    "build/rtl/verification/assume/layers-ValenceBoundary-Verification-Assume.sv": "3eaf32806685f084a105fb2882f8d054f5c067455a22cfb4ae9a1ad573bab995",
+    "build/rtl/verification/assume/layers-VectorPrototype-Verification-Assume.sv": "62e7e598ade34ea12577f7fa3011b68c5e472dd70af49901e1556a2694383d97",
+    "build/rtl/verification/assume/layers-VectorPrototype16-Verification-Assume.sv": "8a8d66ac6f543410350dca76818519f16621011d8c2d20a72f36bfda56240524",
+    "build/rtl/verification/assume/layers-VectorPrototypeBaseline-Verification-Assume.sv": "dad80fb077957169bc4cbb000735ce2047a4101f38fb35c955dc3a7f44ffe533",
+    "build/rtl/verification/assume/layers-VectorPrototypeFlops-Verification-Assume.sv": "a16a4685dfafe0ac3ea64f3638dc51e5173bb2baf86e5cf971796cd6fea9369c",
+    "build/rtl/verification/assume/layers-VersionedRegisterFileRam-Verification-Assume.sv": "53ee55611b09fad2837b699740d83310a42badf1034f553dd59f46344ec02c38",
+    "build/rtl/verification/cover/layers-FloatingPointLane-Verification-Cover.sv": "4c32c855f6d50413814226c204e0604a32fd29ff2d581288dd7852d4bb3f15ac",
+    "build/rtl/verification/cover/layers-IntegerLaneBaseline-Verification-Cover.sv": "64a3057b3cb22f388a9ebe2179f144bc6d6538d5834c9c2e32ee8543187b3eb7",
+    "build/rtl/verification/cover/layers-IntegerLaneSplit-Verification-Cover.sv": "0e4c8ed93f49de6eb8e63c23d7520bffaeed6f4bc9275152607ca51662209fa3",
+    "build/rtl/verification/cover/layers-IntegerLaneSplit16-Verification-Cover.sv": "3c12da3f074d245ae4767049875ca4badc95dbf79f86bd20cb8cfe46762d0e54",
+    "build/rtl/verification/cover/layers-RamVector-Verification-Cover.sv": "5240d4d62c836148d27498e764a560a4231ff5d745cd190ebb7b18f7eedc5d64",
+    "build/rtl/verification/cover/layers-RamVector16-Verification-Cover.sv": "6edb50cd6765a1a5774d4015aedcfd5933dc1b8ca6c477f7587e6b080af50422",
+    "build/rtl/verification/cover/layers-RamVectorFlops-Verification-Cover.sv": "9284e471ef12f9eed91806682c67d10b65cbe0d43707d4f9c51be64c6407dbee",
+    "build/rtl/verification/cover/layers-RamVectorFp-Verification-Cover.sv": "405e6f1c9988a54feb3750f8fbb51465c2cb3c8c69c21c9971fe46076db5306d",
+    "build/rtl/verification/cover/layers-ValenceBoundary-Verification-Cover.sv": "26928991e95287b45b1e8567aefcb8789d66b9589ed58e9329a3f1a48c6c9e1c",
+    "build/rtl/verification/cover/layers-VectorPrototype-Verification-Cover.sv": "af44b258a1ccd67b630578725a4002b6e2f593c0ab774118fe6581adf6cd31bc",
+    "build/rtl/verification/cover/layers-VectorPrototype16-Verification-Cover.sv": "2205f6b6b53ac6a347b9045fbe5db99f6e3f4e94e61126e8d755f0ba39ffc4e1",
+    "build/rtl/verification/cover/layers-VectorPrototypeBaseline-Verification-Cover.sv": "eb4566af70fb446f1138e50c98aa4884999f23bec639fea48526a509ebeb021a",
+    "build/rtl/verification/cover/layers-VectorPrototypeFlops-Verification-Cover.sv": "9aa334bc306ce40871cb14ffa8974bbaf9836832b9b4412e003d8f199498e83d",
+    "build/rtl/verification/cover/layers-VersionedRegisterFileRam-Verification-Cover.sv": "627ae203a1eabe47a5ca1f8f0eae0c99c0b71958645ef8b74621f9a36b6a1e3d",
+    "build/rtl/verification/layers-FloatingPointLane-Verification.sv": "a406dc957ffc7b2716e6e4cafece42948590b5f70f3c272259ea22a8e8892ca4",
+    "build/rtl/verification/layers-IntegerLaneBaseline-Verification.sv": "22fad3920100dea94a5692592351242c3d4600dac37cf4bb7ba56c86337d0e04",
+    "build/rtl/verification/layers-IntegerLaneSplit-Verification.sv": "02e506a159a4f4db8120ac8396453197749ac37c75f664b4660d3d6cf725a426",
+    "build/rtl/verification/layers-IntegerLaneSplit16-Verification.sv": "8e3a3bd462dcde31fdf473db2437d96d78b8a465396a366631c529d035dd2f4f",
+    "build/rtl/verification/layers-RamVector-Verification.sv": "d2407f679fc2bac4ff1f22d4389f86f82bda94afb34eaaaaafd5f5dd4ae49a4c",
+    "build/rtl/verification/layers-RamVector16-Verification.sv": "02ee3c1ba509435de5111853b01253a814b0747b214c4f0f32983a5987b21500",
+    "build/rtl/verification/layers-RamVectorFlops-Verification.sv": "ded19ac1299e7ee1f1e8fd71a5b4aeb49df745ff69c62e91d327bb27b0369e39",
+    "build/rtl/verification/layers-RamVectorFp-Verification.sv": "630ff57e80c31564767bbf76a84086a885a00a19095a1c02925543fb406283df",
+    "build/rtl/verification/layers-ValenceBoundary-Verification.sv": "75fc072351be42189df410349ff5e393aaf901684c3a0bae3394c69a7f9c43ba",
+    "build/rtl/verification/layers-VectorPrototype-Verification.sv": "884a5f4b316ddd7947b610639852a758b7c99bee589b0363a07b9356e6945244",
+    "build/rtl/verification/layers-VectorPrototype16-Verification.sv": "0b987bb340d6f1730fa586b8c9f046954eafee3bb652e78acea403cd4f8d9e25",
+    "build/rtl/verification/layers-VectorPrototypeBaseline-Verification.sv": "d14337061949a4cc05335e231eaced248c91cc83879a04f0e77931b22822c91e",
+    "build/rtl/verification/layers-VectorPrototypeFlops-Verification.sv": "d9b42a6082318d432d84eedd31e30964e96810cc5d6bde76d2a4bcc27caf656f",
+    "build/rtl/verification/layers-VersionedRegisterFileRam-Verification.sv": "15f491c1b85ccc1c5b49699af74ed3073e0371634c1fb013567728ca26e4d780",
+    "build/synth/FloatingPointLane/mapped.json": "2717a2d0da8884e12f47640926c5d613b2a196048d55e2786be1c2e5b29fa490",
+    "build/synth/FloatingPointLane/mapped.v": "ea3e8351356d2aee070c0b2dbd42fab164ce92e67a62de9f340e1647d7f4b2cf",
+    "build/synth/FloatingPointLane/paths.json": "f194d40b8e2b8acf6776c8e3b704959f1657b1b534ab83b9d976e69e438ab6aa",
+    "build/synth/FloatingPointLane/stat.json": "01473830e72f7871700edfd4d838899f6ba6b21907aadb13441c36c2998e8576",
+    "build/synth/FloatingPointLane/summary.json": "2aa1a31c1bcc8febeb567bea3325bfb74566bc23e1ad8a97c851e5cccd5ede40",
+    "build/synth/FloatingPointLane/synth.log": "de159a3cf3d9bbd7e6473eb7e3143835baff2d777a729a0fe67467cd8a93d581",
+    "build/synth/RamVectorFp/mapped.json": "93ba4708a65fd62f25f08e24570960c8effb7e4e748f0f3e15a1dde0d6858164",
+    "build/synth/RamVectorFp/mapped.v": "a794b224f43d77e128e1948cad1ee97ca6f534be107f8275efc52c4a0d90c7f5",
+    "build/synth/RamVectorFp/paths.json": "bb9501117c6e1c8046f6c319f9b67a2476f282ecbd5130d25432c5d0e0e627a1",
+    "build/synth/RamVectorFp/stat.json": "b9e8295553641a1bfc446486cd0172a29dc530e8b609ca7770c8d4a165fe5a1d",
+    "build/synth/RamVectorFp/summary.json": "b1213d6c9b234825d48aa47f9bb3f083196c0e73f958df6d71ec75c13e35115b",
+    "build/synth/RamVectorFp/synth.log": "bde56856ca9540a8df627caa60e3fc0ac6393d4bd8e01235a83efa51f69f3fc8",
+    "build/synth/RamVectorFpNoDsp/mapped.json": "f7eb07e84637426bfe7ddd11a291597381c84f800ef5337e7dcf36efbfd03975",
+    "build/synth/RamVectorFpNoDsp/mapped.v": "0390c0679c9d64601cebd8b6aa2f32ad5c9c0659eb1a41097ba4c756eaacf714",
+    "build/synth/RamVectorFpNoDsp/paths.json": "75d91984a914d9cf4ead874509ba0e4b3941a84a26a31729e50fa71173e7563a",
+    "build/synth/RamVectorFpNoDsp/stat.json": "56f3d487812a880705c1ffa44991b3c89166d288cd888694e92946c2f38c0c12",
+    "build/synth/RamVectorFpNoDsp/summary.json": "ce76d09e265e28bf24b5546371c3bc6aa8a2efa28507db1288521b126086bfc0",
+    "build/synth/RamVectorFpNoDsp/synth.log": "47eacd103f876151fbbe3b8db7343b1e449c152f4ce6233d07c632a04c3e0872",
+    "build/test/RamVectorFp.log": "3aec062e13e3eed4b1dc809bbc1ad8c8ddd5afc912c1d80ffe0b3515cc2dde4a",
+    "build/test/fp-integer-results.json": "5dd4e657a08b35bda06e64314ffe660e11861d8daecd8092b5efc563dd1b7770",
+    "build/test/fp-lane-results.json": "30df366496fcbd8b31db0b0e08ac95eb5de3bb6ef5e597542b9f5df597b21b6b",
+    "build/test/fp-lane.log": "63084435eab47b84e02fa1e0ec9573d075acdd9dda61f57bffa47b706db56e6c",
+    "build/test/fp-vector-mapped-results.json": "f0781eca09f958512569540cf8a2c14e971be4ec39a6af237634645df339b4ba",
+    "build/test/fp-vector-mapped.compile.log": "443a1b79df03ba49bd3cfdfe8430b8868dd158800fd1d3e99b817aa9659771a9",
+    "build/test/fp-vector-mapped.log": "ba36808f506d572d77d34c48dfdc37ba0ca0f9e182a5c0904db93dcabceb9fa8",
+    "build/test/fp-vector-results.json": "82c2a11fb3d18a759c37bad58aa19ad9a7845b4e45619b2d71a7cd2fc2e1094a",
+    "build/test/fp-vector.log": "75205ee95c36b537213864191d8491d510a927778e0dc7b80243c7f0cdc9aae0",
+    "build/test/fp_lane_tb.sv": "042c391ce6b6938edcaec9701a9e7857d438e7b7f5999d5122be66d94c7c322a",
+    "build/test/fp_vector_tb.sv": "4243b0aeb9ee6507098889906929bd9b343b9d2b493994c3de389201d1ee9211",
+    "tools/fp/libfp-reference.so": "85ba9ef1a9e542a7062f6f19a29d3766a9720c4d14ace14d20e5c46657c8bb39",
+    "tools/fp/oracle-source-hashes.json": "a77e5b0a4c34c1e2c6c497733af083c369bc5b443a9d019b6bccb54ecf0b226c",
+    "tools/fp/softfloat/build/Linux-x86_64-GCC/softfloat.a": "cdcbe9ae5d18fdce12b6a9de33314ceccde6ab4c6d092408ee142f7fb726b4f1",
+    "tools/m3-tested-rtl-sha256.json": "3fda5d147737affe739beee70f876213826fad60bba06da4c744bfc9cb335161",
+    "tools/mill-generate.log": "d8c684c37ac175887be24f3406493b60cd99678dcb6be3c718292a77709fcbb4"
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "status": "BUILT_REFERENCE_GRAPH",
+  "scope": "M5_FIXED_ROUTED_IMPLEMENTATION_REFERENCE_ONLY",
+  "exit_code": 0,
+  "observations": {
+    "PROBE_FOLDER_WORKAROUND": "true",
+    "PROBE_VERTICES": "83990",
+    "PROBE_EDGES": "107661",
+    "PROBE_DSP_LOGIC_EDGES": "1775",
+    "PROBE_CYCLES": "false",
+    "PROBE_REFERENCE_PATH_PS": "2817.2002",
+    "PROBE_REFERENCE_START": "unit/request_b_reg[20]/Q",
+    "PROBE_REFERENCE_END": "unit/rb_reg[29]/D",
+    "PROBE_NO_CLOCK_TREE_HOLD_OR_SPEED_GRADE_SIGNOFF": ""
+  },
+  "passes_300MHz": null,
+  "passes_500MHz": null,
+  "signoff_STA": false,
+  "source_or_artifact_sha256": {
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/routed.dcp": "16a09345f303f223ffb4eefa74892e2785c5d4455753271370eb1d32eaa40ab3",
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/routed.edf": "4d87560baa7d200309d79f814e901796b9c92b5514e1599cbce9b324b8b1b99f",
+    "/workspace/zu15-vpu/tools/rapidwright-research/rapidwright-2026.1.1-standalone-lin64.jar": "b3bd8e98a026fec792347b9d007af1fc054e9376789186a3721c400ed52e9955",
+    "/workspace/zu15-vpu/scripts/java/CloudTimingAudit.java": "0c09b2ec564279e94b0fc2beb2a8f62846f6b486cc1edb8025c7012367a4bf7f",
+    "/workspace/zu15-vpu/scripts/cloud_reference.py": "1c8d9cd8dabb173acefc4230a11009b0974ace8cecb23de03a936dde8d627f80",
+    "/workspace/zu15-vpu/build/rapidwright/m5-screen/queries.tsv": "d06ab88574dd06a961e42f467a3826abb885ba007dbe794287bcabad97714a26",
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/dsp_delay/unit-partials_p_1_reg.txt": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/dsp_delay/unit-partials_p_2_reg.txt": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/dsp_delay/unit-partials_p_4_reg.txt": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/dsp_delay/unit-partials_p_5_reg.txt": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/dsp_delay/unit-partials_p_6_reg.txt": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+    "/workspace/zu15-vpu-local-results/m5-300MHz-20261016-103108/dsp_delay/unit-partials_p_reg.txt": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+    "/workspace/zu15-vpu/tools/rapidwright-research/data/parts.db": "d3a8ff8d73d7f355c8307a2f25bbbfde260d47e5c464ed86d9de9efbec66d343",
+    "/workspace/zu15-vpu/tools/rapidwright-research/data/unisim_data.dat": "adb8e1bbacca9de3908f3904698377e6834738f587bcb37c09932b6604f90a90",
+    "/workspace/zu15-vpu/tools/rapidwright-research/data/devices/zynquplus/xczu15eg_db.dat": "b7578487158e0b1a628a76ca027647f58c4ce89ada100631c94989dbdc124504",
+    "/workspace/zu15-vpu/tools/rapidwright-research/timing/ultrascaleplus/intrasite_delay_terms.txt": "ff08ce9041da649f2bf886d900f033dd23de8ad54eb4db55d37ce032dc0ec0a0",
+    "/workspace/zu15-vpu/tools/rapidwright-research/timing/ultrascaleplus/intersite_delay_terms.txt": "3b122837c4a1b5f3c212fc6353bee3a0854a204f2f69e2bc1cac4a2a1f9d7333"
+  }
+}

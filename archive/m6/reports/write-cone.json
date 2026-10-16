@@ -1,0 +1,21 @@
+{
+  "status": "PASS",
+  "scope": "Mapped register-to-RAM combinational fanin; not device delay",
+  "groups": {
+    "write_address": {
+      "FP_state_register_bits_in_direct_cone": [],
+      "stage_address_bits_in_cone": 5,
+      "source_FF_bits": 43
+    },
+    "write_data": {
+      "FP_state_register_bits_in_direct_cone": [],
+      "stage_address_bits_in_cone": 0,
+      "source_FF_bits": 134
+    },
+    "write_enable": {
+      "FP_state_register_bits_in_direct_cone": [],
+      "stage_address_bits_in_cone": 0,
+      "source_FF_bits": 22
+    }
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "vectors": 385,
+  "known_answer_anchors": 52,
+  "flush_reset_cases": 12,
+  "rtl_or_netlist_sha256": "4f15fb8c950f42e7c598da121260d82b6b0dd9fe7d1bef414df02312a9993c2f",
+  "testbench_sha256": "6186515f5abd497fadf9a4a3015d87661c2832ef7cc616a4e84f56a2dbeffc48",
+  "precision": [
+    "FP32",
+    "FP64"
+  ],
+  "rounding_modes": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "corrupt_result_rejected": true,
+  "observed_latency_cycles": {
+    "FP32_op0": [
+      31
+    ],
+    "FP32_op1": [
+      31
+    ],
+    "FP32_op2": [
+      31
+    ],
+    "FP32_op3": [
+      14,
+      279
+    ],
+    "FP32_op4": [
+      14,
+      279
+    ],
+    "FP32_op5": [
+      31
+    ],
+    "FP32_op6": [
+      31
+    ],
+    "FP32_op7": [
+      31
+    ],
+    "FP32_op8": [
+      31
+    ],
+    "FP32_op9": [
+      5
+    ],
+    "FP32_op10": [
+      5
+    ],
+    "FP32_op11": [
+      5
+    ],
+    "FP32_op12": [
+      5
+    ],
+    "FP32_op13": [
+      5
+    ],
+    "FP32_op14": [
+      5
+    ],
+    "FP32_op15": [
+      5
+    ],
+    "FP32_op16": [
+      5
+    ],
+    "FP32_op17": [
+      5
+    ],
+    "FP32_op18": [
+      5
+    ],
+    "FP32_op19": [
+      5
+    ],
+    "FP32_op20": [
+      5
+    ],
+    "FP32_op0_illegal": [
+      1
+    ],
+    "FP32_op30_illegal": [
+      1
+    ],
+    "FP32_op31_illegal": [
+      1
+    ],
+    "FP64_op0": [
+      31
+    ],
+    "FP64_op1": [
+      31
+    ],
+    "FP64_op2": [
+      31
+    ],
+    "FP64_op3": [
+      14,
+      279,
+      284
+    ],
+    "FP64_op4": [
+      14,
+      279
+    ],
+    "FP64_op5": [
+      31
+    ],
+    "FP64_op6": [
+      31
+    ],
+    "FP64_op7": [
+      31
+    ],
+    "FP64_op8": [
+      31
+    ],
+    "FP64_op9": [
+      5
+    ],
+    "FP64_op10": [
+      5
+    ],
+    "FP64_op11": [
+      5
+    ],
+    "FP64_op12": [
+      5
+    ],
+    "FP64_op13": [
+      5
+    ],
+    "FP64_op14": [
+      5
+    ],
+    "FP64_op15": [
+      5
+    ],
+    "FP64_op16": [
+      5
+    ],
+    "FP64_op17": [
+      5
+    ],
+    "FP64_op18": [
+      5
+    ],
+    "FP64_op19": [
+      5
+    ],
+    "FP64_op20": [
+      5
+    ],
+    "FP64_op0_illegal": [
+      1
+    ],
+    "FP64_op30_illegal": [
+      1
+    ],
+    "FP64_op31_illegal": [
+      1
+    ]
+  },
+  "status": "PASS",
+  "test_summary": "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727"
+}

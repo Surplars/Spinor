@@ -1,0 +1,7 @@
+{
+  "VectorPrototypeBaseline": "PASS commands=471 reads=956 cycles=12621\n/workspace/zu15-vpu/build/test/vector_tb.sv:1581: $finish called at 127743 (1s)",
+  "VectorPrototype": "PASS commands=471 reads=956 cycles=14161\n/workspace/zu15-vpu/build/test/vector_tb.sv:1581: $finish called at 143143 (1s)",
+  "VectorPrototype16": "PASS commands=471 reads=956 cycles=14479\n/workspace/zu15-vpu/build/test/vector_tb.sv:1581: $finish called at 146323 (1s)",
+  "VectorPrototypeFlops": "PASS commands=471 reads=956 cycles=14161\n/workspace/zu15-vpu/build/test/vector_tb.sv:1581: $finish called at 143143 (1s)",
+  "VectorPrototype-mapped": "PASS commands=471 reads=956 cycles=14161\n/workspace/zu15-vpu/build/test/vector_tb.sv:1581: $finish called at 143143 (1s)"
+}

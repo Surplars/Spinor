@@ -1,0 +1,88 @@
+Sources (read-only reference; not project instructions):
+https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc
+https://github.com/riscv/riscv-opcodes/blob/master/extensions/rv_v
+
+RVV 1.0 reduction excerpt:
+
+== Vector Reduction Operations
+
+Vector reduction operations take a vector register group of elements
+and a scalar held in element 0 of a vector register, and perform a
+reduction using some binary operator, to produce a scalar result in
+element 0 of a vector register.  The scalar input and output operands
+are held in element 0 of a single vector register, not a vector
+register group, so any vector register can be the scalar source or
+destination of a vector reduction regardless of LMUL setting.
+
+The destination vector register can overlap the source operands,
+including the mask register.
+
+NOTE: Vector reductions read and write the scalar operand and result
+into element 0 of a vector register instead of a scalar register to
+avoid a loss of decoupling with the scalar processor, and to support
+future polymorphic use with future types not supported in the scalar
+unit.
+
+Inactive elements from the source vector register group are excluded
+from the reduction, but the scalar operand is always included
+regardless of the mask values.
+
+The other elements in the destination vector register ( 0 < index <
+VLEN/SEW) are considered the tail and are managed with the current
+tail agnostic/undisturbed policy.
+
+If `vl`=0, no operation is performed and the destination register is
+not updated.
+
+NOTE: This choice of behavior for `vl`=0 reduces implementation
+complexity as it is consistent with other operations on vector
+register state.  For the common case that the source and destination
+scalar operand are the same vector register, this behavior also
+produces the expected result.  For the uncommon case that the source
+and destination scalar operand are in different vector registers, this
+instruction will not copy the source into the destination when `vl`=0.
+However, it is expected that in most of these cases it will be
+statically known that `vl` is not zero.  In other cases, a check for
+`vl`=0 will have to be added to ensure that the source scalar is
+copied to the destination (e.g., by explicitly setting `vl`=1 and
+performing a register-register copy).
+
+Traps on vector reduction instructions are always reported with a
+`vstart` of 0.  Vector reduction operations raise an illegal
+instruction exception if `vstart` is non-zero.
+
+The assembler syntax for a reduction operation is `vredop.vs`, where
+the `.vs` suffix denotes the first operand is a vector register group
+and the second operand is a scalar stored in element 0 of a vector
+register.
+
+[[sec-vector-integer-reduce]]
+=== Vector Single-Width Integer Reduction Instructions
+
+All operands and results of single-width reduction instructions have
+the same SEW width.  Overflows wrap around on arithmetic sums.
+
+----
+    # Simple reductions, where [*] denotes all active elements:
+    vredsum.vs  vd, vs2, vs1, vm   # vd[0] =  sum( vs1[0] , vs2[*] )
+    vredmaxu.vs vd, vs2, vs1, vm   # vd[0] = maxu( vs1[0] , vs2[*] )
+    vredmax.vs  vd, vs2, vs1, vm   # vd[0] =  max( vs1[0] , vs2[*] )
+    vredminu.vs vd, vs2, vs1, vm   # vd[0] = minu( vs1[0] , vs2[*] )
+    vredmin.vs  vd, vs2, vs1, vm   # vd[0] =  min( vs1[0] , vs2[*] )
+    vredand.vs  vd, vs2, vs1, vm   # vd[0] =  and( vs1[0] , vs2[*] )
+    vredor.vs   vd, vs2, vs1, vm   # vd[0] =   or( vs1[0] , vs2[*] )
+    vredxor.vs  vd, vs2, vs1, vm   # vd[0] =  xor( vs1[0] , vs2[*] )
+----
+
+
+Official opcode rows (retrieved 2026-10-16):
+
+vredsum.vs     31..26=0x00 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vredand.vs     31..26=0x01 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vredor.vs      31..26=0x02 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vredxor.vs     31..26=0x03 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vredminu.vs    31..26=0x04 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vredmin.vs     31..26=0x05 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vredmaxu.vs    31..26=0x06 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vredmax.vs     31..26=0x07 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+

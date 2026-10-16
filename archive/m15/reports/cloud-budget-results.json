@@ -1,0 +1,14 @@
+{
+  "status": "PASS",
+  "checks": [
+    "hand-computed delays",
+    "DSP exclusion",
+    "PI exclusion",
+    "cycle rejection",
+    "stale output removal"
+  ],
+  "source_sha256": {
+    "scripts/cloud_budget.py": "a4af6dba7d328077216e2ad28b6ab621edec8d6b9fca0d9e2dc2b15c39b6a4a7",
+    "tests/test_cloud_budget.py": "8056adc880aad3f57b5594c66abea2e659306205461f24edf151b3543d772e58"
+  }
+}

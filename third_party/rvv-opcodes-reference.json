@@ -1,0 +1,6 @@
+{
+  "repository": "https://github.com/riscv/riscv-opcodes",
+  "revision": "f24ac23ec9fa947011781a09cd6fd25a7c36dc45",
+  "file": "extensions/rv_v",
+  "sha256": "a260265cf952fa0025382b97c125c47bd3f42fa167805da0ee97b09c16ba7cba"
+}

@@ -1,0 +1,285 @@
+{
+  "scope": "FIXED_ROUTED_DATA_PATH_REFERENCE_NOT_NEW_RTL_SIGNOFF",
+  "exported_paths": 20,
+  "matched_paths": 20,
+  "paths": [
+    {
+      "source": "unit/state_reg[1]/C",
+      "output_pin": "unit/state_reg[1]/Q",
+      "endpoint": "rf/storage_ext/Memory_reg_0/ADDRBWRADDR[11]",
+      "slack_ns": 0.346,
+      "data_ns": 2.661,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.582,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.4934000999999997,
+      "reference_minus_vivado_ns": -0.08859990000000018
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTBDOUT[27]",
+      "endpoint": "rf/storage_ext/Memory_reg_0/DINBDIN[3]",
+      "slack_ns": 0.404,
+      "data_ns": 2.594,
+      "launch_arc_ns": 0.831,
+      "q_to_d_ns": 1.763,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.6561,
+      "reference_minus_vivado_ns": -0.1069
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTADOUT[18]",
+      "endpoint": "rf/storage_ext/Memory_reg_1/DINBDIN[26]",
+      "slack_ns": 0.407,
+      "data_ns": 2.615,
+      "launch_arc_ns": 0.856,
+      "q_to_d_ns": 1.7590000000000003,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.6200999999999999,
+      "reference_minus_vivado_ns": -0.13890000000000047
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTBDOUT[27]",
+      "endpoint": "rf/storage_ext/Memory_reg_0/DINBDIN[19]",
+      "slack_ns": 0.411,
+      "data_ns": 2.619,
+      "launch_arc_ns": 0.831,
+      "q_to_d_ns": 1.7880000000000003,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.6473999,
+      "reference_minus_vivado_ns": -0.14060010000000034
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTADOUT[9]",
+      "endpoint": "rf/storage_ext/Memory_reg_0/DINADIN[9]",
+      "slack_ns": 0.414,
+      "data_ns": 2.575,
+      "launch_arc_ns": 0.845,
+      "q_to_d_ns": 1.7300000000000002,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.5858998999999998,
+      "reference_minus_vivado_ns": -0.1441001000000004
+    },
+    {
+      "source": "unit/state_reg[1]/C",
+      "output_pin": "unit/state_reg[1]/Q",
+      "endpoint": "rf/storage_ext/Memory_reg_1/ADDRBWRADDR[11]",
+      "slack_ns": 0.421,
+      "data_ns": 2.586,
+      "launch_arc_ns": 0.079,
+      "q_to_d_ns": 2.5069999999999997,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.4252002000000004,
+      "reference_minus_vivado_ns": -0.08179979999999931
+    },
+    {
+      "source": "unit/request_c_reg[19]/C",
+      "output_pin": "unit/request_c_reg[19]/Q",
+      "endpoint": "unit/rc_reg[44]/D",
+      "slack_ns": 0.421,
+      "data_ns": 2.891,
+      "launch_arc_ns": 0.08,
+      "q_to_d_ns": 2.811,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.9135,
+      "reference_minus_vivado_ns": 0.10250000000000004
+    },
+    {
+      "source": "unit/request_c_reg[37]/C",
+      "output_pin": "unit/request_c_reg[37]/Q",
+      "endpoint": "unit/rc_reg[12]/D",
+      "slack_ns": 0.423,
+      "data_ns": 2.893,
+      "launch_arc_ns": 0.081,
+      "q_to_d_ns": 2.812,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.8541999999999996,
+      "reference_minus_vivado_ns": 0.04219999999999979
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTBDOUT[27]",
+      "endpoint": "rf/storage_ext/Memory_reg_0/DINADIN[19]",
+      "slack_ns": 0.426,
+      "data_ns": 2.586,
+      "launch_arc_ns": 0.831,
+      "q_to_d_ns": 1.755,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.593,
+      "reference_minus_vivado_ns": -0.16199999999999992
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTADOUT[18]",
+      "endpoint": "rf/storage_ext/Memory_reg_1/DINADIN[10]",
+      "slack_ns": 0.428,
+      "data_ns": 2.571,
+      "launch_arc_ns": 0.856,
+      "q_to_d_ns": 1.7150000000000003,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.5795,
+      "reference_minus_vivado_ns": -0.1355000000000004
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTBDOUT[20]",
+      "endpoint": "rf/storage_ext/Memory_reg_1/DINBDIN[12]",
+      "slack_ns": 0.431,
+      "data_ns": 2.573,
+      "launch_arc_ns": 0.837,
+      "q_to_d_ns": 1.736,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.5048,
+      "reference_minus_vivado_ns": -0.23120000000000007
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTADOUT[30]",
+      "endpoint": "rf/storage_ext/Memory_reg_1/DINADIN[6]",
+      "slack_ns": 0.439,
+      "data_ns": 2.566,
+      "launch_arc_ns": 0.825,
+      "q_to_d_ns": 1.7409999999999999,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.6287999,
+      "reference_minus_vivado_ns": -0.11220009999999991
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTBDOUT[27]",
+      "endpoint": "rf/storage_ext/Memory_reg_0/DINADIN[27]",
+      "slack_ns": 0.441,
+      "data_ns": 2.544,
+      "launch_arc_ns": 0.831,
+      "q_to_d_ns": 1.713,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.5622999,
+      "reference_minus_vivado_ns": -0.15070010000000011
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTADOUT[18]",
+      "endpoint": "rf/storage_ext/Memory_reg_0/DINBDIN[10]",
+      "slack_ns": 0.454,
+      "data_ns": 2.569,
+      "launch_arc_ns": 0.856,
+      "q_to_d_ns": 1.713,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.514,
+      "reference_minus_vivado_ns": -0.19900000000000007
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTBDOUT[27]",
+      "endpoint": "rf/storage_ext/Memory_reg_0/DINADIN[3]",
+      "slack_ns": 0.465,
+      "data_ns": 2.516,
+      "launch_arc_ns": 0.831,
+      "q_to_d_ns": 1.685,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.5237,
+      "reference_minus_vivado_ns": -0.1613
+    },
+    {
+      "source": "unit/state_reg[0]/C",
+      "output_pin": "unit/state_reg[0]/Q",
+      "endpoint": "unit/savedA_0_reg[24]/CE",
+      "slack_ns": 0.47,
+      "data_ns": 2.758,
+      "launch_arc_ns": 0.078,
+      "q_to_d_ns": 2.68,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.5734998,
+      "reference_minus_vivado_ns": -0.10650020000000016
+    },
+    {
+      "source": "unit/state_reg[0]/C",
+      "output_pin": "unit/state_reg[0]/Q",
+      "endpoint": "unit/savedA_0_reg[25]/CE",
+      "slack_ns": 0.47,
+      "data_ns": 2.758,
+      "launch_arc_ns": 0.078,
+      "q_to_d_ns": 2.68,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.5734998,
+      "reference_minus_vivado_ns": -0.10650020000000016
+    },
+    {
+      "source": "unit/state_reg[0]/C",
+      "output_pin": "unit/state_reg[0]/Q",
+      "endpoint": "unit/savedA_1_reg[25]/CE",
+      "slack_ns": 0.47,
+      "data_ns": 2.759,
+      "launch_arc_ns": 0.078,
+      "q_to_d_ns": 2.681,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.5734998,
+      "reference_minus_vivado_ns": -0.10750020000000005
+    },
+    {
+      "source": "unit/state_reg[0]/C",
+      "output_pin": "unit/state_reg[0]/Q",
+      "endpoint": "unit/savedA_1_reg[26]/CE",
+      "slack_ns": 0.47,
+      "data_ns": 2.759,
+      "launch_arc_ns": 0.078,
+      "q_to_d_ns": 2.681,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 2.5734998,
+      "reference_minus_vivado_ns": -0.10750020000000005
+    },
+    {
+      "source": "rf/storage_ext/Memory_reg_0/CLKARDCLK",
+      "output_pin": "rf/storage_ext/Memory_reg_0/DOUTADOUT[9]",
+      "endpoint": "rf/storage_ext/Memory_reg_1/DINBDIN[1]",
+      "slack_ns": 0.473,
+      "data_ns": 2.521,
+      "launch_arc_ns": 0.845,
+      "q_to_d_ns": 1.676,
+      "status": "MATCHED",
+      "reference_q_to_d_ns": 1.5637,
+      "reference_minus_vivado_ns": -0.11229999999999984
+    }
+  ],
+  "mean_absolute_error_ns": 0.12689004500000006,
+  "worst_underestimate_ns": 0.23120000000000007,
+  "worst_overestimate_ns": 0.10250000000000004,
+  "frequency_what_if": [
+    {
+      "MHz": 300,
+      "setup_slack_ns": 0.346333
+    },
+    {
+      "MHz": 333.333,
+      "setup_slack_ns": 0.013003
+    },
+    {
+      "MHz": 350,
+      "setup_slack_ns": -0.129857
+    },
+    {
+      "MHz": 400,
+      "setup_slack_ns": -0.487
+    },
+    {
+      "MHz": 500,
+      "setup_slack_ns": -0.987
+    }
+  ],
+  "signoff_STA": false,
+  "limitations": [
+    "Only the exported top 20 paths, not full graph error coverage.",
+    "Q-to-D comparison excludes Vivado launch clock-to-output arc; model may choose another path between the same pins.",
+    "Frequency scan reuses fixed routes, setup checks and clock assumptions; no new implementation, hold or pulse-width qualification.",
+    "No complete DSP internal-arc coverage, min-delay or actual clock-tree validation."
+  ],
+  "evidence_sha256": {
+    "/workspace/zu15-vpu-local-results/m4-300MHz-resume-20261016-094747/setup_paths.rpt": "084efaff0dae2b9ca526528ff0ca904b413dcfa3ceacece63c9564675e5a56a0",
+    "/workspace/zu15-vpu-local-results/m4-300MHz-resume-20261016-094747/run-summary.txt": "07aff1426fbd28a6c59b50e0236b822187dff39a5495c6303fca0f801240818c",
+    "/workspace/zu15-vpu-local-results/m4-300MHz-resume-20261016-094747/routed.dcp": "ed729c228e0df3342a81c6a4db0ce02212da3cb9e4514cc40af0655ee6366025",
+    "/workspace/zu15-vpu-local-results/m4-300MHz-resume-20261016-094747/routed.edf": "cc43f156b368f3910e8f57b950a53a1d70eadabac1d4649e5f927c323b21e2df"
+  }
+}

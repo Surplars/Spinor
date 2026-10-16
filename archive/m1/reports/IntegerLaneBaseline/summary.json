@@ -1,0 +1,19 @@
+{
+  "top": "IntegerLaneBaseline",
+  "elapsed_seconds": 9.53,
+  "mapped_cells": {
+    "CARRY4": 44,
+    "FDRE": 218,
+    "INV": 1,
+    "LUT2": 283,
+    "LUT3": 321,
+    "LUT4": 162,
+    "LUT5": 584,
+    "LUT6": 340
+  },
+  "scope": "out-of-context mapping, no IOB/clock buffers",
+  "family": "xcup",
+  "target_device": "xczu15eg-ffvb1156-2-i",
+  "vrf_mapping": "automatic",
+  "timing_status": "NO_DEVICE_PLACE_ROUTE_OR_SIGNOFF"
+}

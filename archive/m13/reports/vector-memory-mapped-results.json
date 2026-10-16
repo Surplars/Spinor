@@ -1,0 +1,1113 @@
+{
+  "context_reads": {
+    "0": 0,
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 0,
+    "5": 0,
+    "6": 0,
+    "7": 0,
+    "8": 0,
+    "9": 0,
+    "10": 0,
+    "11": 0,
+    "12": 0,
+    "13": 0,
+    "14": 0,
+    "15": 0,
+    "16": 0,
+    "17": 0,
+    "18": 0,
+    "19": 0,
+    "20": 0,
+    "21": 0,
+    "22": 0,
+    "23": 0,
+    "24": 0,
+    "25": 0,
+    "26": 0,
+    "27": 0,
+    "28": 0,
+    "29": 0,
+    "30": 0,
+    "31": 0,
+    "32": 0,
+    "33": 0,
+    "34": 0,
+    "35": 0,
+    "36": 0,
+    "37": 0,
+    "38": 0,
+    "39": 0,
+    "40": 0,
+    "41": 0,
+    "42": 0,
+    "43": 0,
+    "44": 0,
+    "45": 0,
+    "46": 0,
+    "47": 0,
+    "48": 0,
+    "49": 0,
+    "50": 0,
+    "51": 0,
+    "52": 0,
+    "53": 0,
+    "54": 0,
+    "55": 0,
+    "56": 0,
+    "57": 0,
+    "58": 0,
+    "59": 0,
+    "60": 0,
+    "61": 0
+  },
+  "status": "PASS",
+  "memory_cases": 62,
+  "stop_cases": 9,
+  "eew_emul_combinations": 6,
+  "metrics": [
+    {
+      "case": 0,
+      "cycles": 209,
+      "requests": 16
+    },
+    {
+      "case": 1,
+      "cycles": 183,
+      "requests": 16
+    },
+    {
+      "case": 2,
+      "cycles": 81,
+      "requests": 4
+    },
+    {
+      "case": 3,
+      "cycles": 88,
+      "requests": 5
+    },
+    {
+      "case": 4,
+      "cycles": 89,
+      "requests": 4
+    },
+    {
+      "case": 5,
+      "cycles": 81,
+      "requests": 4
+    },
+    {
+      "case": 6,
+      "cycles": 30,
+      "requests": 1
+    },
+    {
+      "case": 7,
+      "cycles": 27,
+      "requests": 1
+    },
+    {
+      "case": 8,
+      "cycles": 300,
+      "requests": 16
+    },
+    {
+      "case": 9,
+      "cycles": 252,
+      "requests": 16
+    },
+    {
+      "case": 10,
+      "cycles": 35,
+      "requests": 1
+    },
+    {
+      "case": 11,
+      "cycles": 33,
+      "requests": 1
+    },
+    {
+      "case": 12,
+      "cycles": 16,
+      "requests": 0
+    },
+    {
+      "case": 13,
+      "cycles": 9,
+      "requests": 0
+    },
+    {
+      "case": 14,
+      "cycles": 9,
+      "requests": 0
+    },
+    {
+      "case": 15,
+      "cycles": 49,
+      "requests": 2
+    },
+    {
+      "case": 16,
+      "cycles": 68,
+      "requests": 3
+    },
+    {
+      "case": 17,
+      "cycles": 47,
+      "requests": 2
+    },
+    {
+      "case": 18,
+      "cycles": 63,
+      "requests": 3
+    },
+    {
+      "case": 19,
+      "cycles": 48,
+      "requests": 2
+    },
+    {
+      "case": 20,
+      "cycles": 68,
+      "requests": 3
+    },
+    {
+      "case": 21,
+      "cycles": 47,
+      "requests": 2
+    },
+    {
+      "case": 22,
+      "cycles": 63,
+      "requests": 3
+    },
+    {
+      "case": 23,
+      "cycles": 48,
+      "requests": 2
+    },
+    {
+      "case": 24,
+      "cycles": 70,
+      "requests": 3
+    },
+    {
+      "case": 25,
+      "cycles": 46,
+      "requests": 2
+    },
+    {
+      "case": 26,
+      "cycles": 65,
+      "requests": 3
+    },
+    {
+      "case": 27,
+      "cycles": 51,
+      "requests": 2
+    },
+    {
+      "case": 28,
+      "cycles": 32,
+      "requests": 1
+    },
+    {
+      "case": 29,
+      "cycles": 48,
+      "requests": 2
+    },
+    {
+      "case": 30,
+      "cycles": 31,
+      "requests": 1
+    },
+    {
+      "case": 31,
+      "cycles": 17,
+      "requests": 0
+    },
+    {
+      "case": 32,
+      "cycles": 17,
+      "requests": 0
+    },
+    {
+      "case": 33,
+      "cycles": 17,
+      "requests": 0
+    },
+    {
+      "case": 34,
+      "cycles": 17,
+      "requests": 0
+    },
+    {
+      "case": 35,
+      "cycles": 17,
+      "requests": 0
+    },
+    {
+      "case": 36,
+      "cycles": 17,
+      "requests": 0
+    },
+    {
+      "case": 37,
+      "cycles": 17,
+      "requests": 0
+    },
+    {
+      "case": 38,
+      "cycles": 17,
+      "requests": 0
+    },
+    {
+      "case": 39,
+      "cycles": 8,
+      "requests": 0
+    },
+    {
+      "case": 40,
+      "cycles": 8,
+      "requests": 0
+    },
+    {
+      "case": 41,
+      "cycles": 8,
+      "requests": 0
+    },
+    {
+      "case": 42,
+      "cycles": 8,
+      "requests": 0
+    },
+    {
+      "case": 43,
+      "cycles": 8,
+      "requests": 0
+    },
+    {
+      "case": 44,
+      "cycles": 8,
+      "requests": 0
+    },
+    {
+      "case": 45,
+      "cycles": 8,
+      "requests": 0
+    },
+    {
+      "case": 46,
+      "cycles": 8,
+      "requests": 0
+    },
+    {
+      "case": 47,
+      "cycles": 304,
+      "requests": 16
+    },
+    {
+      "case": 48,
+      "cycles": 110,
+      "requests": 5
+    },
+    {
+      "case": 49,
+      "cycles": 17,
+      "requests": 0
+    },
+    {
+      "case": 50,
+      "cycles": 89,
+      "requests": 4
+    },
+    {
+      "case": 51,
+      "cycles": 81,
+      "requests": 4
+    },
+    {
+      "case": 52,
+      "cycles": 90,
+      "requests": 4
+    },
+    {
+      "case": 53,
+      "cycles": 82,
+      "requests": 4
+    },
+    {
+      "case": 54,
+      "cycles": 1590,
+      "requests": 128
+    },
+    {
+      "case": 55,
+      "cycles": 1376,
+      "requests": 128
+    },
+    {
+      "case": 56,
+      "cycles": 2144,
+      "requests": 128
+    },
+    {
+      "case": 57,
+      "cycles": 1930,
+      "requests": 128
+    },
+    {
+      "case": 58,
+      "cycles": 248,
+      "requests": 16
+    },
+    {
+      "case": 59,
+      "cycles": 200,
+      "requests": 16
+    },
+    {
+      "case": 60,
+      "cycles": 296,
+      "requests": 16
+    },
+    {
+      "case": 61,
+      "cycles": 272,
+      "requests": 16
+    }
+  ],
+  "case_specs": [
+    {
+      "id": 0,
+      "eew": 8,
+      "write": false,
+      "vl": 16,
+      "vtype": 0,
+      "active_successes": 16,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 1,
+      "eew": 8,
+      "write": true,
+      "vl": 16,
+      "vtype": 0,
+      "active_successes": 16,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 2,
+      "eew": 16,
+      "write": false,
+      "vl": 8,
+      "vtype": 8,
+      "active_successes": 4,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 3,
+      "eew": 16,
+      "write": true,
+      "vl": 8,
+      "vtype": 8,
+      "active_successes": 5,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 4,
+      "eew": 32,
+      "write": false,
+      "vl": 4,
+      "vtype": 16,
+      "active_successes": 4,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 5,
+      "eew": 32,
+      "write": true,
+      "vl": 4,
+      "vtype": 16,
+      "active_successes": 4,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 6,
+      "eew": 64,
+      "write": false,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 1,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 7,
+      "eew": 64,
+      "write": true,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 1,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 8,
+      "eew": 64,
+      "write": false,
+      "vl": 16,
+      "vtype": 0,
+      "active_successes": 16,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 9,
+      "eew": 64,
+      "write": true,
+      "vl": 16,
+      "vtype": 0,
+      "active_successes": 16,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 10,
+      "eew": 8,
+      "write": false,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 1,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 11,
+      "eew": 8,
+      "write": true,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 1,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 12,
+      "eew": 64,
+      "write": false,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 13,
+      "eew": 64,
+      "write": true,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 14,
+      "eew": 8,
+      "write": false,
+      "vl": 0,
+      "vtype": 0,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 15,
+      "eew": 8,
+      "write": false,
+      "vl": 4,
+      "vtype": 0,
+      "active_successes": 1,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 16,
+      "eew": 8,
+      "write": false,
+      "vl": 4,
+      "vtype": 0,
+      "active_successes": 3,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 17,
+      "eew": 8,
+      "write": true,
+      "vl": 4,
+      "vtype": 0,
+      "active_successes": 1,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 18,
+      "eew": 8,
+      "write": true,
+      "vl": 4,
+      "vtype": 0,
+      "active_successes": 3,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 19,
+      "eew": 16,
+      "write": false,
+      "vl": 4,
+      "vtype": 8,
+      "active_successes": 1,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 20,
+      "eew": 16,
+      "write": false,
+      "vl": 4,
+      "vtype": 8,
+      "active_successes": 3,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 21,
+      "eew": 16,
+      "write": true,
+      "vl": 4,
+      "vtype": 8,
+      "active_successes": 1,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 22,
+      "eew": 16,
+      "write": true,
+      "vl": 4,
+      "vtype": 8,
+      "active_successes": 3,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 23,
+      "eew": 32,
+      "write": false,
+      "vl": 4,
+      "vtype": 16,
+      "active_successes": 1,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 24,
+      "eew": 32,
+      "write": false,
+      "vl": 4,
+      "vtype": 16,
+      "active_successes": 3,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 25,
+      "eew": 32,
+      "write": true,
+      "vl": 4,
+      "vtype": 16,
+      "active_successes": 1,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 26,
+      "eew": 32,
+      "write": true,
+      "vl": 4,
+      "vtype": 16,
+      "active_successes": 3,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 27,
+      "eew": 64,
+      "write": false,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 1,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 28,
+      "eew": 64,
+      "write": false,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 1,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 29,
+      "eew": 64,
+      "write": true,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 1,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 30,
+      "eew": 64,
+      "write": true,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 1,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 31,
+      "eew": 16,
+      "write": false,
+      "vl": 2,
+      "vtype": 8,
+      "active_successes": 0,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 32,
+      "eew": 16,
+      "write": true,
+      "vl": 2,
+      "vtype": 8,
+      "active_successes": 0,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 33,
+      "eew": 32,
+      "write": false,
+      "vl": 2,
+      "vtype": 16,
+      "active_successes": 0,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 34,
+      "eew": 32,
+      "write": true,
+      "vl": 2,
+      "vtype": 16,
+      "active_successes": 0,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 35,
+      "eew": 64,
+      "write": false,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 0,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 36,
+      "eew": 64,
+      "write": true,
+      "vl": 2,
+      "vtype": 24,
+      "active_successes": 0,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 37,
+      "eew": 8,
+      "write": false,
+      "vl": 2,
+      "vtype": 0,
+      "active_successes": 0,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 38,
+      "eew": 8,
+      "write": true,
+      "vl": 2,
+      "vtype": 0,
+      "active_successes": 0,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 39,
+      "eew": 64,
+      "write": false,
+      "vl": 1,
+      "vtype": 3,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": true
+    },
+    {
+      "id": 40,
+      "eew": 8,
+      "write": false,
+      "vl": 4,
+      "vtype": 0,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": true
+    },
+    {
+      "id": 41,
+      "eew": 8,
+      "write": false,
+      "vl": 4,
+      "vtype": 0,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": true
+    },
+    {
+      "id": 42,
+      "eew": 8,
+      "write": false,
+      "vl": 4,
+      "vtype": 0,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": true
+    },
+    {
+      "id": 43,
+      "eew": 8,
+      "write": false,
+      "vl": 4,
+      "vtype": 0,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": true
+    },
+    {
+      "id": 44,
+      "eew": 8,
+      "write": false,
+      "vl": 4,
+      "vtype": 0,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": true
+    },
+    {
+      "id": 45,
+      "eew": 8,
+      "write": false,
+      "vl": 4,
+      "vtype": 0,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": true
+    },
+    {
+      "id": 46,
+      "eew": 8,
+      "write": false,
+      "vl": 4,
+      "vtype": 1,
+      "active_successes": 0,
+      "fault": false,
+      "illegal": true
+    },
+    {
+      "id": 47,
+      "eew": 8,
+      "write": false,
+      "vl": 16,
+      "vtype": 0,
+      "active_successes": 16,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 48,
+      "eew": 8,
+      "write": true,
+      "vl": 16,
+      "vtype": 0,
+      "active_successes": 5,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 49,
+      "eew": 8,
+      "write": false,
+      "vl": 2,
+      "vtype": 0,
+      "active_successes": 0,
+      "fault": true,
+      "illegal": false
+    },
+    {
+      "id": 50,
+      "eew": 32,
+      "write": false,
+      "vl": 4,
+      "vtype": 16,
+      "active_successes": 4,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 51,
+      "eew": 32,
+      "write": true,
+      "vl": 4,
+      "vtype": 16,
+      "active_successes": 4,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 52,
+      "eew": 32,
+      "write": false,
+      "vl": 4,
+      "vtype": 16,
+      "active_successes": 4,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 53,
+      "eew": 32,
+      "write": true,
+      "vl": 4,
+      "vtype": 16,
+      "active_successes": 4,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 54,
+      "eew": 8,
+      "write": false,
+      "vl": 128,
+      "vtype": 3,
+      "active_successes": 128,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 55,
+      "eew": 8,
+      "write": true,
+      "vl": 128,
+      "vtype": 3,
+      "active_successes": 128,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 56,
+      "eew": 8,
+      "write": false,
+      "vl": 128,
+      "vtype": 3,
+      "active_successes": 128,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 57,
+      "eew": 8,
+      "write": true,
+      "vl": 128,
+      "vtype": 3,
+      "active_successes": 128,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 58,
+      "eew": 64,
+      "write": false,
+      "vl": 16,
+      "vtype": 27,
+      "active_successes": 16,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 59,
+      "eew": 64,
+      "write": true,
+      "vl": 16,
+      "vtype": 27,
+      "active_successes": 16,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 60,
+      "eew": 64,
+      "write": false,
+      "vl": 16,
+      "vtype": 27,
+      "active_successes": 16,
+      "fault": false,
+      "illegal": false
+    },
+    {
+      "id": 61,
+      "eew": 64,
+      "write": true,
+      "vl": 16,
+      "vtype": 27,
+      "active_successes": 16,
+      "fault": false,
+      "illegal": false
+    }
+  ],
+  "stop_specs": [
+    {
+      "id": 62,
+      "write": false,
+      "delay": 0
+    },
+    {
+      "id": 63,
+      "write": false,
+      "delay": 30
+    },
+    {
+      "id": 64,
+      "write": false,
+      "delay": 120
+    },
+    {
+      "id": 65,
+      "write": false,
+      "delay": 1000
+    },
+    {
+      "id": 66,
+      "write": true,
+      "delay": 0
+    },
+    {
+      "id": 67,
+      "write": true,
+      "delay": 30
+    },
+    {
+      "id": 68,
+      "write": true,
+      "delay": 120
+    },
+    {
+      "id": 69,
+      "write": true,
+      "delay": 1000
+    },
+    {
+      "id": 70,
+      "error_stop": true
+    }
+  ],
+  "benchmark_cases": [
+    {
+      "case": 54,
+      "service_wait": 0,
+      "eew": 8,
+      "vl": 128,
+      "write": false
+    },
+    {
+      "case": 55,
+      "service_wait": 0,
+      "eew": 8,
+      "vl": 128,
+      "write": true
+    },
+    {
+      "case": 56,
+      "service_wait": 4,
+      "eew": 8,
+      "vl": 128,
+      "write": false
+    },
+    {
+      "case": 57,
+      "service_wait": 4,
+      "eew": 8,
+      "vl": 128,
+      "write": true
+    },
+    {
+      "case": 58,
+      "service_wait": 0,
+      "eew": 64,
+      "vl": 16,
+      "write": false
+    },
+    {
+      "case": 59,
+      "service_wait": 0,
+      "eew": 64,
+      "vl": 16,
+      "write": true
+    },
+    {
+      "case": 60,
+      "service_wait": 4,
+      "eew": 64,
+      "vl": 16,
+      "write": false
+    },
+    {
+      "case": 61,
+      "service_wait": 4,
+      "eew": 64,
+      "vl": 16,
+      "write": true
+    }
+  ],
+  "assertions_enabled": false,
+  "scope": "physical normal RAM; registered memory model; no MMIO/PMP/VM/coherence",
+  "rtl_or_netlist_sha256": "7bebd3516f86360b5fb76a0efe4adf30cfae0d601a5d84674f6751e0cc4e5baa",
+  "testbench_sha256": "cfe5708be64e16cfe518e90f81aa46e2bdbfcd248ed430fe14f11b34b357355d",
+  "summary": "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971"
+}

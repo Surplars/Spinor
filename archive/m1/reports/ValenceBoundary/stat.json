@@ -1,0 +1,49 @@
+{
+   "creator": "Yosys 0.70+16 (git sha1 3bb533450, Release, Clang /usr/bin/clang++ 21.1.8)",
+   "invocation": "stat -json ",
+   "modules": {
+      "\\ValenceBoundary": {
+         "num_wires":         119,
+         "num_wire_bits":     1638,
+         "num_pub_wires":     44,
+         "num_pub_wire_bits": 1262,
+         "num_ports":         41,
+         "num_port_bits":     1123,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         285,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "FDRE": 70,
+            "LUT2": 64,
+            "LUT3": 4,
+            "LUT4": 60,
+            "LUT5": 49,
+            "LUT6": 38
+         }
+      }
+   },
+      "design": {
+         "num_wires":         119,
+         "num_wire_bits":     1638,
+         "num_pub_wires":     44,
+         "num_pub_wire_bits": 1262,
+         "num_ports":         41,
+         "num_port_bits":     1123,
+         "num_memories":      0,
+         "num_memory_bits":   0,
+         "num_processes":     0,
+         "num_cells":         285,
+         "num_submodules":       0,
+         "num_cells_by_type": {
+            "FDRE": 70,
+            "LUT2": 64,
+            "LUT3": 4,
+            "LUT4": 60,
+            "LUT5": 49,
+            "LUT6": 38
+         }
+      }
+}
+
