@@ -283,7 +283,7 @@ ctx(49,0,0,64'h1fffffffe);
 ctx(50,0,0,64'h80000000);
 ctx(51,0,0,64'h7ffffffe80000001);
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h3401);monAccess(64'h18,4,0,64'h3fffff);
+monAccess(64'h10,4,0,64'h3501);monAccess(64'h18,4,0,64'h7fffff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});

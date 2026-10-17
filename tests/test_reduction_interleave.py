@@ -146,8 +146,24 @@ setwords(8,[0x3f800000]*4);setwords(16,[0x40000000]*4)
 execute(0,1,24,8,16,[0x40400000]*4)
 setwords(8,[1,2,3,4]);setwords(16,[5,6,7,8])
 execute(0x25,2,24,8,16,[5,12,21,32])
+# Integer destructive multiply-add shares the third RAM read with FP FMA.
+# Exercise both overwrite forms and return immediately to FP and ordinary MUL.
+setwords(8,[1,2,3,4]);setwords(16,[5,6,7,8]);setwords(24,[10,20,30,40])
+execute(0x2d,2,24,8,16,[15,32,51,72])
+execute(0x2f,6,24,8,5,[12,26,42,60],scalar=3)
+execute(0x29,2,24,8,16,[61,158,297,484])
+execute(0x2b,6,24,8,5,[(x-2*d)&0xffffffff for x,d in zip([1,2,3,4],[61,158,297,484])],scalar=2)
+execute(0x2d,2,8,8,8,[2,6,12,20])
+execute(0x25,2,24,8,16,[10,36,84,160])
+# MAC and reductions share only scalar scratch: seed reload and product
+# handoff must overwrite it at their own boundaries.
+execute(0,2,24,8,16,[45,36,84,160])
+execute(0x2d,2,24,8,16,[55,72,168,320])
+setwords(8,[0x3f800000]*4);setwords(16,[0x40000000]*4);setwords(24,[0x3f800000]*4)
+execute(0x2c,1,24,8,16,[0x40400000]*4)
+execute(0,1,24,24,16,[0x40a00000]*4)
 for r in range(32):ctx(r)
-lines+=['$display("PASS reduction-interleave 69 vector instructions");$finish;end endmodule']
+lines+=['$display("PASS reduction-interleave 79 vector instructions");$finish;end endmodule']
 tb=OUT/'tb.sv';tb.write_text('\n'.join(lines));label='mapped' if args.mapped else 'rtl'
 rtl=ROOT/('build/synth/RamVectorFp/mapped.v' if args.mapped else 'build/rtl/RamVectorFp.sv')
 files=[tb,rtl];extra=[]
@@ -156,5 +172,5 @@ with (OUT/(label+'-compile.log')).open('w') as log:
  subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/iverilog'),'-g2012','-s','tb','-DTOP=RamVectorFp',*extra,'-o',str(OUT/label),*map(str,files)],check=True,stdout=log,stderr=log)
 run=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],capture_output=True,text=True)
 (OUT/(label+'.log')).write_text(run.stdout+run.stderr);assert run.returncode==0,run.stdout+run.stderr
-result=dict(status='PASS',mapped=args.mapped,vector_instructions=69,sha256={str(x.relative_to(ROOT)):hashlib.sha256(x.read_bytes()).hexdigest() for x in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
+result=dict(status='PASS',mapped=args.mapped,vector_instructions=79,sha256={str(x.relative_to(ROOT)):hashlib.sha256(x.read_bytes()).hexdigest() for x in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

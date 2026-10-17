@@ -9,6 +9,7 @@ class IncrementProof extends Module {
   val io=IO(new Bundle {
     val bits=Input(UInt(109.W));val enable=Input(Bool())
     val base=Input(UInt(64.W));val index=Input(UInt(8.W));val eewLog2=Input(UInt(2.W))
+    val packed=Input(UInt(128.W));val byteIndex=Input(UInt(4.W))
     val mismatch=Output(Bool())
   })
   val increments=Seq(5,8,32,55,109).map { width =>
@@ -46,7 +47,8 @@ class IncrementProof extends Module {
   val narrowValid=lmul<=2.U || lmul>=5.U
   val narrowMismatch=narrowValid && (VectorConfig.narrowAlignment(lmul)=/=(narrowCount-1.U) ||
     VectorConfig.groupAlignment(VectorConfig.doubleGroupLog(lmul))=/=(narrowCount-1.U))
-  io.mismatch:=narrowMismatch || highPartMismatch || overlapMismatch || alignmentMismatch || endMismatch || groupMismatch || increments || (address=/=(io.base+offset.pad(64))) || configMismatch
+  val readMismatch=PackedElementRead(io.packed,UIntToOH(io.byteIndex,16))=/=(io.packed>>Cat(io.byteIndex,0.U(3.W)))(63,0)
+  io.mismatch:=readMismatch || narrowMismatch || highPartMismatch || overlapMismatch || alignmentMismatch || endMismatch || groupMismatch || increments || (address=/=(io.base+offset.pad(64))) || configMismatch
 }
 object GenerateIncrementProof extends App {
   val path=Paths.get(args(0));Files.createDirectories(path.getParent)

@@ -39,7 +39,10 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   io.context.valid:=state===maskLow || state===maskHigh || state===readChunk || (state===writeChunk && !stop)
   io.context.bits:=0.U.asTypeOf(new ContextAccess)
   val byteOffset=(index<<width)(6,0)
-  val chunkAddress=((baseRegister<<1)+byteOffset(6,3))(5,0)
+  // Compute the RF chunk address alongside the low memory address, before
+  // checkAddress/readChunk. This cuts index -> shift/add -> shared RF access
+  // without adding an element cycle or changing the write-through cache.
+  val chunkAddress=Reg(UInt(6.W))
   val bitOffset=Cat(byteOffset(2,0),0.U(3.W))
   io.context.bits.address:=Mux(state===maskLow,0.U,Mux(state===maskHigh,1.U,chunkAddress))
   io.context.bits.write:=state===writeChunk;io.context.bits.data:=result
@@ -90,6 +93,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
       .otherwise { state:=addressLow }
   }
   when(state===addressLow) {
+    chunkAddress:=((baseRegister<<1)+byteOffset(6,3))(5,0)
     val sum=CarrySelect.add(cmd.scalar(31,0),(index<<width).pad(32),false.B)
     address:=Cat(cmd.scalar(63,32),sum(31,0));addressCarry:=sum(32);state:=addressHigh
   }

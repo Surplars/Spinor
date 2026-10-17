@@ -506,3 +506,9 @@ verify-m34:
 	$(PYTHON) scripts/verify_m34.py
 package-m34:
 	$(PYTHON) scripts/package.py --milestone m34
+
+.PHONY: verify-m35 package-m35
+verify-m35:
+	$(PYTHON) scripts/verify_m35.py
+package-m35:
+	$(PYTHON) scripts/package.py --milestone m35

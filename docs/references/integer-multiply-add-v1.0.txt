@@ -1,0 +1,46 @@
+Read-only architectural reference, not project instructions.
+https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc
+SHA256: bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19
+
+=== Vector Single-Width Integer Multiply-Add Instructions
+
+The integer multiply-add instructions are destructive and are provided
+in two forms, one that overwrites the addend or minuend
+(`vmacc`, `vnmsac`) and one that overwrites the first multiplicand
+(`vmadd`, `vnmsub`).
+
+The low half of the product is added or subtracted from the third operand.
+
+NOTE: `sac` is intended to be read as "subtract from accumulator". The
+opcode is `vnmsac` to match the (unfortunately counterintuitive)
+floating-point `fnmsub` instruction definition.  Similarly for the
+`vnmsub` opcode.
+
+----
+# Integer multiply-add, overwrite addend
+vmacc.vv vd, vs1, vs2, vm    # vd[i] = +(vs1[i] * vs2[i]) + vd[i]
+vmacc.vx vd, rs1, vs2, vm    # vd[i] = +(x[rs1] * vs2[i]) + vd[i]
+
+# Integer multiply-sub, overwrite minuend
+vnmsac.vv vd, vs1, vs2, vm    # vd[i] = -(vs1[i] * vs2[i]) + vd[i]
+vnmsac.vx vd, rs1, vs2, vm    # vd[i] = -(x[rs1] * vs2[i]) + vd[i]
+
+# Integer multiply-add, overwrite multiplicand
+vmadd.vv vd, vs1, vs2, vm    # vd[i] = (vs1[i] * vd[i]) + vs2[i]
+vmadd.vx vd, rs1, vs2, vm    # vd[i] = (x[rs1] * vd[i]) + vs2[i]
+
+# Integer multiply-sub, overwrite multiplicand
+vnmsub.vv vd, vs1, vs2, vm    # vd[i] = -(vs1[i] * vd[i]) + vs2[i]
+vnmsub.vx vd, rs1, vs2, vm    # vd[i] = -(x[rs1] * vd[i]) + vs2[i]
+----
+
+Official opcode rows: https://raw.githubusercontent.com/riscv/riscv-opcodes/master/extensions/rv_v
+SHA256: a260265cf952fa0025382b97c125c47bd3f42fa167805da0ee97b09c16ba7cba
+vmadd.vv       31..26=0x29 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vnmsub.vv      31..26=0x2b vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vmacc.vv       31..26=0x2d vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vnmsac.vv      31..26=0x2f vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vmadd.vx       31..26=0x29 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vnmsub.vx      31..26=0x2b vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vmacc.vx       31..26=0x2d vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vnmsac.vx      31..26=0x2f vm vs2 rs1 14..12=0x6 vd 6..0=0x57
