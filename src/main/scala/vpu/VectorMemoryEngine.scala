@@ -30,6 +30,11 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   // Reuse original as one write-through register-file chunk, never a whole group snapshot.
   val cachedValid=RegInit(false.B);val cachedAddress=Reg(UInt(6.W))
   val address=Reg(UInt(64.W));val addressCarry=Reg(Bool());val stopped=RegInit(false.B)
+  // The scalar base is invariant for the instruction. Capture the carry into
+  // each high-address byte at decode, before the per-element address stages.
+  // Separate 8-bit increments prevent LUT sharing from rebuilding a long
+  // prefix chain through all 32 high bits, without adding an element cycle.
+  val upperAddressPrefix=Reg(Vec(3,Bool()))
   val decodedBad=Reg(Bool());val illegal=Reg(Bool());val status=Reg(new VectorMemoryStatus);val nextStart=Reg(UInt(8.W));val finishAfterStart=Reg(Bool())
   val stop=stopped || io.stop
   io.busy:=state=/=idle;io.command.ready:=state===idle && !io.stop
@@ -64,6 +69,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   def fault(cause:UInt):Unit={ status.fault:=true.B;status.cause:=cause;status.address:=address;status.element:=index;setStart(index,true.B) }
   when(state===decode) {
     val inst=cmd.instruction;val f3=inst(14,12)
+    for(byte<-1 until 4) { upperAddressPrefix(byte-1):=cmd.scalar(31+8*byte,32).andR }
     val ew=MuxLookup(f3,0.U(2.W))(Seq(5.U->1.U,6.U->2.U,7.U->3.U))
     val lm=Mux(typ(2),typ(2,0).asSInt,typ(2,0).zext)
     val emul=lm+&ew.zext-typ(4,3).zext
@@ -97,7 +103,13 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val sum=CarrySelect.add(cmd.scalar(31,0),(index<<width).pad(32),false.B)
     address:=Cat(cmd.scalar(63,32),sum(31,0));addressCarry:=sum(32);state:=addressHigh
   }
-  when(state===addressHigh) { address:=Cat(ParallelIncrement(cmd.scalar(63,32),addressCarry),address(31,0));state:=checkAddress }
+  when(state===addressHigh) {
+    val upperBytes=(0 until 4).map { byte =>
+      val carry=if(byte==0)addressCarry else addressCarry && upperAddressPrefix(byte-1)
+      ParallelIncrement(cmd.scalar(39+8*byte,32+8*byte),carry)
+    }
+    address:=Cat(Cat(upperBytes.reverse),address(31,0));state:=checkAddress
+  }
   when(state===checkAddress) {
     val alignment=VecInit(Seq(0,1,3,7).map(_.U(3.W)))(width)
     val regionMask=((BigInt(1)<<64)-1) ^ (regionBytes-1)

@@ -16,9 +16,24 @@ class IncrementProof extends Module {
     val x=io.bits(width-1,0)
     ParallelIncrement(x,io.enable)=/=(x+io.enable)
   }.reduce(_ || _)
+  // Registered prefix values are functions of the stable owner payload.
+  // Prove the segmented combinational arithmetic against mathematical +1;
+  // temporal capture/flush ordering is covered by RTL and mapped simulations.
+  val segmented=Seq(32,64,109).map { width =>
+    val x=io.bits(width-1,0)
+    val bytes=(0 until width by 8).map { lo =>
+      val carry=io.enable && (if(lo==0)true.B else x(lo-1,0).andR)
+      ParallelIncrement(x(math.min(lo+7,width-1),lo),carry)
+    }
+    Cat(bytes.reverse)=/=(x+io.enable)
+  }.reduce(_ || _)
   val offset=(io.index<<io.eewLog2).pad(32)
   val low=CarrySelect.add(io.base(31,0),offset,false.B)
-  val address=Cat(ParallelIncrement(io.base(63,32),low(32)),low(31,0))
+  val upperBytes=(0 until 4).map { byte =>
+    val carry=if(byte==0)low(32) else low(32) && io.base(31+8*byte,32).andR
+    ParallelIncrement(io.base(39+8*byte,32+8*byte),carry)
+  }
+  val address=Cat(Cat(upperBytes.reverse),low(31,0))
   val t=io.bits(63,0)
   val fractionalReference=t(2,0)<=3.U || (t(2,0)>=5.U && t(5,3)<=(t(2,0)-5.U))
   val configMismatch=(VectorConfig.fractionalLegal(t)=/=fractionalReference) ||
@@ -48,7 +63,7 @@ class IncrementProof extends Module {
   val narrowMismatch=narrowValid && (VectorConfig.narrowAlignment(lmul)=/=(narrowCount-1.U) ||
     VectorConfig.groupAlignment(VectorConfig.doubleGroupLog(lmul))=/=(narrowCount-1.U))
   val readMismatch=PackedElementRead(io.packed,UIntToOH(io.byteIndex,16))=/=(io.packed>>Cat(io.byteIndex,0.U(3.W)))(63,0)
-  io.mismatch:=readMismatch || narrowMismatch || highPartMismatch || overlapMismatch || alignmentMismatch || endMismatch || groupMismatch || increments || (address=/=(io.base+offset.pad(64))) || configMismatch
+  io.mismatch:=segmented || readMismatch || narrowMismatch || highPartMismatch || overlapMismatch || alignmentMismatch || endMismatch || groupMismatch || increments || (address=/=(io.base+offset.pad(64))) || configMismatch
 }
 object GenerateIncrementProof extends App {
   val path=Paths.get(args(0));Files.createDirectories(path.getParent)

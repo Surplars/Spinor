@@ -62,6 +62,10 @@ class StagedFmaPost extends Module {
   // ripple increment before absolute-value selection.
   def increment(x:UInt,enable:Bool):UInt = ParallelIncrement(x,enable)
   val sigSum=Reg(UInt(sumWidth.W))
+  // The low 104 sum bits are a direct concatenation of the multiplier result
+  // and aligned-C bit zero. Capture their byte prefixes with sigSum, so the
+  // magnitude stage only increments independent chunks of at most eight bits.
+  val magnitudePrefix=Reg(Vec((2*s+2)/8,Bool()))
   val cAbs=Reg(UInt((2*s+2).W)); val nAbs=Reg(UInt((2*s+3).W))
   val cAbsExtra=Reg(Bool()); val nSign=Reg(Bool())
   val reduced=Reg(UInt(((2*s+4)/2).W))
@@ -75,11 +79,18 @@ class StagedFmaPost extends Module {
   when(phase===0.U && io.start && !io.flush) {
     sigSum:=Cat(increment(m.highAlignedSigC,io.mulAddResult(2*s)),
       io.mulAddResult(2*s-1,0),m.bit0AlignedSigC)
+    for(byte<-1 to (2*s+2)/8) {
+      magnitudePrefix(byte-1):=m.bit0AlignedSigC.asBool && io.mulAddResult(8*byte-2,0).andR
+    }
     phase:=1.U
   }
   when(phase===1.U) {
     nSign:=sigSum(2*s+3)
-    nAbs:=Mux(sigSum(2*s+3),~sigSum(2*s+2,0),increment(sigSum(2*s+2,0),m.doSubMags))
+    val magnitudeIncrement=Cat((0 to (2*s+2)/8).reverse.map { byte =>
+      val carry=if(byte==0)m.doSubMags else m.doSubMags && magnitudePrefix(byte-1)
+      increment(sigSum(math.min(8*byte+7,2*s+2),8*byte),carry)
+    })
+    nAbs:=Mux(sigSum(2*s+3),~sigSum(2*s+2,0),magnitudeIncrement)
     cAbs:=Mux(m.doSubMags,~sigSum(sumWidth-1,s+1),
       Cat(0.U(1.W),m.highAlignedSigC(s+1,s),sigSum(sumWidth-3,s+2)))
     cAbsExtra:=Mux(m.doSubMags,(~sigSum(s,1)).orR,sigSum(s+1,1).orR)

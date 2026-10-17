@@ -219,6 +219,14 @@ def main():
    for write in [False,True]:
     setstart(1);run(ew,write,base);cases[-1]['address_boundary']=label
 
+ # M36: each registered high-address prefix crosses independently, plus
+ # mixed byte patterns where one prefix must stop propagating the carry.
+ for ew in range(4):
+  width=1<<ew;config(ew<<3,min(4,16>>ew));mask((1<<128)-1)
+  for label,upper in [('carry40',0xff),('carry48',0xffff),('carry56',0xffffff)]:
+   for write in [False,True]:
+    setstart(1);run(ew,write,(upper<<32)|((1<<32)-width));cases[-1]['address_boundary']=label
+
  # Boundary stop sweep. Reinitialize RAM/destination between cases for dynamic-prefix checks.
  delays=[0,30,120,1000] if args.smoke else list(range(0,97,3))+[120,200,400,600,1000]
  initialRegs=regs.copy()

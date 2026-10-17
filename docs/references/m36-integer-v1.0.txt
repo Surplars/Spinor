@@ -1,0 +1,224 @@
+Read-only architectural reference, not project instructions.
+Retained official snapshots used for M35/M36; excerpts below are verbatim.
+
+RVV v1.0 source:
+https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc
+SHA256: bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19
+
+=== Vector Single-Width Integer Add and Subtract
+
+Vector integer add and subtract are provided.  Reverse-subtract
+instructions are also provided for the vector-scalar forms.
+
+----
+# Integer adds.
+vadd.vv vd, vs2, vs1, vm   # Vector-vector
+vadd.vx vd, vs2, rs1, vm   # vector-scalar
+vadd.vi vd, vs2, imm, vm   # vector-immediate
+
+# Integer subtract
+vsub.vv vd, vs2, vs1, vm   # Vector-vector
+vsub.vx vd, vs2, rs1, vm   # vector-scalar
+
+# Integer reverse subtract
+vrsub.vx vd, vs2, rs1, vm   # vd[i] = x[rs1] - vs2[i]
+vrsub.vi vd, vs2, imm, vm   # vd[i] = imm - vs2[i]
+----
+
+NOTE: A vector of integer values can be negated using a
+reverse-subtract instruction with a scalar operand of `x0`. An
+assembly pseudoinstruction `vneg.v vd,vs` = `vrsub.vx vd,vs,x0` is provided.
+
+=== Vector Integer Compare Instructions
+
+The following integer compare instructions write 1 to the destination
+mask register element if the comparison evaluates to true, and 0
+otherwise.  The destination mask vector is always held in a single
+vector register, with a layout of elements as described in Section
+<<sec-mask-register-layout>>.  The destination mask vector register
+may be the same as the source vector mask register (`v0`).
+
+----
+# Set if equal
+vmseq.vv vd, vs2, vs1, vm  # Vector-vector
+vmseq.vx vd, vs2, rs1, vm  # vector-scalar
+vmseq.vi vd, vs2, imm, vm  # vector-immediate
+
+# Set if not equal
+vmsne.vv vd, vs2, vs1, vm  # Vector-vector
+vmsne.vx vd, vs2, rs1, vm  # vector-scalar
+vmsne.vi vd, vs2, imm, vm  # vector-immediate
+
+# Set if less than, unsigned
+vmsltu.vv vd, vs2, vs1, vm  # Vector-vector
+vmsltu.vx vd, vs2, rs1, vm  # Vector-scalar
+
+# Set if less than, signed
+vmslt.vv vd, vs2, vs1, vm  # Vector-vector
+vmslt.vx vd, vs2, rs1, vm  # vector-scalar
+
+# Set if less than or equal, unsigned
+vmsleu.vv vd, vs2, vs1, vm   # Vector-vector
+vmsleu.vx vd, vs2, rs1, vm   # vector-scalar
+vmsleu.vi vd, vs2, imm, vm   # Vector-immediate
+
+# Set if less than or equal, signed
+vmsle.vv vd, vs2, vs1, vm  # Vector-vector
+vmsle.vx vd, vs2, rs1, vm  # vector-scalar
+vmsle.vi vd, vs2, imm, vm  # vector-immediate
+
+# Set if greater than, unsigned
+vmsgtu.vx vd, vs2, rs1, vm   # Vector-scalar
+vmsgtu.vi vd, vs2, imm, vm   # Vector-immediate
+
+# Set if greater than, signed
+vmsgt.vx vd, vs2, rs1, vm    # Vector-scalar
+vmsgt.vi vd, vs2, imm, vm    # Vector-immediate
+
+# Following two instructions are not provided directly
+# Set if greater than or equal, unsigned
+# vmsgeu.vx vd, vs2, rs1, vm    # Vector-scalar
+# Set if greater than or equal, signed
+# vmsge.vx vd, vs2, rs1, vm    # Vector-scalar
+----
+
+=== Vector Widening Integer Multiply-Add Instructions
+
+The widening integer multiply-add instructions add the full 2*SEW-bit
+product from a SEW-bit*SEW-bit multiply to a 2*SEW-bit value and
+produce a 2*SEW-bit result.  All combinations of signed and unsigned
+multiply operands are supported.
+
+----
+# Widening unsigned-integer multiply-add, overwrite addend
+vwmaccu.vv vd, vs1, vs2, vm    # vd[i] = +(vs1[i] * vs2[i]) + vd[i]
+vwmaccu.vx vd, rs1, vs2, vm    # vd[i] = +(x[rs1] * vs2[i]) + vd[i]
+
+# Widening signed-integer multiply-add, overwrite addend
+vwmacc.vv vd, vs1, vs2, vm    # vd[i] = +(vs1[i] * vs2[i]) + vd[i]
+vwmacc.vx vd, rs1, vs2, vm    # vd[i] = +(x[rs1] * vs2[i]) + vd[i]
+
+# Widening signed-unsigned-integer multiply-add, overwrite addend
+vwmaccsu.vv vd, vs1, vs2, vm  # vd[i] = +(signed(vs1[i]) * unsigned(vs2[i])) + vd[i]
+vwmaccsu.vx vd, rs1, vs2, vm  # vd[i] = +(signed(x[rs1]) * unsigned(vs2[i])) + vd[i]
+
+# Widening unsigned-signed-integer multiply-add, overwrite addend
+vwmaccus.vx vd, rs1, vs2, vm  # vd[i] = +(unsigned(x[rs1]) * signed(vs2[i])) + vd[i]
+----
+
+=== Whole Vector Register Move
+
+The `vmv<nr>r.v` instructions copy whole vector registers (i.e., all
+VLEN bits) and can copy whole vector register groups.  The `nr` value
+in the opcode is the number of individual vector registers, NREG, to
+copy.  The instructions operate as if EEW=SEW, EMUL = NREG, effective
+length `evl`= EMUL * VLEN/SEW.
+
+NOTE: These instructions are intended to aid compilers to shuffle
+vector registers without needing to know or change `vl` or `vtype`.
+
+NOTE: The usual property that no elements are written if `vstart` {ge} `vl`
+does not apply to these instructions.
+Instead, no elements are written if `vstart` {ge} `evl`.
+
+NOTE: If `vd` is equal to `vs2` the instruction is an architectural
+NOP, but is treated as a hint to implementations that rearrange data
+internally that the register group will next be accessed with an EEW
+equal to SEW.
+
+The instruction is encoded as an OPIVI instruction.  The number of
+vector registers to copy is encoded in the low three bits of the
+`simm` field (`simm[2:0]`) using the same encoding as the `nf[2:0]` field for memory
+instructions (Figure <<fig-nf>>), i.e., `simm[2:0]` = NREG-1.
+
+The value of NREG must be 1, 2, 4, or 8, and values of `simm[4:0]`
+other than 0, 1, 3, and 7 are reserved.
+
+NOTE: A future extension may support other numbers of registers to be moved.
+
+NOTE: The instruction uses the same funct6 encoding as the `vsmul`
+instruction but with an immediate operand, and only the unmasked
+version (`vm=1`).  This encoding is chosen as it is close to the
+related `vmerge` encoding, and it is unlikely the `vsmul` instruction
+would benefit from an immediate form.
+
+----
+    vmv<nr>r.v vd, vs2  # General form
+
+    vmv1r.v v1, v2   #  Copy v1=v2
+    vmv2r.v v10, v12 #  Copy v10=v12; v11=v13
+    vmv4r.v v4, v8   #  Copy v4=v8; v5=v9; v6=v10; v7=v11
+    vmv8r.v v0, v8   #  Copy v0=v8; v1=v9; ...;  v7=v15
+----
+
+The source and destination vector register numbers must be aligned
+appropriately for the vector register group size, and encodings with
+other vector register numbers are reserved.
+
+NOTE: A future extension may relax the vector register alignment
+restrictions.
+
+If the `vill` bit is set, then any attempt to execute a vector instruction
+that depends upon `vtype` will raise an illegal-instruction exception.
+
+NOTE: `vset{i}vl{i}` and whole-register loads, stores, and moves do not depend
+upon `vtype`.
+
+When the `vill` bit is set, the other XLEN-1 bits in `vtype` shall be
+zero.
+
+Vector-scalar operations can have three possible forms.  In all three forms,
+the vector register group operand is specified by `vs2`.  The second
+scalar source operand comes from one of three alternative sources:
+
+. For integer operations, the scalar can be a 5-bit immediate, `imm[4:0]`, encoded
+in the `rs1` field.  The value is sign-extended to SEW bits, unless
+otherwise specified.
+
+. For integer operations, the scalar can be taken from the scalar `x`
+register specified by `rs1`.  If XLEN>SEW, the least-significant SEW
+bits of the `x` register are used, unless otherwise specified.  If
+XLEN<SEW, the value from the `x` register is sign-extended to SEW
+bits.
+
+Current ISA manual source-EEW clarification, retained from the M33 reference
+(retrieved 2026-10-17; the following provenance and text are unchanged):
+https://github.com/riscv/riscv-isa-manual/blob/main/src/unpriv/vector-common.adoc
+Git blob SHA: c0f2bbd5e3194fc5c17a7f634bfc50e2d13355c8
+Downloaded file SHA256: 953eade975979f04181c1d34065696880cfa1b1ff7f0a6f185eaefe007d2316d
+
+[[norm:vreg_source_eew_rsv]]
+A vector register cannot be used to provide source operands with more
+than one EEW for a single instruction.  A mask register source is
+considered to have EEW=1 for this constraint.  An encoding that would
+result in the same vector register being read with two or more
+different EEWs, including when the vector register appears at
+different positions within two or more vector register groups, is
+reserved.
+
+NOTE: In practice, there is no software benefit to reading the same
+register with different EEW in the same instruction, and this
+constraint reduces complexity for implementations that internally
+rearrange data dependent on EEW.
+
+Official opcode rows:
+https://raw.githubusercontent.com/riscv/riscv-opcodes/master/extensions/rv_v
+SHA256: a260265cf952fa0025382b97c125c47bd3f42fa167805da0ee97b09c16ba7cba
+
+vrsub.vx       31..26=0x03 vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vmsgtu.vx      31..26=0x1e vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vmsgt.vx       31..26=0x1f vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vrsub.vi       31..26=0x03 vm vs2 simm5 14..12=0x3 vd 6..0=0x57
+vmsgtu.vi      31..26=0x1e vm vs2 simm5 14..12=0x3 vd 6..0=0x57
+vmsgt.vi       31..26=0x1f vm vs2 simm5 14..12=0x3 vd 6..0=0x57
+vmv1r.v        31..26=0x27 25=1 vs2 19..15=0 14..12=0x3 vd 6..0=0x57
+vmv2r.v        31..26=0x27 25=1 vs2 19..15=1 14..12=0x3 vd 6..0=0x57
+vmv4r.v        31..26=0x27 25=1 vs2 19..15=3 14..12=0x3 vd 6..0=0x57
+vmv8r.v        31..26=0x27 25=1 vs2 19..15=7 14..12=0x3 vd 6..0=0x57
+vwmaccu.vv     31..26=0x3c vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwmacc.vv      31..26=0x3d vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwmaccsu.vv    31..26=0x3f vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwmaccu.vx     31..26=0x3c vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwmacc.vx      31..26=0x3d vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwmaccus.vx    31..26=0x3e vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwmaccsu.vx    31..26=0x3f vm vs2 rs1 14..12=0x6 vd 6..0=0x57

@@ -6,17 +6,21 @@ from test_vector import HEADER
 ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'build/reduction-interleave';OUT.mkdir(parents=True,exist_ok=True)
 p=argparse.ArgumentParser();p.add_argument('--mapped',action='store_true');args=p.parse_args()
 h=HEADER.replace('wire [4:0] io_vl;','wire [7:0] io_vl;wire [6:0] io_vstart;wire [1:0] io_vxrm;wire io_vxsat;wire [31:0] io_versions;wire [2:0] io_frm;wire [4:0] io_fflags;').replace('input [4:0] expectedVl','input [7:0] expectedVl')
-lines=[h];regs=[0]*32;versions=0;count=0;flags=rounding=vxsat=vxrm=0
+h=h.replace('reg [31:0] saved;','reg [31:0] saved,originalVersions;reg [6:0] originalStart;').replace('io_command_bits_instruction=inst;io_command_bits_scalar=scalar;','originalVersions=io_versions;originalStart=io_vstart;io_command_bits_instruction=inst;io_command_bits_scalar=scalar;',1)
+guard='if(io_versions!==originalVersions || io_vstart!==originalStart)$fatal(1,"interleave premature publication");'
+h=h.replace('while(!io_completion_valid) tick();','while(!io_completion_valid)begin tick();'+guard+'end',1).replace('repeat(stall) begin','repeat(stall) begin\n'+guard+'\nif(io_completion_bits_scalar!==result || io_completion_bits_illegal!==illegal || io_completion_bits_writesScalar!==wr)$fatal(1,"interleave unstable reply");',1)
+lines=[h];regs=[0]*32;versions=0;count=vector_count=start=0;flags=rounding=vxsat=vxrm=0
 def ctx(r,write=False):
  for chunk in range(2):
   x=(regs[r]>>(64*chunk))&((1<<64)-1)
   lines.append(f"ctx({2*r+chunk},1'b{int(write)},64'h{x:x},64'h{x:x});")
 def setwords(r,words):regs[r]=sum(x<<(32*i) for i,x in enumerate(words));ctx(r,True)
 def command(inst,result=0,writes=0,scalar=0):
- global count
+ global count,vector_count
  lines.append(f"command(32'h{inst:x},64'h{scalar:x},0,4,80'h{0xcccc0000000000000000+count:x},0,64'h{result:x},1'b{writes},3,8'd4,64'h10);")
- lines.append(f"if(io_versions!==32'h{versions:x} || io_vstart!==0 || io_fflags!==5'd{flags} || io_frm!==3'd{rounding} || io_vxsat!==1'd{vxsat} || io_vxrm!==2'd{vxrm})$fatal(1,\"interleave state\");")
+ lines.append(f"if(io_versions!==32'h{versions:x} || io_vstart!==7'd{start} || io_fflags!==5'd{flags} || io_frm!==3'd{rounding} || io_vxsat!==1'd{vxsat} || io_vxrm!==2'd{vxrm})$fatal(1,\"interleave state\");")
  count+=1
+ vector_count+=int(inst&127==0x57 and (inst>>12&7)!=7)
 def execute(code,form,vd,source,seed,words,scalar=0):
  global versions
  regs[vd]=sum(x<<(32*i) for i,x in enumerate(words));versions^=1<<vd
@@ -162,8 +166,61 @@ execute(0x2d,2,24,8,16,[55,72,168,320])
 setwords(8,[0x3f800000]*4);setwords(16,[0x40000000]*4);setwords(24,[0x3f800000]*4)
 execute(0x2c,1,24,8,16,[0x40400000]*4)
 execute(0,1,24,24,16,[0x40a00000]*4)
+# Preserve the complete M35 sequence above, then cross the M36 whole-move
+# fast path with the modes whose metadata and scalar scratch it bypasses.
+assert vector_count==79
+def whole(n,vd,src):
+ global versions,start
+ snapshot=tuple(regs);first=start*32
+ for j in range(n):
+  for bit in range(0,128,8):
+   if 128*j+bit>=first:
+    mask=255<<bit
+    regs[vd+j]=(regs[vd+j]&~mask)|(snapshot[src+j]&mask)
+ if first<n*128 and vd!=src:versions^=((1<<n)-1)<<vd
+ start=0
+ command((0x27<<26)|(1<<25)|(src<<20)|((n-1)<<15)|(3<<12)|(vd<<7)|0x57)
+ for j in range(n):ctx(vd+j)
+setwords(8,[0x3f800000]*4);setwords(16,[0x40000000]*4);setwords(24,[0x3f800000]*4)
+execute(0x2c,1,24,8,16,[0x40400000]*4) # exact FP32 1*2+1 = 3
+whole(1,20,24)
+setwords(16,[10,0,0,0])
+execute(0,2,28,20,16,[0x0100000a,0,0,0]) # modular integer sum of the four FP bit patterns
+setwords(8,[0xffffffff,2,0x80000000,3]);setwords(16,[1,0xffffffff,2,0x80000000])
+setwords(24,[1,0,2,0]);setwords(25,[3,0,4,0])
+widen(0x3f,2,24,8,16,[0x100000000,0,0x100000003,0xfffffffe80000004])
+execute(0,2,28,8,16,[0x80000005,0,0,0])
+regs[3]=0xa;ctx(3,True)
+execute(0x17,2,24,8,3,[2,3,0,0])
+whole(2,20,24)
+setwords(8,[0x3f800000]*4);setwords(16,[0x40000000]*4)
+execute(0,1,24,8,16,[0x40400000]*4)
+# A held whole move must leave both its destination versions and a nonzero
+# vstart untouched. Assert flush and completion.ready together, then retry
+# from the same element using an immutable source/destination byte oracle.
+setwords(28,[0xdeadbeef,0x12345678,0x89abcdef,0xfedcba98]);setwords(29,[0x76543210,0x0badcafe,0x55555555,0xaaaaaaaa])
+start=1;command(0x008091f3,writes=1,scalar=1)
+cancel_inst=(0x27<<26)|(1<<25)|(20<<20)|(1<<15)|(3<<12)|(28<<7)|0x57
+cancel_guard=f'if(io_versions!==32\'h{versions:x} || io_vstart!==1 || io_vl!==4 || io_vtype!==64\'h10 || io_fflags!==5\'d{flags} || io_frm!==3\'d{rounding} || io_vxsat!==1\'d{vxsat} || io_vxrm!==2\'d{vxrm})$fatal(1,"whole move cancelled state");'
+lines.append(f'''io_command_bits_instruction=32'h{cancel_inst:x};io_command_bits_scalar=0;
+io_command_bits_token=80'h36ccccbad;io_command_valid=1;
+#1;if(!io_command_ready)$fatal(1,"whole cancel command unavailable");tick();io_command_valid=0;
+while(!io_completion_valid)begin tick();{cancel_guard}end
+repeat(5)begin
+ {cancel_guard}
+ if(!io_completion_valid || io_completion_bits_instruction!==32'h{cancel_inst:x} || io_completion_bits_token!==80'h36ccccbad || io_completion_bits_illegal || io_completion_bits_writesScalar || io_completion_bits_scalar!==0)$fatal(1,"whole cancel held reply");
+ tick();
+end
+io_completion_ready=1;io_flush=1;
+#1;if(io_completion_valid || io_command_ready)$fatal(1,"whole cancel flush handshake");
+tick();io_flush=0;io_completion_ready=0;
+repeat(12)begin tick();{cancel_guard}if(io_completion_valid)$fatal(1,"whole cancel stale reply");end
+if(io_busy)$fatal(1,"whole cancel remains busy");''')
 for r in range(32):ctx(r)
-lines+=['$display("PASS reduction-interleave 79 vector instructions");$finish;end endmodule']
+whole(2,28,20)
+execute(0,0,24,28,28,[0xbd5b7dde,6,0,0]) # preserved prestart word is read by the next ALU operation
+for r in range(32):ctx(r)
+lines+=[f'$display("PASS reduction-interleave {vector_count} vector instructions, 1 held whole-move flush");$finish;end endmodule']
 tb=OUT/'tb.sv';tb.write_text('\n'.join(lines));label='mapped' if args.mapped else 'rtl'
 rtl=ROOT/('build/synth/RamVectorFp/mapped.v' if args.mapped else 'build/rtl/RamVectorFp.sv')
 files=[tb,rtl];extra=[]
@@ -172,5 +229,5 @@ with (OUT/(label+'-compile.log')).open('w') as log:
  subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/iverilog'),'-g2012','-s','tb','-DTOP=RamVectorFp',*extra,'-o',str(OUT/label),*map(str,files)],check=True,stdout=log,stderr=log)
 run=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],capture_output=True,text=True)
 (OUT/(label+'.log')).write_text(run.stdout+run.stderr);assert run.returncode==0,run.stdout+run.stderr
-result=dict(status='PASS',mapped=args.mapped,vector_instructions=79,sha256={str(x.relative_to(ROOT)):hashlib.sha256(x.read_bytes()).hexdigest() for x in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
+result=dict(status='PASS',mapped=args.mapped,vector_instructions=vector_count,commands=count,held_whole_move_flushes=1,original_vector_instructions=79,sha256={str(x.relative_to(ROOT)):hashlib.sha256(x.read_bytes()).hexdigest() for x in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps(result,indent=2))

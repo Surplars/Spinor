@@ -2,6 +2,7 @@
 """OOC UltraScale+ mapping. No device P&R or claimed FPGA Fmax."""
 from concurrent.futures import ThreadPoolExecutor
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import subprocess
@@ -15,6 +16,8 @@ def run(top):
     out.mkdir(parents=True,exist_ok=True)
     sourceTop={'VectorPrototypeBram':'VectorPrototype','RamVectorBram':'RamVector',
                'RamVectorFpNoDsp':'RamVectorFp'}.get(top,top)
+    inputs=[ROOT/f'build/rtl/{sourceTop}.sv',Path(__file__).resolve()]
+    source_hashes={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs}
     setup=''
     if top=='VectorPrototypeBram':
         setup='''rename VectorPrototype VectorPrototypeBram
@@ -45,9 +48,10 @@ write_verilog -noattr {out}/mapped.v
     start=time.monotonic()
     with (out/'synth.log').open('w') as log:
         subprocess.run([str(BIN/'yosys'),'-T','-s',str(out/'synth.ys')],stdout=log,stderr=subprocess.STDOUT,check=True)
+    assert all(hashlib.sha256((ROOT/p).read_bytes()).hexdigest()==h for p,h in source_hashes.items()),'synthesis input changed during run'
     stat=json.loads((out/'stat.json').read_text())
     module=stat['modules']['\\'+top]
-    summary={'top':top,'elapsed_seconds':round(time.monotonic()-start,2),
+    summary={'input_sha256':source_hashes,'netlist_sha256':{str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [out/'mapped.json',out/'mapped.v']},'top':top,'elapsed_seconds':round(time.monotonic()-start,2),
              'mapped_cells':module['num_cells_by_type'],'scope':'out-of-context mapping, no IOB/clock buffers',
              'family':'xcup','target_device':'xczu15eg-ffvb1156-2-i',
              'vrf_mapping':'forced block RAM' if top.endswith('Bram') else 'automatic',

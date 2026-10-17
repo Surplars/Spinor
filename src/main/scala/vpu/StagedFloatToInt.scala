@@ -119,15 +119,29 @@ class StagedFloatToInt(expWidth: Int, sigWidth: Int, intWidth: Int) extends chis
              (rawIn.sign && common_inexact)) ||
         (roundingMode_max && (!rawIn.sign && common_inexact))
     val complement=Reg(UInt(intWidth.W));val increment=Reg(Bool())
-    when(state===calculate) { complement:=Mux(rawIn.sign,~unroundedInt,unroundedInt);increment:=roundIncr^rawIn.sign }
+    // Register each byte's prefix with the sign-selected integer, before the
+    // existing low/high rounding stages. A local increment never propagates
+    // through more than eight data bits after this register boundary.
+    val roundingPrefix=Reg(Vec(intWidth/32,Vec(3,Bool())))
+    val complementNext=Mux(rawIn.sign,~unroundedInt,unroundedInt)
+    when(state===calculate) {
+      complement:=complementNext;increment:=roundIncr^rawIn.sign
+      for(word<-0 until intWidth/32;byte<-1 until 4) {
+        roundingPrefix(word)(byte-1):=complementNext(32*word+8*byte-1,32*word).andR
+      }
+    }
+    def incrementWord(word:Int,enable:Bool):UInt = Cat((0 until 4).reverse.map { byte =>
+      val carry=if(byte==0)enable else enable && roundingPrefix(word)(byte-1)
+      ParallelIncrement(complement(32*word+8*byte+7,32*word+8*byte),carry)
+    })
     val roundedInt=Reg(UInt(intWidth.W));val carry=Reg(Bool())
     when(state===low) {
-      roundedInt:=ParallelIncrement(complement(31,0),increment)
+      roundedInt:=incrementWord(0,increment)
       carry:=complement(31,0).andR && increment
     }
     if(intWidth==64) {
       when(state===high) {
-        roundedInt:=Cat(ParallelIncrement(complement(63,32),carry),roundedInt(31,0))
+        roundedInt:=Cat(incrementWord(1,carry),roundedInt(31,0))
       }
     }
 

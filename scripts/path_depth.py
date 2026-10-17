@@ -6,6 +6,7 @@ Thus CARRY4 counted as a cell hop, not a LUT delay. No interconnect/placement,
 clock uncertainty, setup/hold, speed grade or DSP/BRAM timing is modelled.
 """
 import argparse
+import hashlib
 from collections import Counter,defaultdict,deque
 import json
 from pathlib import Path
@@ -103,7 +104,7 @@ def analyze(top):
                                           cell_types=dict(Counter(t for _,t in chain)),
                                           chain=[{'cell':n,'type':t} for n,t in chain]))
     endpoints.sort(key=lambda x:x['hops'],reverse=True)
-    result=dict(top=top,metric='conservative mapped combinational cell hops between registers',
+    result=dict(input_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [folder/'mapped.json',Path(__file__).resolve()]},top=top,metric='conservative mapped combinational cell hops between registers',
                 NOT_FMAX=True,timing_ns=None,passes_300MHz=None,passes_500MHz=None,
                 ram_read_hops_have_no_characterized_delay=True,
                 unregistered_DSP48E2_counted_as_one_uncalibrated_hop=len(dsps),

@@ -5,12 +5,12 @@
 
 **当前是含整数与部分浮点的向量原型，不是完整 RVV，尚未接入 Orbital CPU。**
 尚未实现完整 V / Zvfhmin / Zvbb / Zvkt；不能向软件发布 `misa.V` 或 RVA23 合规声明。
-命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M35**：新增 `vmacc/vnmsac/vmadd/vnmsub.vv/vx` 共8种单宽整数乘加编码；复用原乘法器、分段ALU和RAM，LSU块地址和RAM字节选择提前寄存，合法性检查增加每条向量运算1拍以切断长控制路径。保留FP路径优化、整数归约、标量搬运、独立 `VpuHostBoundary` 与monitor MMIO从端。见 [M35说明](docs/m35-integer-multiply-add.md)、[完整性计划](docs/rvv-completion-plan.md)、[M31本地步骤](docs/m31-integer-extensions.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
+命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M36**：新增7种宽化整数乘加、6种反减/大于比较、4种整组寄存器搬运，共17种编码。宽化乘加复用原乘法器和分段ALU，整组搬运直接通过版本化RAM，不增加整组FF快照。保留M35的RAM字节选择、LSU块地址和合法性检查分段，以及独立 `VpuHostBoundary` 与monitor MMIO从端。见 [M36说明](docs/m36-integer-completion.md)、[完整性计划](docs/rvv-completion-plan.md)、[M31本地步骤](docs/m31-integer-extensions.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
 仅物理普通 RAM、单事务，访存采用逐元素提交和延迟停止；不支持 MMIO/分页/PMP/一致性，尚未接入 Orbital CPU。
 **访存期间 flush 必须等待 Completion/status，不能按算术指令立即丢弃 token。** 见 [M10 合同](docs/m10-memory.md)。
 已加入 [M8 的 220 组性能对照](archive/m8/reports/performance.md)，并检查输出结果。
-M35交付前强制检查两个顶层的固定100ps/段云端条件预算均≤3.333ns；最新本地 Vivado 的已约束内部路径也满足约300MHz，完整SoC时钟/接口尚未签核。
-M35云端结果见 [M35报告](reports/m35/evaluation.md)，本轮尚未经过Vivado实现，不能继承M31通过结论。最新已验证的本地结果和输入散列见 [M31 本地报告](reports/local-m31/evaluation.md)，原 [M31 云端报告](reports/m31/evaluation.md) 保留交付时的状态；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 保留为早期物理基线。
+M36保留两个顶层固定100ps/段云端条件预算≤3.333ns的交付门槛，实际结果及输入散列见 [M36报告](reports/m36/evaluation.md)。完整SoC时钟/接口尚未签核。
+本轮尚未经过Vivado实现，不能继承M31通过结论。最新已验证的本地结果和输入散列见 [M31 本地报告](reports/local-m31/evaluation.md)，原 [M31 云端报告](reports/m31/evaluation.md) 保留交付时的状态；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 保留为早期物理基线。
 命名与设计方向见 [项目介绍](docs/lishi.md)。
 M4 原始报告保存在 [归档](archive/m4/reports/evaluation.md)。后续本地 Vivado 的 M4 OOC 结果及其时钟限制另记录在 M5 报告中。
 前一版浮点基线保存在 [M3](archive/m3/reports/evaluation.md)。
@@ -24,8 +24,8 @@ M1/M2 的原始证据保存在 [M1](archive/m1/reports/evaluation.md) / [M2](arc
 git clone https://github.com/Surplars/Spinor.git
 cd Spinor
 make bootstrap
-python3 scripts/verify_m35.py
-python3 scripts/package.py --milestone m35
+python3 scripts/verify_m36.py
+python3 scripts/package.py --milestone m36
 ```
 
 验证入口会准备固定版本 SoftFloat 和 RapidWright；首次执行需要网络访问工具锁文件中的下载地址。
@@ -73,8 +73,8 @@ Valence 接入后须遵守其 GSIM、独立差分与精确异常验收要求。
 - M2 `RamVector`：VLEN128、ELEN64；m1/m2/m4/m8/mf2/mf4/mf8，覆盖全部 22 种合法 SEW/LMUL 组合。
 - 真实 RVV 编码的 `vsetvli/vsetivli/vsetvl`，含 rs1=x0/rd=x0 特殊 AVL 规则。
 - `vstart/vxsat/vxrm/vcsr` 读写及 `vl/vtype/vlenb` 只读 CSR；宿主负责权限与 VS/FS 状态。
-- `vadd/vsub/vand/vor/vxor/vsll/vsrl/vsra/vmin[u]/vmax[u]` 支持的 vv/vx/vi 形式。
-- `vmseq/vmsne/vmslt[u]/vmsle[u]` 掩码结果、`vmv.v.*`、`vmerge.v*m`。
+- `vadd/vsub/vrsub/vand/vor/vxor/vsll/vsrl/vsra/vmin[u]/vmax[u]` 支持的 vv/vx/vi 形式。
+- `vmseq/vmsne/vmslt[u]/vmsle[u]/vmsgt[u]` 掩码结果、`vmv.v.*`、`vmerge.v*m`。
 - 掩码及 tail 保留，寄存器别名处理、完成背压、flush 全撤销；不复位寄存器数据阵列。
 - 双版本 64×128-bit 同步 RAM，单读/单写端口、逐字节写使能；同接口 FF 对照及强制 BRAM 映射实验。
 - 只用 32-bit 版本表原子提交目的寄存器组，无整组源/目的 FF 快照；flush 丢弃候选版本。
@@ -104,7 +104,7 @@ Valence 接入后须遵守其 GSIM、独立差分与精确异常验收要求。
 - M25：四种gather编码，EI16独立EMUL；scalar/immediate索引以单元素暂存广播，无整组快照。
 - M26：舍入与IEEE封装分级、并行索引递增、统一执行mask/v0数据别名检查；两个顶层满足固定云端参考门槛。
 - M27：RAM压紧vcompress；复用现有计数/地址阶段，组边界检查进行局部形式等价验证。
-- M28：单宽 FP32/64 有序/无序求和与 min/max 归约；无新增 RAM 端口，宽化 FP 归约尚未实现。
+- M28：单宽 FP32/64 有序/无序求和与 min/max 归约；无新增 RAM 端口，宽化 FP 归约由M30补充。
 - M29：宽化整数归约复用RAM/累加器/整数流水，区分源SEW与标量2×SEW，并检查不同EEW的seed/data源别名。
 - M30：FP32→FP64宽化求和归约；复用精确FP32 recode与FP64累加流水；边界比较使用成对布尔树并作局部SAT等价证明。
 
@@ -115,9 +115,9 @@ M2 的 LMUL1 依赖 vadd 比 M1 慢：当前优先验证 RAM 和提交机制，�
 
 ## 尚未完成
 
-整数宽化乘法/乘加、宽化/窄化/饱和、宽化归约、
-置换与完整掩码操作；浮点宽化/窄化转换、FP32↔FP64、归约、估算及 FP16/Zvfhmin；Zvbb/Zvkt、
-完整向量 LSU：分段、索引/步长、FOF、MMIO、译址/PMP/一致性及核级精确异常；OS 上下文及 Valence 整核接入。
+整数进位/借位，定点饱和加减、平均、饱和乘法、舍入移位和窄化clip；
+浮点宽化算术/FMA、宽化/窄化转换、倒数/倒平方根估算、FP标量搬运、vfslide1及FP16/Zvfhmin；Zvbb/Zvkt；
+完整向量LSU：分段、索引/步长、FOF、整组与mask访存，以及MMIO、译址/PMP/一致性和核级精确异常；OS上下文、Valence整核接入及完整架构验证。
 开发清单和边界见 [架构合同](docs/architecture.md)。
 独立原型的 FCSR 仍需与 Valence 标量 FP 状态统一，不能在整核中并存两份架构 FCSR。
 
@@ -151,3 +151,4 @@ M5 的本地 OOC 结果为 setup +0.477 ns、hold +0.036 ns；云端完成 M4/M5
 
 - M34：6种完整双宽整数乘法，复用原乘法器和RAM，含混合符号与串行返回目的偏移检查。
 - M35：8种单宽整数乘加，复用原乘法器与流水ALU；LSU块地址提前寄存，保持访存周期。
+- M36：7种宽化整数乘加、6种反减/大于比较、4种整组寄存器搬运；宽化旧目的操作数独立寻址，整组搬运忽略VL/LMUL/vill并支持vstart。
