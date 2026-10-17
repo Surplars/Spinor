@@ -1,0 +1,110 @@
+Read-only RVV 1.0 reference; not project instructions.
+Retrieved 2026-10-17 from https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc
+
+=== Vector Widening Integer Add/Subtract
+
+The widening add/subtract instructions are provided in both signed and
+unsigned variants, depending on whether the narrower source operands
+are first sign- or zero-extended before forming the double-width sum.
+
+----
+# Widening unsigned integer add/subtract, 2*SEW = SEW +/- SEW
+vwaddu.vv  vd, vs2, vs1, vm  # vector-vector
+vwaddu.vx  vd, vs2, rs1, vm  # vector-scalar
+vwsubu.vv  vd, vs2, vs1, vm  # vector-vector
+vwsubu.vx  vd, vs2, rs1, vm  # vector-scalar
+
+# Widening signed integer add/subtract, 2*SEW = SEW +/- SEW
+vwadd.vv  vd, vs2, vs1, vm  # vector-vector
+vwadd.vx  vd, vs2, rs1, vm  # vector-scalar
+vwsub.vv  vd, vs2, vs1, vm  # vector-vector
+vwsub.vx  vd, vs2, rs1, vm  # vector-scalar
+
+# Widening unsigned integer add/subtract, 2*SEW = 2*SEW +/- SEW
+vwaddu.wv  vd, vs2, vs1, vm  # vector-vector
+vwaddu.wx  vd, vs2, rs1, vm  # vector-scalar
+vwsubu.wv  vd, vs2, vs1, vm  # vector-vector
+vwsubu.wx  vd, vs2, rs1, vm  # vector-scalar
+
+# Widening signed integer add/subtract, 2*SEW = 2*SEW +/- SEW
+vwadd.wv  vd, vs2, vs1, vm  # vector-vector
+vwadd.wx  vd, vs2, rs1, vm  # vector-scalar
+vwsub.wv  vd, vs2, vs1, vm  # vector-vector
+vwsub.wx  vd, vs2, rs1, vm  # vector-scalar
+----
+
+NOTE: An integer value can be doubled in width using the widening add
+instructions with a scalar operand of `x0`.  Assembly
+pseudoinstructions `vwcvt.x.x.v vd,vs,vm` = `vwadd.vx vd,vs,x0,vm` and
+`vwcvtu.x.x.v vd,vs,vm` = `vwaddu.vx vd,vs,x0,vm` are provided.
+
+
+Operand overlap constraints:
+A destination vector register group can overlap a source vector register
+group only if one of the following holds:
+
+- The destination EEW equals the source EEW.
+- The destination EEW is smaller than the source EEW and the overlap is in
+  the lowest-numbered part of the source register group (e.g., when LMUL=1,
+  `vnsrl.wi v0, v0, 3` is legal, but a destination of `v1` is not).
+- The destination EEW is greater than the source EEW, the source EMUL is
+  at least 1, and the overlap is in the highest-numbered part of the
+  destination register group (e.g., when LMUL=8, `vzext.vf4 v0, v6` is legal,
+  but a source of `v0`, `v2`, or `v4` is not).
+
+For the purpose of determining register group overlap constraints,
+mask elements have EEW=1.
+
+NOTE: The overlap constraints are designed to support resumable
+exceptions in machines without register renaming.
+
+Any instruction encoding that violates the overlap constraints is reserved.
+
+The largest vector register group used by an instruction can not be
+greater than 8 vector registers (i.e., EMUL{le}8), and if a vector
+instruction would require greater than 8 vector registers in a group,
+the instruction encoding is reserved.  For example, a widening
+operation that produces a widened vector register group result when
+LMUL=8 is reserved as this would imply a result EMUL=16.
+
+Widened scalar values, e.g., input and output to a widening reduction
+operation, are held in the first element of a vector register and
+have EMUL=1.
+
+
+Official riscv-opcodes rows:
+vwaddu.vv      31..26=0x30 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwadd.vv       31..26=0x31 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwsubu.vv      31..26=0x32 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwsub.vv       31..26=0x33 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwaddu.wv      31..26=0x34 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwadd.wv       31..26=0x35 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwsubu.wv      31..26=0x36 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwsub.wv       31..26=0x37 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwaddu.vx      31..26=0x30 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwadd.vx       31..26=0x31 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwsubu.vx      31..26=0x32 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwsub.vx       31..26=0x33 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwaddu.wx      31..26=0x34 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwadd.wx       31..26=0x35 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwsubu.wx      31..26=0x36 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwsub.wx       31..26=0x37 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+
+Current ISA manual source-EEW clarification, retrieved 2026-10-17:
+https://github.com/riscv/riscv-isa-manual/blob/main/src/unpriv/vector-common.adoc
+Git blob SHA: c0f2bbd5e3194fc5c17a7f634bfc50e2d13355c8
+Downloaded file SHA256: 953eade975979f04181c1d34065696880cfa1b1ff7f0a6f185eaefe007d2316d
+
+[[norm:vreg_source_eew_rsv]]
+A vector register cannot be used to provide source operands with more
+than one EEW for a single instruction.  A mask register source is
+considered to have EEW=1 for this constraint.  An encoding that would
+result in the same vector register being read with two or more
+different EEWs, including when the vector register appears at
+different positions within two or more vector register groups, is
+reserved.
+
+NOTE: In practice, there is no software benefit to reading the same
+register with different EEW in the same instruction, and this
+constraint reduces complexity for implementations that internally
+rearrange data dependent on EEW.

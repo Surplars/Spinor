@@ -44,7 +44,8 @@ class IncrementProof extends Module {
   val lmul=io.bits(14,12)
   val narrowCount=MuxLookup(lmul,1.U(5.W))(Seq(0.U->2.U,1.U->4.U,2.U->8.U))
   val narrowValid=lmul<=2.U || lmul>=5.U
-  val narrowMismatch=narrowValid && VectorConfig.narrowAlignment(lmul)=/=(narrowCount-1.U)
+  val narrowMismatch=narrowValid && (VectorConfig.narrowAlignment(lmul)=/=(narrowCount-1.U) ||
+    VectorConfig.groupAlignment(VectorConfig.doubleGroupLog(lmul))=/=(narrowCount-1.U))
   io.mismatch:=narrowMismatch || highPartMismatch || overlapMismatch || alignmentMismatch || endMismatch || groupMismatch || increments || (address=/=(io.base+offset.pad(64))) || configMismatch
 }
 object GenerateIncrementProof extends App {

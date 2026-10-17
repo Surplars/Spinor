@@ -154,6 +154,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val mulVV=f3===2.U; val mulVX=f3===6.U
   val extensionEncoding=mulVV && f6===0x12.U && vs1(4,3)===0.U && vs1(2,1)=/=0.U
   val narrowEncoding=f6(5,1)===0x16.U && (vv || vx || vi) // vnsrl/vnsra.wv/wx/wi
+  val widenEncoding=f6(5,3)===6.U && (mulVV || mulVX) // vwadd[u]/vwsub[u], including .w sources
+  val wideSource2=widenEncoding && f6(2)
   val integerReductionEncoding=mulVV && f6<=7.U
   val fpReductionEncoding=fpVV && f6(5,3)===0.U && f6(0) // 1/3 sum, 5 min, 7 max
   val wideningReductionEncoding=vv && f6(5,1)===0x18.U // vwredsumu/sum, f6=0x30/31
@@ -251,6 +253,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(gatherEncoding=/=0.U) {supported:=true.B;decodedOp:=Op.move.U}
   when(extensionEncoding) {supported:=true.B;decodedOp:=Op.move.U}
   when(narrowEncoding) {supported:=true.B;decodedOp:=Mux(f6(0),Op.sra.U,Op.srl.U)}
+  when(widenEncoding) {supported:=true.B;decodedOp:=Mux(f6(1),Op.sub.U,Op.add.U)}
   val producesMask=Mux(fpSupported,fpMask,decodedMask)
   // Register decode before alignment/overlap/permission checks in the FP top.
   val selectedOp=if(enableFp)Reg(UInt(Op.width.W)) else decodedOp
@@ -297,6 +300,9 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val groupLog = Mux(vtype(2,0) <= 3.U,vtype(1,0),0.U(2.W))
   val groupCount = (1.U(4.W)<<groupLog)(3,0)
   val alignment = VectorConfig.groupAlignment(groupLog)
+  val destinationLog=Mux(widenEncoding,VectorConfig.doubleGroupLog(vtype(2,0)),groupLog)
+  val destinationAlignment=VectorConfig.groupAlignment(destinationLog)
+  val destinationGroupCount=(1.U(4.W)<<destinationLog)(3,0)
   // Mask destinations have EEW=1: overlap may only use the lowest register
   // of a wider source group (generic narrowing-overlap rule).
   val badMaskOverlap = selectedMask && !selectedMaskLogic && !selectedMaskPrefix && ((vd=/=vs2 && VectorConfig.alignedGroupContains(vd,vs2,alignment)) ||
@@ -306,7 +312,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val extensionCount=selectedExtensionGeometry(5,2)
     val extensionAlignment=VectorConfig.countAlignment(extensionCount)
     val narrowAlignment=VectorConfig.narrowAlignment(vtype(2,0))
-    val sourceAlignment=Mux(extensionEncoding,extensionAlignment,Mux(narrowEncoding,narrowAlignment,alignment))
+    val sourceAlignment=Mux(extensionEncoding,extensionAlignment,Mux(narrowEncoding || wideSource2,narrowAlignment,alignment))
     val extensionOverlap=VectorConfig.alignedGroupsOverlap(vd,alignment,vs2,extensionAlignment)
     val extensionHighPart=(vd^vs2)===(alignment^extensionAlignment)
     val extensionBad=extensionEncoding && (extensionCount===0.U ||
@@ -316,9 +322,15 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val narrowBad=narrowEncoding && (vtype(4,3)===3.U || vtype(2,0)===3.U ||
       (vd=/=vs2 && VectorConfig.alignedGroupsOverlap(vd,alignment,vs2,narrowAlignment)) ||
       (vv && VectorConfig.alignedGroupsOverlap(vs1,alignment,vs2,narrowAlignment)))
+    def badWidenOverlap(source:UInt):Bool =
+      VectorConfig.alignedGroupsOverlap(vd,destinationAlignment,source,alignment) &&
+        (vtype(2) || (vd^source)=/=(destinationAlignment^alignment))
+    val widenBad=widenEncoding && (vtype(4,3)===3.U || vtype(2,0)===3.U ||
+      (!wideSource2 && badWidenOverlap(vs2)) || (mulVV && badWidenOverlap(vs1)) ||
+      (wideSource2 && mulVV && VectorConfig.alignedGroupsOverlap(vs2,narrowAlignment,vs1,alignment)))
     val singleRegister=selectedMaskLogic || selectedScalarMove=/=0.U || selectedMaskScalar || selectedMaskPrefix
     val misaligned = !singleRegister && ((needsVs2 && (vs2&sourceAlignment) =/= 0.U) || (vectorSource1 && (vs1&alignment) =/= 0.U) ||
-      (!selectedMask && !selectedReduction && (vd&alignment) =/= 0.U))
+      (!selectedMask && !selectedReduction && (vd&destinationAlignment) =/= 0.U))
     val indexCount=Mux(selectedGather===2.U,selectedEi16Count,groupCount)
     val indexAlignment=VectorConfig.countAlignment(indexCount)
     val gatherBad=selectedGather=/=0.U && (
@@ -336,7 +348,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val wideningReductionBad=anyWidenReduction && (vtype(4,3)===3.U ||
       VectorConfig.alignedGroupContains(vs1,vs2,alignment))
     val fpIllegal=selectedFp && (vtype(4,3)<2.U || (frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U))
-    when(vtype(63) || !selectedSupported || fpIllegal || extensionBad || narrowBad || wideningReductionBad || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias || compressBad ||
+    when(vtype(63) || !selectedSupported || fpIllegal || extensionBad || narrowBad || widenBad || wideningReductionBad || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias || compressBad ||
       (!vm && !selectedMask && !selectedReduction && !selectedMaskScalar && vd === 0.U) ||
       ((selectedReduction || selectedMaskScalar || selectedMaskPrefix || selectedIndexGenerate===1.U || selectedIndexGenerate===3.U) && vstart=/=0.U) ||
       (selectedMaskPrefix && (vd===vs2 || (!vm && vd===0.U))) ||
@@ -344,9 +356,10 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       (selectedSlide && !f6(0) && vd===vs2)) {
       illegal := true.B; state := finish
     }.otherwise {
-      sew := Mux(selectedMaskLogic || selectedMaskPrefix,0.U,vtype(4,3)); op := selectedOp; comparison := selectedMask
+      sew := Mux(selectedMaskLogic || selectedMaskPrefix,0.U,
+        Mux(widenEncoding,Cat(vtype(4)^vtype(3),!vtype(3)),vtype(4,3))); op := selectedOp; comparison := selectedMask
       sourceSew:=Mux(extensionEncoding,selectedExtensionGeometry(1,0),
-        Mux(narrowEncoding,Cat(vtype(4)^vtype(3),!vtype(3)),vtype(4,3)))
+        Mux(narrowEncoding || wideSource2,Cat(vtype(4)^vtype(3),!vtype(3)),vtype(4,3)))
       reduction:=selectedReduction
       maskLogic:=selectedMaskLogic;scalarMove:=selectedScalarMove
       maskScalar:=selectedMaskScalar
@@ -361,8 +374,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         fpDestMultiply:=f6>=0x28.U && f6<=0x2b.U
         fpReverse:=fpVF && (f6===0x21.U || f6===0x27.U)
       }
-      destinationCount := Mux(selectedMask || selectedReduction || singleRegister,1.U,groupCount)
-      val maskBase = Mux(selectedMask || selectedReduction || singleRegister,1.U(32.W),MuxLookup(groupLog,1.U(32.W))(Seq(
+      destinationCount := Mux(selectedMask || selectedReduction || singleRegister,1.U,destinationGroupCount)
+      val maskBase = Mux(selectedMask || selectedReduction || singleRegister,1.U(32.W),MuxLookup(destinationLog,1.U(32.W))(Seq(
         1.U -> 3.U(32.W),2.U -> 15.U(32.W),3.U -> 255.U(32.W))))
       commitMask := (maskBase<<vd)(31,0)
       copyIndex := 0.U; index := vstart
@@ -475,7 +488,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         destination := Mux(comparison,vd,(vd+offset(6,4))(4,0))
         val widthMask = VecInit(Seq(1,3,15,255).map(_.U(16.W)))(sew)
         byteMask := (widthMask<<offset(3,0))(15,0)
-        when(extensionEncoding || narrowEncoding) {
+        when(extensionEncoding || narrowEncoding || widenEncoding) {
           val source=(index<<sourceSew)(6,0)
           sourceOffset:=source(6,4);bitOffset:=Cat(source(3,0),0.U(3.W))
         }
@@ -579,6 +592,11 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   // Owner instruction is stable until completion/flush; no extra mode register.
   val arithmeticSew=Mux(anyWidenReduction || narrowEncoding,Cat(sew(1)||sew(0),!sew(0)),sew)
   val accumulatorMask=VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(arithmeticSew)
+  val configuredMask=VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(vtype(4,3))
+  def configuredSignExtend(value:UInt):UInt = MuxLookup(vtype(4,3),value)(Seq(
+    0.U->Cat(Fill(56,value(7)),value(7,0)),
+    1.U->Cat(Fill(48,value(15)),value(15,0)),
+    2.U->Cat(Fill(32,value(31)),value(31,0))))
   when(state===scalarRead) {rf.io.readEnable:=true.B;rf.io.readAddress:=vs2;state:=scalarCapture}
   when(state===scalarCapture) {
     val value=rf.io.readData(63,0)
@@ -610,10 +628,12 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       2.U->Cat(Fill(32,value(31)),value(31,0))))
     a := Mux(wideningReductionEncoding && f6(0),signExtended,value&elementMask)
     when(narrowEncoding) {a:=value&accumulatorMask}
+    when(widenEncoding) {a:=Mux(wideSource2,value&elementMask,Mux(f6(0),signExtended,value&configuredMask))}
     val immediate = Cat(Fill(59,vs1(4)),vs1)
     val isShift = op === Op.sll.U || op === Op.srl.U || op === Op.sra.U
     val fpScalar=Mux(sew===2.U && !command.scalar(63,32).andR,"h7fc00000".U,command.scalar)
     b := Mux(reduction,reductionAccumulator,Mux(fp,fpScalar,Mux(vx || mulVX,command.scalar,Mux(isShift,vs1.pad(64),immediate))))&accumulatorMask
+    when(widenEncoding) {b:=Mux(f6(0),configuredSignExtend(command.scalar),command.scalar&configuredMask)}
     // Small registered prefix feedback; RAM bit selection never feeds the
     // 64-bit arithmetic result chain. Masked-out elements bypass captureA.
     when(indexGenerate=/=0.U) {
@@ -627,9 +647,9 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       val sourceMask=VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(sourceSew)
       b:=Mux(vs1(0),signExtended,value&sourceMask)
     }
-    when(narrowEncoding && vv) {
-      // vs1 shift amounts stay at destination SEW, independent of wider vs2.
-      val offset=(index<<sew)(6,0)
+    when((narrowEncoding && vv) || (widenEncoding && mulVV)) {
+      // The second vector uses configured SEW, independently of the vs2 EEW.
+      val offset=(index<<Mux(widenEncoding,vtype(4,3),sew))(6,0)
       sourceOffset:=offset(6,4);bitOffset:=Cat(offset(3,0),0.U(3.W))
     }
     when(gather=/=0.U && !vv) {gatherCached:=true.B}
@@ -642,6 +662,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(state === captureB) {
     val value=(rf.io.readData>>bitOffset)(63,0)
     b := value&elementMask
+    when(widenEncoding) {b:=Mux(f6(0),configuredSignExtend(value),value&configuredMask)}
     state := Mux(fp && fpOp>=FpOp.fma.U && fpOp<=FpOp.fnmadd.U,readC,launch)
     when(gather=/=0.U) {
       a:=Mux(gather===2.U,value(15,0).pad(64),value&elementMask)

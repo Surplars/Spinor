@@ -26,6 +26,11 @@ object VectorConfig {
     Mux(lmul(2),0.U(5.W),
       chisel3.util.Cat(0.U(2.W),lmul(1),lmul(1)||lmul(0),true.B))
   }
+  // log2 of the physical register count after doubling LMUL; m8 is rejected.
+  def doubleGroupLog(lmul:UInt):UInt = {
+    require(lmul.getWidth==3)
+    Mux(lmul(2),0.U(2.W),chisel3.util.Cat(lmul(1)^lmul(0),!lmul(0)))
+  }
   def alignedGroupsOverlap(a:UInt,aa:UInt,b:UInt,ba:UInt):Bool = {
     val alignment=aa|ba
     (a & ~alignment)===(b & ~alignment)

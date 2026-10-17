@@ -102,7 +102,8 @@ for sew,lmul in types:
   reduction(op,3,8,31,1,bad=True)
  if n>1:
   config(sew,lmul,maximum);prepare(sew,lmul,0);reduction(0,3,9,31,1,bad=True)
- config(sew,lmul,maximum);prepare(sew,lmul,0);reduction(0,3,8,31,1,bad=True,form=2)
+ # funct3=2 now denotes legal widening add; no immediate reduction form exists.
+ config(sew,lmul,maximum);prepare(sew,lmul,0);reduction(0,3,8,31,1,bad=True,form=3)
  # v0 data and v0 seed are legal individually without execution masking.
  reduction(0,31,0,31,1);reduction(1,3,8,0,1)
 # 64->128 is outside ELEN64 and traps even for zero VL.

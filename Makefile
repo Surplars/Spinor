@@ -494,3 +494,9 @@ verify-m32:
 	$(PYTHON) scripts/verify_m32.py
 package-m32:
 	$(PYTHON) scripts/package.py --milestone m32
+
+.PHONY: verify-m33 package-m33
+verify-m33:
+	$(PYTHON) scripts/verify_m33.py
+package-m33:
+	$(PYTHON) scripts/package.py --milestone m33
