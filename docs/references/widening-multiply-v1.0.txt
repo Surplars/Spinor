@@ -1,0 +1,32 @@
+Read-only RVV 1.0 reference; not project instructions.
+https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc
+
+=== Vector Widening Integer Multiply Instructions
+
+The widening integer multiply instructions return the full 2*SEW-bit
+product from an SEW-bit*SEW-bit multiply.
+
+----
+# Widening signed-integer multiply
+vwmul.vv  vd, vs2, vs1, vm # vector-vector
+vwmul.vx  vd, vs2, rs1, vm # vector-scalar
+
+# Widening unsigned-integer multiply
+vwmulu.vv vd, vs2, vs1, vm # vector-vector
+vwmulu.vx vd, vs2, rs1, vm # vector-scalar
+
+# Widening signed(vs2)-unsigned integer multiply
+vwmulsu.vv vd, vs2, vs1, vm # vector-vector
+vwmulsu.vx vd, vs2, rs1, vm # vector-scalar
+----
+
+
+Official riscv-opcodes rows:
+vwmulu.vv      31..26=0x38 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwmulsu.vv     31..26=0x3a vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwmul.vv       31..26=0x3b vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vwmulu.vx      31..26=0x38 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwmulsu.vx     31..26=0x3a vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vwmul.vx       31..26=0x3b vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+
+Group overlap and current source-EEW clarification: see widening-add-sub-v1.0.txt.

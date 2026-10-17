@@ -68,7 +68,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val csrData = Reg(UInt(64.W))
   val index = Reg(UInt(8.W))
   val sew = Reg(UInt(2.W))
-  val sourceSew = Reg(UInt(2.W)) // vs2 EEW for extension/narrowing; otherwise SEW
+  val sourceSew = Reg(UInt(2.W)) // vs2 EEW, independently of configured and destination SEW
   val op = Reg(UInt(Op.width.W))
   val comparison = Reg(Bool())
   val destinationCount = Reg(UInt(4.W))
@@ -154,8 +154,12 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val mulVV=f3===2.U; val mulVX=f3===6.U
   val extensionEncoding=mulVV && f6===0x12.U && vs1(4,3)===0.U && vs1(2,1)=/=0.U
   val narrowEncoding=f6(5,1)===0x16.U && (vv || vx || vi) // vnsrl/vnsra.wv/wx/wi
-  val widenEncoding=f6(5,3)===6.U && (mulVV || mulVX) // vwadd[u]/vwsub[u], including .w sources
-  val wideSource2=widenEncoding && f6(2)
+  val widenAddSub=f6(5,3)===6.U && (mulVV || mulVX) // vwadd[u]/vwsub[u], including .w sources
+  val widenMultiply=(f6===0x38.U || f6===0x3a.U || f6===0x3b.U) && (mulVV || mulVX)
+  val widenEncoding=widenAddSub || widenMultiply
+  val wideSource2=widenAddSub && f6(2)
+  val widenSignedA=Mux(widenMultiply,f6(1),f6(0))
+  val widenSignedB=Mux(widenMultiply,f6(1) && f6(0),f6(0))
   val integerReductionEncoding=mulVV && f6<=7.U
   val fpReductionEncoding=fpVV && f6(5,3)===0.U && f6(0) // 1/3 sum, 5 min, 7 max
   val wideningReductionEncoding=vv && f6(5,1)===0x18.U // vwredsumu/sum, f6=0x30/31
@@ -253,7 +257,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(gatherEncoding=/=0.U) {supported:=true.B;decodedOp:=Op.move.U}
   when(extensionEncoding) {supported:=true.B;decodedOp:=Op.move.U}
   when(narrowEncoding) {supported:=true.B;decodedOp:=Mux(f6(0),Op.sra.U,Op.srl.U)}
-  when(widenEncoding) {supported:=true.B;decodedOp:=Mux(f6(1),Op.sub.U,Op.add.U)}
+  when(widenEncoding) {supported:=true.B;decodedOp:=Mux(widenMultiply,Op.mul.U,Mux(f6(1),Op.sub.U,Op.add.U))}
   val producesMask=Mux(fpSupported,fpMask,decodedMask)
   // Register decode before alignment/overlap/permission checks in the FP top.
   val selectedOp=if(enableFp)Reg(UInt(Op.width.W)) else decodedOp
@@ -628,12 +632,12 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       2.U->Cat(Fill(32,value(31)),value(31,0))))
     a := Mux(wideningReductionEncoding && f6(0),signExtended,value&elementMask)
     when(narrowEncoding) {a:=value&accumulatorMask}
-    when(widenEncoding) {a:=Mux(wideSource2,value&elementMask,Mux(f6(0),signExtended,value&configuredMask))}
+    when(widenEncoding) {a:=Mux(wideSource2,value&elementMask,Mux(widenSignedA,signExtended,value&configuredMask))}
     val immediate = Cat(Fill(59,vs1(4)),vs1)
     val isShift = op === Op.sll.U || op === Op.srl.U || op === Op.sra.U
     val fpScalar=Mux(sew===2.U && !command.scalar(63,32).andR,"h7fc00000".U,command.scalar)
     b := Mux(reduction,reductionAccumulator,Mux(fp,fpScalar,Mux(vx || mulVX,command.scalar,Mux(isShift,vs1.pad(64),immediate))))&accumulatorMask
-    when(widenEncoding) {b:=Mux(f6(0),configuredSignExtend(command.scalar),command.scalar&configuredMask)}
+    when(widenEncoding) {b:=Mux(widenSignedB,configuredSignExtend(command.scalar),command.scalar&configuredMask)}
     // Small registered prefix feedback; RAM bit selection never feeds the
     // 64-bit arithmetic result chain. Masked-out elements bypass captureA.
     when(indexGenerate=/=0.U) {
@@ -652,6 +656,10 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       val offset=(index<<Mux(widenEncoding,vtype(4,3),sew))(6,0)
       sourceOffset:=offset(6,4);bitOffset:=Cat(offset(3,0),0.U(3.W))
     }
+    when(widenMultiply && mulVX) {
+      // Serialized multiply retires using bitOffset, unlike tag-based ALU writes.
+      bitOffset:=Cat((index<<sew)(3,0),0.U(3.W))
+    }
     when(gather=/=0.U && !vv) {gatherCached:=true.B}
     val fused=fp && fpOp>=FpOp.fma.U && fpOp<=FpOp.fnmadd.U
     state := Mux(indexGenerate===3.U,slideAddress,Mux(vectorSource1,readB,Mux(fused,readC,launch)))
@@ -662,7 +670,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(state === captureB) {
     val value=(rf.io.readData>>bitOffset)(63,0)
     b := value&elementMask
-    when(widenEncoding) {b:=Mux(f6(0),configuredSignExtend(value),value&configuredMask)}
+    when(widenEncoding) {b:=Mux(widenSignedB,configuredSignExtend(value),value&configuredMask)}
+    when(widenMultiply) {bitOffset:=Cat((index<<sew)(3,0),0.U(3.W))}
     state := Mux(fp && fpOp>=FpOp.fma.U && fpOp<=FpOp.fnmadd.U,readC,launch)
     when(gather=/=0.U) {
       a:=Mux(gather===2.U,value(15,0).pad(64),value&elementMask)
