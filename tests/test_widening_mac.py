@@ -150,7 +150,9 @@ seed();execute(0x3d,6,vd=0,scalar=M64)
 seed();execute(0x3d,2,other=16)
 config(0,5,2);seed();execute(0x3c,6);execute(0x3e,6,vd=16)
 config(2,0,4);seed();setstart(127);execute(0x3d,6,scalar=M64)
-for form in [0,1,3,4,5]:execute(0x3c,form)
+# M40 implements OPFVV/OPFVF at this funct6. Keep negative probes reserved;
+# their positive FP semantics are covered by test_fp_widen_arithmetic.py.
+for form in [0,1,3,4,5]:execute(0x39 if fp and form in [1,5] else 0x3c,form)
 for form in [2,6]:execute(0x39,form)
 # Sampling the reused multiplier's partial-product/align/accumulate phases,
 # owner flush and indefinitely held completion; no result is published early.

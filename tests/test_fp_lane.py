@@ -79,9 +79,11 @@ def check(trace,rows):
     return {k:sorted(v) for k,v in latencies.items()}
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument("--smoke",action="store_true");p.add_argument("--mapped",action="store_true");args=p.parse_args();assert not args.mapped or args.smoke
+    p=argparse.ArgumentParser();p.add_argument("--widen-native",action="store_true");p.add_argument("--smoke",action="store_true");p.add_argument("--mapped",action="store_true");args=p.parse_args();assert not args.mapped or args.smoke
     OUT.mkdir(parents=True,exist_ok=True)
     ref=Reference();rng=random.Random(0x3f15e62);rows=[];lines=[HEADER.replace("repeat(400)","repeat(100)") if args.smoke else HEADER]
+    if args.widen_native:
+        lines[0]=lines[0].replace("FloatingPointLane dut", "reg [1:0] narrowOperands=0;FloatingPointLaneWiden dut")
     def add(d,op,rm,a,b=0,c=0):
         legal=op<=20 and rm<=4
         value,flags=ref(op,d,rm,a,b,c) if legal else (0,0)
@@ -115,8 +117,10 @@ def main():
     add(False,0,0,0x3f800000,0x3f800000)
     lines.append('$display("PASS fp-lane vectors=%0d stalls=%0d cancels=%0d cycles=%0d",n,stalls,cancels,cycles);$finish;end endmodule\n')
     name='fp-lane-mapped' if args.mapped else 'fp-lane-smoke' if args.smoke else 'fp-lane'
+    if args.widen_native:name=name.replace('fp-lane','fp-native')
     tb=OUT/(name+'-tb.sv');tb.write_text('\n'.join(lines));exe=OUT/name
     rtl=ROOT/('build/synth/FloatingPointLane/mapped.v' if args.mapped else 'build/rtl/FloatingPointLane.sv')
+    if args.widen_native:rtl=ROOT/('build/synth/FloatingPointLaneWiden/mapped.v' if args.mapped else 'build/rtl/FloatingPointLaneWiden.sv')
     files=[str(tb),str(rtl)]
     if args.mapped:files += [str(ROOT/'tools/oss-cad-suite/share/yosys/xilinx/cells_sim.v'),str(ROOT/'third_party/xilinx-unisim/DSP48E2.v'),str(ROOT/'tests/fp_mapped_global.sv')]
     with (OUT/(name+'.compile.log')).open('w') as log:

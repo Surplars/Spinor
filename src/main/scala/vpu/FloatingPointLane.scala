@@ -110,7 +110,10 @@ object FpBits {
   * Staged align, tiled product/CSA, split add, normalize, round and div/sqrt.
   * Capacity remains one; device timing and throughput remain unqualified.
   */
-class FloatingPointLane extends Module {
+class FloatingPointLane(enableWiden:Boolean=false) extends Module {
+  override def desiredName=if(enableWiden)"FloatingPointLaneWiden" else "FloatingPointLane"
+  val narrowOperands=if(enableWiden)Some(IO(Input(UInt(2.W)))) else None
+  val operandWidths=if(enableWiden)Reg(UInt(2.W)) else WireDefault(0.U(2.W))
   val io=IO(new Bundle {
     val flush=Input(Bool()); val in=Flipped(Decoupled(new FpRequest)); val out=Decoupled(new FpResponse)
   })
@@ -130,13 +133,20 @@ class FloatingPointLane extends Module {
   val isMisc=request.op>=FpOp.min.U && !isWideAdd
   when(io.in.fire) {
     request:=io.in.bits
+    if(enableWiden) {operandWidths:=narrowOperands.get}
     response:=0.U.asTypeOf(new FpResponse)
     response.tag:=io.in.bits.tag
     val rtz=io.in.bits.op>=FpOp.toUIntRtz.U && io.in.bits.op<=FpOp.toIntRtz.U
     val legal=(io.in.bits.rounding<=4.U || rtz) && (io.in.bits.op<=FpOp.toIntRtz.U ||
       (io.in.bits.op===FpOp.widenAdd.U && io.in.bits.double))
-    response.illegal := !legal
-    state:=Mux(legal,recode,reply)
+    val widthsLegal=if(enableWiden) narrowOperands.get===0.U ||
+      (io.in.bits.double && (narrowOperands.get===2.U && io.in.bits.op<=FpOp.sub.U ||
+        narrowOperands.get===3.U && (io.in.bits.op<=FpOp.mul.U || io.in.bits.op>=FpOp.fma.U && io.in.bits.op<=FpOp.fnmadd.U))) else true.B
+    if(enableWiden) {
+      response.illegal := !(legal && widthsLegal);state:=Mux(legal && widthsLegal,recode,reply)
+    } else {
+      response.illegal := !legal;state:=Mux(legal,recode,reply)
+    }
   }
   // Register FP32 normalization before exponent widening / special packing.
   // Preserve signaling NaNs and payload; this is exact widening, no rounding.
@@ -149,9 +159,15 @@ class FloatingPointLane extends Module {
     state:=recodeFinish
   }
   when(state===recodeFinish) {
-    ra:=Mux(request.double && !isWideAdd,IeeeRecode(11,53,request.a,norm64(0)),FpBits.wideRecRaw(raw32(0)))
+    if(enableWiden) {
+      ra:=Mux(request.double && !isWideAdd && !operandWidths(0),IeeeRecode(11,53,request.a,norm64(0)),FpBits.wideRecRaw(raw32(0)))
+    } else {
+      ra:=Mux(request.double && !isWideAdd,IeeeRecode(11,53,request.a,norm64(0)),FpBits.wideRecRaw(raw32(0)))
+    }
     when(request.double) {
-      rb:=IeeeRecode(11,53,request.b,norm64(1));rc:=IeeeRecode(11,53,request.c,norm64(2))
+      if(enableWiden) {rb:=Mux(operandWidths(1),FpBits.wideRecRaw(raw32(1)),IeeeRecode(11,53,request.b,norm64(1)))}
+      else {rb:=IeeeRecode(11,53,request.b,norm64(1))}
+      rc:=IeeeRecode(11,53,request.c,norm64(2))
     }.otherwise {
       rb:=FpBits.wideRecRaw(raw32(1));rc:=FpBits.wideRecRaw(raw32(2))
     }

@@ -19,7 +19,7 @@ for preset,top in PROFILES.items():
  assert cfg['top']==top and cfg['preset']==preset and cfg['alu_stage_bits']==(16 if 'deep' in preset else 32)
  fp='integer' not in preset;assert cfg['fp32_fp64']==fp and cfg['has_fp_csr_ports']==fp
  assert ('io_core_frm' in text)==fp and ('io_core_fflags' in text)==fp
- assert ('module FloatingPointLane(' in text)==fp
+ assert ('module FloatingPointLaneWiden(' in text)==fp
  assert 'VersionedRegisterFileRam' in text and 'storage_ext' in text
  assert cfg['vlen']==128 and cfg['lanes']==1 and cfg['instruction_capacity']==1
 assert (ROOT/'build/rtl/SpinorStandard.sv').read_text().replace('SpinorStandard','SpinorVpu')==(ROOT/'build/rtl/SpinorVpu.sv').read_text()

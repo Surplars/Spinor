@@ -73,6 +73,8 @@ object Generate extends App {
   val convert = ChiselStage.emitSystemVerilog(new FloatingPointConvert,firtoolOpts=Array(
     "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays"))
   writeBundle("FloatingPointConvert",convert)
+  writeBundle("FloatingPointLaneWiden",ChiselStage.emitSystemVerilog(new FloatingPointLane(enableWiden=true),firtoolOpts=Array(
+    "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays")))
   val fp = ChiselStage.emitSystemVerilog(new FloatingPointLane,firtoolOpts=Array(
     "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays"))
   writeBundle("FloatingPointLane",fp)

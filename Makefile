@@ -539,3 +539,9 @@ package-m39:
 	$(PYTHON) scripts/package.py --milestone m39
 profiles:
 	$(PYTHON) scripts/generate_profiles.py
+
+.PHONY: verify-m40 package-m40
+verify-m40:
+	$(PYTHON) scripts/verify_m40.py
+package-m40:
+	$(PYTHON) scripts/package.py --milestone m40

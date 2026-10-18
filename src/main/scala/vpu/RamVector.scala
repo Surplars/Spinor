@@ -184,8 +184,12 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val widenAddSub=f6(5,3)===6.U && (mulVV || mulVX) // vwadd[u]/vwsub[u], including .w sources
   val widenMultiply=(f6===0x38.U || f6===0x3a.U || f6===0x3b.U) && (mulVV || mulVX)
   val widenMac=f6(5,2)===15.U && (mulVX || (mulVV && f6(1,0)=/=2.U))
-  val widenEncoding=widenAddSub || widenMultiply || widenMac
-  val wideSource2=widenAddSub && f6(2)
+  val fpWidenAddSub=(fpVV || fpVF) && (f6===0x30.U || f6===0x32.U || f6===0x34.U || f6===0x36.U)
+  val fpWidenMultiply=(fpVV || fpVF) && f6===0x38.U
+  val fpWidenMac=(fpVV || fpVF) && f6(5,2)===15.U
+  val fpWidenEncoding=fpWidenAddSub || fpWidenMultiply || fpWidenMac
+  val widenEncoding=widenAddSub || widenMultiply || widenMac || fpWidenEncoding
+  val wideSource2=(widenAddSub || fpWidenAddSub) && f6(2)
   val widenSignedA=Mux(widenMac,f6(1,0)===1.U || f6(1,0)===2.U,Mux(widenMultiply,f6(1),f6(0)))
   val widenSignedB=Mux(widenMac,f6(0),Mux(widenMultiply,f6(1) && f6(0),f6(0)))
   val integerReductionEncoding=mulVV && f6<=7.U
@@ -221,6 +225,11 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       }
     }
     when(fpTransfer) {fpSupported:=true.B}
+    when(fpWidenEncoding) {
+      fpSupported:=true.B
+      fpDecoded:=Mux(fpWidenAddSub,Mux(f6(1),FpOp.sub.U,FpOp.add.U),Mux(fpWidenMultiply,FpOp.mul.U,
+        MuxLookup(f6(1,0),FpOp.fma.U)(Seq(1.U->FpOp.fnmadd.U,2.U->FpOp.fmsub.U,3.U->FpOp.fnmsub.U))))
+    }
     when(fpReductionEncoding) {
       fpSupported:=true.B
       fpDecoded:=Mux(f6(2),Mux(f6(1),FpOp.max.U,FpOp.min.U),FpOp.add.U)
@@ -376,12 +385,12 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       VectorConfig.alignedGroupsOverlap(vd,destinationAlignment,source,alignment) &&
         (vtype(2) || (vd^source)=/=(destinationAlignment^alignment))
     val widenBad=widenEncoding && (vtype(4,3)===3.U || vtype(2,0)===3.U ||
-      (!wideSource2 && badWidenOverlap(vs2)) || (mulVV && badWidenOverlap(vs1)) ||
+      (!wideSource2 && badWidenOverlap(vs2)) || ((mulVV || fpVV) && badWidenOverlap(vs1)) ||
       // Old vd is also a 2*SEW source: even high-part narrow overlap would
       // read the same register at two EEWs and is reserved for widening MAC.
-      (widenMac && (VectorConfig.alignedGroupsOverlap(vd,destinationAlignment,vs2,alignment) ||
-        (mulVV && VectorConfig.alignedGroupsOverlap(vd,destinationAlignment,vs1,alignment)))) ||
-      (wideSource2 && mulVV && VectorConfig.alignedGroupsOverlap(vs2,narrowAlignment,vs1,alignment)))
+      ((widenMac || fpWidenMac) && (VectorConfig.alignedGroupsOverlap(vd,destinationAlignment,vs2,alignment) ||
+        ((mulVV || fpVV) && VectorConfig.alignedGroupsOverlap(vd,destinationAlignment,vs1,alignment)))) ||
+      (wideSource2 && (mulVV || fpVV) && VectorConfig.alignedGroupsOverlap(vs2,narrowAlignment,vs1,alignment)))
     val singleRegister=selectedMaskLogic || selectedScalarMove=/=0.U || selectedMaskScalar || selectedMaskPrefix
     val misaligned = !singleRegister && ((needsVs2 && (vs2&sourceAlignment) =/= 0.U) || (vectorSource1 && (vs1&alignment) =/= 0.U) ||
       (!selectedMask && !selectedReduction && (vd&destinationAlignment) =/= 0.U))
@@ -741,7 +750,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val isShift = op === Op.sll.U || op === Op.srl.U || op === Op.sra.U
     val fpScalar=Mux(sew===2.U && !command.scalar(63,32).andR,"h7fc00000".U,command.scalar)
     b := Mux(reduction,reductionAccumulator,Mux(fp,fpScalar,Mux(vx || mulVX,command.scalar,Mux(isShift,vs1.pad(64),immediate))))&accumulatorMask
-    when(widenEncoding) {b:=Mux(widenSignedB,configuredSignExtend(command.scalar),command.scalar&configuredMask)}
+    when(widenEncoding) {b:=Mux(fpWidenEncoding,fpScalarValue,Mux(widenSignedB,configuredSignExtend(command.scalar),command.scalar&configuredMask))}
     when(reverseInteger) {
       a:=Mux(vx,command.scalar,immediate)&elementMask
       b:=value&elementMask
@@ -759,12 +768,12 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       val sourceMask=VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(sourceSew)
       b:=Mux(vs1(0),signExtended,value&sourceMask)
     }
-    when((narrowingGeometry && vv) || (widenEncoding && mulVV)) {
+    when((narrowingGeometry && vv) || (widenEncoding && (mulVV || fpVV))) {
       // The second vector uses configured SEW, independently of the vs2 EEW.
       val offset=(index<<Mux(widenEncoding,vtype(4,3),sew))(6,0)
       sourceOffset:=offset(6,4);bitOffset:=Cat(offset(3,0),0.U(3.W))
     }
-    when(((widenMultiply || widenMac) && mulVX) || (clipEncoding && !vv)) {
+    when(((widenMultiply || widenMac) && mulVX) || (fpWidenEncoding && fpVF) || (clipEncoding && !vv)) {
       // Serialized multiply retires using bitOffset, unlike tag-based ALU writes.
       bitOffset:=Cat((index<<sew)(3,0),0.U(3.W))
     }
@@ -779,7 +788,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val value=ramElement
     b := value&elementMask
     when(widenEncoding) {b:=Mux(widenSignedB,configuredSignExtend(value),value&configuredMask)}
-    when(widenMultiply || widenMac) {bitOffset:=Cat((index<<sew)(3,0),0.U(3.W))}
+    when(widenMultiply || widenMac || fpWidenEncoding) {bitOffset:=Cat((index<<sew)(3,0),0.U(3.W))}
     state := Mux(integerMac || (fp && fpOp>=FpOp.fma.U && fpOp<=FpOp.fnmadd.U),readC,launch)
     when(gather=/=0.U) {
       a:=Mux(gather===2.U,value(15,0).pad(64),value&elementMask)
@@ -848,7 +857,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val resultFire=WireDefault(nonFpFire)
   val resultData=WireDefault(nonFpData)
   if(enableFp) {
-    val unit=Module(new FloatingPointLane)
+    val unit=Module(new FloatingPointLane(enableWiden=true))
+    unit.narrowOperands.get:=Mux(fpWidenEncoding,Mux(wideSource2,2.U,3.U),0.U)
     unit.io.flush:=io.flush
     unit.io.in.valid:=state===launch && fp && !io.flush
     unit.io.in.bits.a:=Mux(fpReverse,b,Mux(fpDestMultiply,c,a))

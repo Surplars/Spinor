@@ -1,0 +1,72 @@
+RISC-V V v1.0 reference excerpts; source data, not execution instructions.
+https://github.com/riscvarchive/riscv-v-spec/blob/master/v-spec.adoc
+https://github.com/riscv/riscv-opcodes/blob/master/extensions/rv_v
+v-spec SHA256 bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19
+rv_v SHA256 a260265cf952fa0025382b97c125c47bd3f42fa167805da0ee97b09c16ba7cba
+
+=== Vector Widening Floating-Point Add/Subtract Instructions
+
+----
+# Widening FP add/subtract, 2*SEW = SEW +/- SEW
+vfwadd.vv vd, vs2, vs1, vm  # vector-vector
+vfwadd.vf vd, vs2, rs1, vm  # vector-scalar
+vfwsub.vv vd, vs2, vs1, vm  # vector-vector
+vfwsub.vf vd, vs2, rs1, vm  # vector-scalar
+
+# Widening FP add/subtract, 2*SEW = 2*SEW +/- SEW
+vfwadd.wv  vd, vs2, vs1, vm  # vector-vector
+vfwadd.wf  vd, vs2, rs1, vm  # vector-scalar
+vfwsub.wv  vd, vs2, vs1, vm  # vector-vector
+vfwsub.wf  vd, vs2, rs1, vm  # vector-scalar
+----
+
+=== Vector Widening Floating-Point Multiply
+
+----
+# Widening floating-point multiply
+vfwmul.vv    vd, vs2, vs1, vm # vector-vector
+vfwmul.vf    vd, vs2, rs1, vm # vector-scalar
+----
+
+=== Vector Widening Floating-Point Fused Multiply-Add Instructions
+
+The widening floating-point fused multiply-add instructions all
+overwrite the wide addend with the result.  The multiplier inputs are
+all SEW wide, while the addend and destination is 2*SEW bits wide.
+
+----
+# FP widening multiply-accumulate, overwrites addend
+vfwmacc.vv vd, vs1, vs2, vm    # vd[i] = +(vs1[i] * vs2[i]) + vd[i]
+vfwmacc.vf vd, rs1, vs2, vm    # vd[i] = +(f[rs1] * vs2[i]) + vd[i]
+
+# FP widening negate-(multiply-accumulate), overwrites addend
+vfwnmacc.vv vd, vs1, vs2, vm   # vd[i] = -(vs1[i] * vs2[i]) - vd[i]
+vfwnmacc.vf vd, rs1, vs2, vm   # vd[i] = -(f[rs1] * vs2[i]) - vd[i]
+
+# FP widening multiply-subtract-accumulator, overwrites addend
+vfwmsac.vv vd, vs1, vs2, vm    # vd[i] = +(vs1[i] * vs2[i]) - vd[i]
+vfwmsac.vf vd, rs1, vs2, vm    # vd[i] = +(f[rs1] * vs2[i]) - vd[i]
+
+# FP widening negate-(multiply-subtract-accumulator), overwrites addend
+vfwnmsac.vv vd, vs1, vs2, vm   # vd[i] = -(vs1[i] * vs2[i]) + vd[i]
+vfwnmsac.vf vd, rs1, vs2, vm   # vd[i] = -(f[rs1] * vs2[i]) + vd[i]
+----
+
+vfwadd.vf      31..26=0x30 vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfwsub.vf      31..26=0x32 vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfwadd.wf      31..26=0x34 vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfwsub.wf      31..26=0x36 vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfwmul.vf      31..26=0x38 vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfwmacc.vf     31..26=0x3c vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfwnmacc.vf    31..26=0x3d vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfwmsac.vf     31..26=0x3e vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfwnmsac.vf    31..26=0x3f vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfwadd.vv      31..26=0x30 vm vs2 vs1 14..12=0x1 vd 6..0=0x57
+vfwsub.vv      31..26=0x32 vm vs2 vs1 14..12=0x1 vd 6..0=0x57
+vfwadd.wv      31..26=0x34 vm vs2 vs1 14..12=0x1 vd 6..0=0x57
+vfwsub.wv      31..26=0x36 vm vs2 vs1 14..12=0x1 vd 6..0=0x57
+vfwmul.vv      31..26=0x38 vm vs2 vs1 14..12=0x1 vd 6..0=0x57
+vfwmacc.vv     31..26=0x3c vm vs2 vs1 14..12=0x1 vd 6..0=0x57
+vfwnmacc.vv    31..26=0x3d vm vs2 vs1 14..12=0x1 vd 6..0=0x57
+vfwmsac.vv     31..26=0x3e vm vs2 vs1 14..12=0x1 vd 6..0=0x57
+vfwnmsac.vv    31..26=0x3f vm vs2 vs1 14..12=0x1 vd 6..0=0x57
