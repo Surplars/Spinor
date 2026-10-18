@@ -52,3 +52,7 @@ M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真�
 单位步长与跨步指令均用`Command.scalar`传递解析后的rs1物理基址。跨步`vlse/vsse`用既有`scalar2`传递解析后的rs2有符号字节步长，完整64位捕获，元素地址按模2^64计算；指令rs2=x0时VPU强制零步长并忽略scalar2。rs2非零但值为零仍逐有效元素访问；当前x0也选择逐元素访问。标量寄存器依赖须由CPU先解决，不能在command握手后改变操作数。vsetvl原有scalar2传递vtype的用途保持，按原指令分别解释。
 
 跨步与单位步长适用同一物理普通RAM、单事务和不可撤销所有者规则。vstart恢复仍传原基址而非已偏移地址；CPU需保留原PC/操作数直至故障或停止处理完成。未增加MMIO、VM/PMP或一致性能力。[实现和验证范围](m43-strided-memory.md)。
+
+## M44索引访存
+
+`vluxei/vloxei/vsuxei/vsoxei`用`scalar`传rs1基址，从指令vs2指定的向量组读取索引，忽略`scalar2`。vs2=v0是向量源，不是标量x0；无掩码时可以合法使用。索引EEW取指令编码，数据EEW=SEW；索引为零扩展字节偏移，不乘数据宽度，完整64位加法回绕。ordered和unordered在当前实现均按元素序发出/排空，保留单事务和前缀停止合同。仍不支持MMIO、VM/PMP或一致性。[范围和重叠规则](m44-indexed-memory.md)。

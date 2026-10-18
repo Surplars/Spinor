@@ -16,7 +16,7 @@ def bus(prefix,master):
  return text
 extra=bus('io_tl',True)+bus('io_monitor',False)+'''wire io_memoryStatus_valid,io_memoryStatus_bits_fault,io_memoryStatus_bits_interrupted;
 wire [5:0] io_memoryStatus_bits_cause;wire [63:0] io_memoryStatus_bits_address;wire [7:0] io_memoryStatus_bits_element;
-reg [63:0] memword=64'h1234567887654321;integer transfers=0;
+reg [63:0] memword=64'h1234567887654321;integer transfers=0,byteIndex;
 always @(posedge clock)begin
  if(reset)io_tl_d_valid<=0;
  else begin
@@ -27,7 +27,8 @@ always @(posedge clock)begin
    transfers<=transfers+1;io_tl_d_valid<=1;io_tl_d_bits_opcode<=io_tl_a_bits_opcode==4?1:0;
    io_tl_d_bits_size<=io_tl_a_bits_size;io_tl_d_bits_source<=io_tl_a_bits_source;io_tl_d_bits_data<=memword;
    if(io_tl_a_bits_opcode!=4)begin
-    if(io_tl_a_bits_mask!==8'hff)$fatal(1,"store mask");memword<=io_tl_a_bits_data;
+    if(io_tl_a_bits_mask!==(io_tl_a_bits_size==3?8'hff:8'h0f))$fatal(1,"store mask");
+    for(byteIndex=0;byteIndex<8;byteIndex=byteIndex+1)if(io_tl_a_bits_mask[byteIndex])memword[8*byteIndex+:8]<=io_tl_a_bits_data[8*byteIndex+:8];
    end
   end
  end
@@ -48,7 +49,7 @@ def command(inst,scalar=0,scalar2=0,avl=0,result=0,writes=0,bad=0,vl=4,typ=16):
  body.append(f"command(32'h{inst:x},64'h{scalar:x},64'h{scalar2:x},{avl},80'h{0x390000+count:x},{bad},64'h{result:x},{writes},3,{vl},64'h{typ:x});");count+=1
 def ctx(addr,value,write=False):body.append(f"ctx({addr},{int(write)},64'h{value:x},64'h{value:x});")
 for addr in range(64):ctx(addr,0,True)
-body += [f"mon(16,64'h4301);mon(24,64'h{cfg['monitor_caps'][2:]});mon(32,64'h1002000400080);mon(40,64'h800000200);"]
+body += [f"mon(16,64'h4401);mon(24,64'h{cfg['monitor_caps'][2:]});mon(32,64'h1002000400080);mon(40,64'h800000200);"]
 command(0x0100f1d7,avl=4,result=4,writes=1)
 ctx(16,0x0000000200000001,True);ctx(17,0x0000000400000003,True);ctx(32,0x0000000600000005,True);ctx(33,0x0000000800000007,True)
 command(0x02880c57);ctx(48,0x0000000800000006);ctx(49,0x0000000c0000000a)
@@ -74,6 +75,13 @@ command(0x0a00f407,scalar=0x80000000,scalar2=0xdeadbeef,vl=2,typ=24)
 ctx(16,0xfedcba9876543210);ctx(17,0xfedcba9876543210)
 command(0x0a20f427,scalar=0x80000000,scalar2=0,vl=2,typ=24)
 body.append('if(transfers!=6 || memword!==64\'hfedcba9876543210)$fatal(1,"zero stride transfer count");')
+# M44: indexed gather/scatter in FP and integer-only presets.
+command(0x0100f1d7,avl=4,result=4,writes=1)
+ctx(48,0,True);ctx(49,0,True)
+command(0x0780d407,scalar=0x80000000)
+ctx(16,0x7654321076543210);ctx(17,0x7654321076543210)
+command(0x0f80d427,scalar=0x80000000)
+body.append('if(transfers!=14 || memword!==64\'hfedcba9876543210)$fatal(1,"indexed preset transfers");')
 body.append(f'$display("PASS profile {a.top} commands=%0d cycles=%0d",cmds,cycles);$finish;end endmodule')
 label=a.top+('-mapped' if a.mapped else '-rtl');tb=OUT/(label+'-tb.sv');tb.write_text('\n'.join(body));rtl=ROOT/(f'build/synth/{a.top}/mapped.v' if a.mapped else f'build/rtl/{a.top}.sv');files=[tb,rtl];extra=[]
 if a.mapped:files += [ROOT/'tools/oss-cad-suite/share/yosys/xilinx/cells_sim.v',ROOT/'third_party/xilinx-unisim/DSP48E2.v',ROOT/'tests/fp_mapped_global.sv'];extra=['-s','glbl']

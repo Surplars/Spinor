@@ -6,7 +6,7 @@ import chisel3.util._
 class VectorMemoryStatus extends Bundle {
   val fault=Bool();val interrupted=Bool();val cause=UInt(6.W);val address=UInt(64.W);val element=UInt(8.W)
 }
-/** Unit/constant-stride physical normal-RAM prototype. Uses the arithmetic core's
+/** Unit/constant-stride/indexed physical normal-RAM prototype. Uses the arithmetic core's
   * context port for per-element architectural updates and dedicated vstart commit port.
   * Memory instructions are irrevocable ROB-head operations: flush requests a
   * boundary stop and DOES NOT silently cancel completion or issued stores.
@@ -22,10 +22,10 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val memoryRequest=Decoupled(new VpuMemoryRequest(VpuTLParams()))
     val memoryResponse=Flipped(Decoupled(new VpuMemoryResponse))
   })
-  val states=Enum(24)
+  val states=Enum(28)
   val Seq(idle,decode,validate,maskLow,maskLowWait,maskHigh,maskHighWait,checkElement,addressLow,addressHigh,
     checkAddress,readChunk,readChunkWait,sendMemory,waitMemory,writeChunk,writeChunkWait,writeStart,reply)=states.take(19)
-  val Seq(strideSeek,strideAdd0,strideAdd1,strideAdd2,strideAdd3)=states.drop(19)
+  val Seq(strideSeek,strideAdd0,strideAdd1,strideAdd2,strideAdd3,indexValidate,indexRead,indexReadWait,indexExtract)=states.drop(19)
   val state=RegInit(idle);val cmd=Reg(new Command);val length=Reg(UInt(8.W));val typ=Reg(UInt(64.W))
   val lastIndex=Reg(UInt(8.W));val index=Reg(UInt(8.W));val width=Reg(UInt(2.W));val baseRegister=Reg(UInt(5.W));val store=Reg(Bool());val masked=Reg(Bool())
   val mask=Reg(UInt(128.W));val original=Reg(UInt(64.W));val result=Reg(UInt(64.W))
@@ -40,8 +40,11 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   val strided=Reg(Bool());val zeroStride=Reg(Bool());val seeking=Reg(Bool());val seek=Reg(UInt(7.W))
   // original is free until the first RF chunk read. Reuse it as the shifted
   // multiplicand for a bounded seven-bit vstart seek; no DSP or extra 64-bit bank.
+  val indexed=Reg(Bool());val indexWidth=Reg(UInt(2.W))
+  val dataAlignment=Reg(UInt(5.W));val indexAlignment=Reg(UInt(5.W));val indexIntegral=Reg(Bool())
+  val indexChunk=Reg(UInt(6.W));val indexByte=Reg(UInt(3.W))
   val stride=Mux(zeroStride,0.U(64.W),cmd.scalar2)
-  val addend=Mux(seeking,original,stride)
+  val addend=Mux(indexed,result,Mux(seeking,original,stride))
   val decodedBad=Reg(Bool());val illegal=Reg(Bool());val status=Reg(new VectorMemoryStatus);val nextStart=Reg(UInt(8.W));val finishAfterStart=Reg(Bool())
   val stop=stopped || io.stop
   val nextIndex=ParallelIncrement(index,true.B)
@@ -50,7 +53,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   io.completion.valid:=state===reply;io.completion.bits:=0.U.asTypeOf(new Completion)
   io.completion.bits.token:=cmd.token;io.completion.bits.instruction:=cmd.instruction;io.completion.bits.illegal:=illegal
   io.status:=status
-  io.context.valid:=state===maskLow || state===maskHigh || state===readChunk || (state===writeChunk && !stop)
+  io.context.valid:=state===maskLow || state===maskHigh || state===indexRead || state===readChunk || (state===writeChunk && !stop)
   io.context.bits:=0.U.asTypeOf(new ContextAccess)
   val byteOffset=(index<<width)(6,0)
   // Compute the RF chunk address alongside the low memory address, before
@@ -58,7 +61,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   // without adding an element cycle or changing the write-through cache.
   val chunkAddress=Reg(UInt(6.W))
   val bitOffset=Cat(byteOffset(2,0),0.U(3.W))
-  io.context.bits.address:=Mux(state===maskLow,0.U,Mux(state===maskHigh,1.U,chunkAddress))
+  io.context.bits.address:=Mux(state===maskLow,0.U,Mux(state===maskHigh,1.U,Mux(state===indexRead,indexChunk,chunkAddress)))
   io.context.bits.write:=state===writeChunk;io.context.bits.data:=result
   io.commit.valid:=state===writeStart;io.commit.bits:=nextStart(6,0)
   io.memoryRequest.valid:=state===sendMemory
@@ -79,7 +82,9 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   when(state===decode) {
     val inst=cmd.instruction;val f3=inst(14,12);lastIndex:=length-1.U
     for(byte<-1 until 4) { upperAddressPrefix(byte-1):=cmd.scalar(31+8*byte,32).andR }
-    val ew=MuxLookup(f3,0.U(2.W))(Seq(5.U->1.U,6.U->2.U,7.U->3.U))
+    // For valid encodings (000/101/110/111), low bits are log2(bytes).
+    // Decode validity separately so f3[2] does not gate the EMUL arithmetic.
+    val ew=f3(1,0)
     val lm=Mux(typ(2),typ(2,0).asSInt,typ(2,0).zext)
     val emul=lm+&ew.zext-typ(4,3).zext
     val group=Mux(emul>0.S,(1.U(4.W)<<emul.asUInt(1,0))(3,0),1.U(4.W))
@@ -87,18 +92,39 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val validOpcode=inst(6,0)==="h07".U || isStore
     val validWidth=f3===0.U || f3===5.U || f3===6.U || f3===7.U
     val isStrided=inst(27,26)===2.U
+    val isIndexed=inst(26)
+    val dataGroup=Mux(isIndexed,Mux(lm>0.S,(1.U(4.W)<<lm.asUInt(1,0))(3,0),1.U(4.W)),group)
+    val indexBase=inst(24,20)
     val bad= !validOpcode || !validWidth || typ(63) || typ(5,3)>3.U || emul<(-3).S || emul>3.S ||
-      inst(31,28)=/=0.U || !(inst(27,26)===0.U || isStrided) || (!isStrided && inst(24,20)=/=0.U) || (vr&(group-1.U))=/=0.U ||
-      (vr+&group)>32.U || (!inst(25) && vr===0.U)
-    store:=isStore;masked:= !inst(25);baseRegister:=vr;width:=ew
+      inst(31,28)=/=0.U || (!isStrided && !isIndexed && inst(24,20)=/=0.U) || (vr&(dataGroup-1.U))=/=0.U ||
+      (vr+&dataGroup)>32.U || (!inst(25) && vr===0.U) ||
+      (isIndexed && ((indexBase&(group-1.U))=/=0.U || (indexBase+&group)>32.U ||
+        (!inst(25) && indexBase===0.U) || typ(2,0)===4.U || !VectorConfig.fractionalLegal(typ)))
+    store:=isStore;masked:= !inst(25);baseRegister:=vr;width:=Mux(isIndexed,typ(4,3),ew)
+    indexed:=isIndexed;indexWidth:=ew;dataAlignment:=VectorConfig.countAlignment(dataGroup)
+    indexAlignment:=VectorConfig.countAlignment(group);indexIntegral:=emul>=0.S
     strided:=isStrided;zeroStride:=inst(24,20)===0.U || cmd.scalar2===0.U
     seeking:=true.B;seek:=index(6,0);original:=Mux(inst(24,20)===0.U,0.U,cmd.scalar2)
     decodedBad:=bad;state:=validate
   }
   when(state===validate) {
     when(decodedBad) { illegal:=true.B;state:=reply }
+      .elsewhen(indexed) {state:=indexValidate}
       .elsewhen(index>=length) { setStart(0.U,true.B) }
       .otherwise { state:=Mux(masked,maskLow,Mux(strided,strideSeek,checkElement)) }
+  }
+  // Check cross-width aliases from registered group geometry. The load rules
+  // preserve unread index elements without snapshots, including restart.
+  when(state===indexValidate) {
+    val indexBase=cmd.instruction(24,20)
+    val overlap=VectorConfig.alignedGroupsOverlap(baseRegister,dataAlignment,indexBase,indexAlignment)
+    val legalLoadOverlap=width===indexWidth ||
+      (width<indexWidth && baseRegister===indexBase) ||
+      (width>indexWidth && indexIntegral && (baseRegister|dataAlignment)===(indexBase|indexAlignment))
+    val badAlias=overlap && Mux(store,width=/=indexWidth,!legalLoadOverlap)
+    when(badAlias) {illegal:=true.B;state:=reply}
+      .elsewhen(index>=length) {setStart(0.U,true.B)}
+      .otherwise {state:=Mux(masked,maskLow,checkElement)}
   }
   when(state===maskLow && io.context.fire) { state:=maskLowWait }
   when(state===maskLowWait && io.contextResult.valid) { mask:=io.contextResult.bits;state:=maskHigh }
@@ -111,9 +137,18 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
         index:=nextIndex;when(strided && !zeroStride && !last) {state:=strideAdd0}
       }
       .otherwise {
-        when(strided) {chunkAddress:=((baseRegister<<1)+byteOffset(6,3))(5,0)}
-        state:=Mux(strided,checkAddress,addressLow)
+        when(strided || indexed) {chunkAddress:=((baseRegister<<1)+byteOffset(6,3))(5,0)}
+        val offset=(index<<indexWidth)(6,0)
+        indexChunk:=((cmd.instruction(24,20)<<1)+offset(6,3))(5,0);indexByte:=offset(2,0)
+        state:=Mux(indexed,indexRead,Mux(strided,checkAddress,addressLow))
       }
+  }
+  when(state===indexRead && io.context.fire) {state:=indexReadWait}
+  when(state===indexReadWait && io.contextResult.valid) {result:=io.contextResult.bits;state:=indexExtract}
+  when(state===indexExtract) {
+    val shifted=result>>Cat(indexByte,0.U(3.W))
+    result:=MuxLookup(indexWidth,shifted)(Seq(0.U->shifted(7,0).pad(64),1.U->shifted(15,0).pad(64),2.U->shifted(31,0).pad(64)))
+    address:=cmd.scalar;state:=strideAdd0
   }
   when(state===strideSeek) {
     when(stop) {interrupt()}
@@ -130,7 +165,8 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
       address:=Cat(pieces);addressCarry:=sum(16)
       if(part<3) {state:=Seq(strideAdd1,strideAdd2,strideAdd3)(part)}
       else {
-        when(seeking) {original:=Cat(original(62,0),false.B);seek:=seek>>1;state:=strideSeek}
+        when(indexed) {state:=checkAddress}
+          .elsewhen(seeking) {original:=Cat(original(62,0),false.B);seek:=seek>>1;state:=strideSeek}
           .otherwise {state:=checkElement}
       }
     }

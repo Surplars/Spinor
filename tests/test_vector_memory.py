@@ -171,7 +171,7 @@ def main():
  config(0,4);setstart(2);run(0,False,BASE,vr=0,masked=True,illegal=True)
  # Encoding rejects and v0 source/destination corner cases.
  config(0,4);setstart(2)
- for bits in [1<<29,1<<28,1<<26,1<<20,1<<12]:run(0,False,BASE,illegal=True,reserved=bits)
+ for bits in [1<<29,1<<28,1<<21,1<<20,1<<12]:run(0,False,BASE,illegal=True,reserved=bits)
  config(1,4);run(0,False,BASE,vr=9,illegal=True)
  config(0,16);run(0,False,BASE+768,vr=0);run(0,True,BASE+1024,vr=0,masked=True,illegal=True)
  # Mixed-EEW mask/data aliases are checked before empty/inactive/restart exits.

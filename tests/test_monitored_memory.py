@@ -420,8 +420,19 @@ caseid=-44;commandStride=64'hfffffffffffffff8;
 memory(32'h0a20e427,64'h80001c38,80'hfd0002,0,0,0,0,0,4,0);
 if({mem[7203],mem[7202],mem[7201],mem[7200]}!==32'd4 || {mem[7211],mem[7210],mem[7209],mem[7208]}!==32'd3 ||
  {mem[7219],mem[7218],mem[7217],mem[7216]}!==32'd2 || {mem[7227],mem[7226],mem[7225],mem[7224]}!==32'd1)$fatal(1,"public strided store data");
+// M44: 16-bit byte indices, zero extension, and ordered reverse scatter.
+command(32'h0100f1d7,0,0,4,80'hfc0010,0,4,1,3,8'd4,64'h10);
+ctx(48,1,64'h800c800880048000,64'h800c800880048000);ctx(49,1,0,0);
+for(mi=0;mi<16;mi=mi+1)mem[7500+mi]=0;
+mem[7500]=11;mem[7504]=22;mem[7508]=33;mem[7512]=44;
+faultAddress=64'hffffffffffffffff;faultKind=0;caseid=-45;commandStride=64'hdeadbeef;
+memory(32'h0780d407,64'h7fff9d4c,80'hfc0001,0,0,0,0,0,4,0);
+ctx(16,0,0,64'h000000160000000b);ctx(17,0,0,64'h0000002c00000021);
+ctx(48,1,64'h000000040008000c,64'h000000040008000c);caseid=-46;
+memory(32'h0f80d427,64'h80001db0,80'hfc0002,0,0,0,0,0,4,0);
+if({mem[7603],mem[7602],mem[7601],mem[7600]}!==32'd44 || {mem[7615],mem[7614],mem[7613],mem[7612]}!==32'd11)$fatal(1,"public indexed store data");
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h4301);monAccess(64'h18,4,0,64'hffffffff);
+monAccess(64'h10,4,0,64'h4401);monAccess(64'h18,4,0,64'hffffffff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});
@@ -455,4 +466,14 @@ for i,base,step,opcode in [(-43,0x80000000+7000,8,4),(-44,0x80000000+7224,-8,0)]
  assert [(x[0],x[1],x[2]) for x in observed[i]]==[(base+e*step,opcode,15<<((base+e*step)%8)) for e in range(4)],observed
 result=ns['OUT']/(label+'-results.json');d=json.loads(result.read_text());d['strided_public_bus_sequences']=observed
 d['source_sha256']={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__).resolve(),original]}
+result.write_text(json.dumps(d,indent=2)+'\n')
+
+indexed_observed={-45:[],-46:[]}
+for line in log.splitlines():
+ if line.startswith('BUS '):
+  f=line.split();i=int(f[1])
+  if i in indexed_observed:indexed_observed[i].append((int(f[2],16),int(f[3]),int(f[4],16),int(f[5],16)))
+for i,addresses,opcode in [(-45,[0x80000000+7500+4*e for e in range(4)],4),(-46,[0x80000000+7600+4*e for e in reversed(range(4))],0)]:
+ assert [(x[0],x[1],x[2]) for x in indexed_observed[i]]==[(addr,opcode,15<<(addr%8)) for addr in addresses],indexed_observed
+ d['indexed_public_bus_sequences']=indexed_observed
 result.write_text(json.dumps(d,indent=2)+'\n')
