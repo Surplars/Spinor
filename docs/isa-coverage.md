@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M42）
+# Spinor 指令覆盖矩阵（M43）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -22,12 +22,12 @@
 | 宽化整数加减 | M33：vwaddu/vwadd/vwsubu/vwsub 的 vv/vx/wv/wx 共16种编码，SEW8/16/32，目的2×SEW/2×LMUL | 目的EMUL≤8；允许最高部分窄源重叠和同宽源原地写回；mask/vstart与不同EEW源别名检查 |
 | 宽化整数乘法 | M34：vwmulu/vwmulsu/vwmul vv/vx，SEW8/16/32，完整2×SEW积 | 原单DSP分时乘法器；目的EMUL≤8；高位重叠、mask/vstart |
 | 定点/宽窄/进位 | vzext/vsext.vf2/vf4/vf8；M32新增vnsrl/vnsra.wv/wx/wi，支持mask/vstart和宽窄源独立寻址；M37新增饱和加减10种、平均8种、舍入移位6种、carry/borrow15种 ；M38补vsmul和vnclip[u] | 基础V定点族已覆盖目标ELEN范围，仍需完整架构差分 |
-| 访存 | 单位步长vle/vse，EEW8/16/32/64，独立EMUL、mask、物理故障/停止/vstart前缀 | 无strided/indexed/segments/FOF/whole-register/mask load-store；仅物理普通RAM |
+| 访存 | 单位步长vle/vse及M43跨步vlse/vsse，EEW8/16/32/64，独立EMUL、mask、物理故障/停止/vstart前缀 | 无indexed/segments/FOF/whole-register/mask load-store；仅物理普通RAM |
 | CPU/SoC | SpinorVpu顶层、TL物理主端、monitor从端、独立VpuHostBoundary | 尚未接Orbital；需VM/PMP/一致性、精确异常和上下文集成 |
 | Linux监控 | ABI1.0，UIO用户态工具 | 未作真实内核/上板测试；不是计算作业驱动 |
 | 双发射/乱序 | 独立8项实验窗口 | 不属于当前Spinor执行数据通路 |
 
-完整性计划见[目标与验收清单](rvv-completion-plan.md)。近期优先审计剩余FP语义、扩展访存模式，每轮核对资源和云端条件时序；Orbital程序闭环另行推进。只有指令、异常、上下文和内存模型都满足目标配置并完成架构测试后，才能宣称完整目标ISA支持。
+完整性计划见[目标与验收清单](rvv-completion-plan.md)。近期推进索引/分段等访存、FP16及程序闭环，每轮核对资源和云端条件时序；Orbital程序闭环另行推进。只有指令、异常、上下文和内存模型都满足目标配置并完成架构测试后，才能宣称完整目标ISA支持。
 
 M26已统一执行mask（EEW1）与v0数据源（SEW≥8）的保留编码检查，覆盖普通INT/FP、乘除、归约seed、滑移、gather及masked store/load v0。VL0、全mask关闭和vstart越过VL也先检查。EEW1的vcpop/vfirst、前缀mask、viota源可合法使用v0；FP单目selector0、标量寄存器编号0不是向量数据源。EI16仍独立检查不同EEW的数据/索引物理组重叠。新检查修复已知缺口，回归仍不构成完整架构合规证明。
 
@@ -54,3 +54,5 @@ M40宽化FP的窄源/宽源/目的独立寻址，FMA旧vd按64位读取，标量
 M41新增跨宽转换，目的/源EEW独立，RTZ与ROD忽略frm数值。[转换说明](m41-width-conversions.md)。
 
 M42新增FP七位估算，归一化与查表分段；整数转换按字节跳过零高位。[估算与转换提速](m42-estimates-and-efficiency.md)。
+
+M43支持正/负/零字节步长、rs2=x0、mask/vstart、全64位地址与回绕；无效frm的向量FP执行为规范保留行为，合法软件须设置frm。[跨步及效率说明](m43-strided-memory.md)。

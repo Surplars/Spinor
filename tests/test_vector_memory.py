@@ -15,7 +15,7 @@ reg [3:0] io_tl_d_bits_source=0;reg io_tl_d_bits_sink=0,io_tl_d_bits_denied=0,io
 reg [7:0] mem[0:8191];integer caseid=-1,latency=0,waits=0,requests=0,responses=0,memCommands=0,completionStall=4;
 reg pending=0;reg [63:0] pa,pdata;reg [7:0] pmask;reg [2:0] psz,pop;integer perror;
 reg [63:0] faultAddress=64'hffffffffffffffff;integer faultKind=0;
-integer chunkReads=0;
+reg [63:0] commandStride=0;integer chunkReads=0;
 `ifndef MAPPED
 always @(posedge clock)if(!reset && dut.engine.io_context_valid && dut.engine.io_context_ready && !dut.engine.io_context_bits_write)chunkReads=chunkReads+1;
 `endif
@@ -53,7 +53,7 @@ end
 task memory(input [31:0] inst,input [63:0] base,input [79:0] token,input integer bad,fault,cause,element,expectedStart,expectedRequests,
  input [63:0] tval);
 integer beginCycle,beginRequests,beginReads,k;reg [159:0] held;begin
- io_core_command_bits_instruction=inst;io_core_command_bits_scalar=base;io_core_command_bits_token=token;
+ io_core_command_bits_instruction=inst;io_core_command_bits_scalar=base;io_core_command_bits_scalar2=commandStride;io_core_command_bits_token=token;
  io_core_command_valid=1;beginCycle=cycles;beginRequests=requests;beginReads=chunkReads;
  #1;if(!io_core_command_ready)$fatal(1,"memory not admitted");tick();io_core_command_valid=0;
  while(!io_core_completion_valid)begin tick();if(io_core_context_ready)$fatal(1,"context arbitration");end
@@ -73,7 +73,7 @@ end endtask
 
 task stopMemory(input [31:0] inst,input [63:0] base,input integer delayCycles,vl,expectFault);
 integer beginRequests;begin
- io_core_command_bits_instruction=inst;io_core_command_bits_scalar=base;io_core_command_bits_token=caseid;
+ io_core_command_bits_instruction=inst;io_core_command_bits_scalar=base;io_core_command_bits_scalar2=commandStride;io_core_command_bits_token=caseid;
  io_core_command_valid=1;beginRequests=requests;#1;if(!io_core_command_ready)$fatal(1,"stop start blocked");tick();io_core_command_valid=0;
  repeat(delayCycles)tick();io_core_flush=1;tick();io_core_flush=0;
  while(!io_core_completion_valid)tick();
@@ -117,7 +117,7 @@ def main():
   width=[0,5,6,7][ew];return (int(not masked)<<25)|(1<<15)|(width<<12)|(vr<<7)|(0x27 if write else 7)
  def run(ew,write,base,vr=8,masked=False,faultIndex=None,kind=0,illegal=False,reserved=0):
   nonlocal start
-  ident=len(cases);inst=instruction(ew,write,vr,masked)|reserved;width=1<<ew
+  initialStart=start;ident=len(cases);inst=instruction(ew,write,vr,masked)|reserved;width=1<<ew
   emul=((typ&7) if typ&7<4 else (typ&7)-8)+ew-((typ>>3)&7);group=1 if illegal else 1<<max(0,emul)
   transfers=[];failure=None;active=0
   if not illegal:
@@ -143,7 +143,7 @@ def main():
    for addr in transfers:
     if failure and addr==failure[2]:continue
     for k in range(width):lines.append(f"if(mem[{addr-BASE+k}]!==8'h{mem[addr-BASE+k]:x})$fatal(1,\"store data\");")
-  cases.append(dict(id=ident,eew=8<<ew,write=write,vl=vl,vtype=typ,active_successes=active,fault=failure is not None,illegal=illegal))
+  cases.append(dict(masked=masked,initial_vstart=initialStart,id=ident,eew=8<<ew,write=write,vl=vl,vtype=typ,active_successes=active,fault=failure is not None,illegal=illegal))
  for r in range(32):ctx(r,True)
  types=[(s<<3)|m for m in [0,1,2,3,5,6,7] for s in range(4) if m<=3 or s<=m-5]
  combinations=[(t,e) for t in types for e in range(4) if -3<=((t&7) if t&7<4 else (t&7)-8)+e-((t>>3)&7)<=3]
@@ -277,7 +277,7 @@ def main():
   elif line.startswith('MEM '):metrics.append(dict(case=int(fields[1]),cycles=int(fields[2]),requests=int(fields[3])))
  for ident,expected in expectedBus.items():assert actual.get(ident,[])==expected,(ident,actual.get(ident,[]),expected)
  if not args.mapped:
-  for case in benchmarkCases:assert contextReads[case['case']]==18,(case,contextReads[case['case']])
+  for case in benchmarkCases:assert contextReads[case['case']]==(0 if case['eew']==64 and not case['write'] else 16),(case,contextReads[case['case']])
  result=dict(context_reads=contextReads,status='PASS',memory_cases=len(cases),stop_cases=len(stops),eew_emul_combinations=len(combinations),metrics=metrics,case_specs=cases,stop_specs=stops,benchmark_cases=benchmarkCases,
   assertions_enabled=not args.mapped,scope='physical normal RAM; registered memory model; no MMIO/PMP/VM/coherence',
   rtl_or_netlist_sha256=hashlib.sha256(rtl.read_bytes()).hexdigest(),testbench_sha256=hashlib.sha256(tb.read_bytes()).hexdigest(),

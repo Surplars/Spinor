@@ -1,0 +1,61 @@
+RVV 1.0 source: https://github.com/riscv/riscv-v-spec/blob/v1.0/v-spec.adoc
+
+
+
+----
+    # Vector strided loads and stores
+
+    # vd destination, rs1 base address, rs2 byte stride
+    vlse8.v    vd, (rs1), rs2, vm  #    8-bit strided load
+    vlse16.v   vd, (rs1), rs2, vm  #   16-bit strided load
+    vlse32.v   vd, (rs1), rs2, vm  #   32-bit strided load
+    vlse64.v   vd, (rs1), rs2, vm  #   64-bit strided load
+
+    # vs3 store data, rs1 base address, rs2 byte stride
+    vsse8.v    vs3, (rs1), rs2, vm  #    8-bit strided store
+    vsse16.v   vs3, (rs1), rs2, vm  #   16-bit strided store
+    vsse32.v   vs3, (rs1), rs2, vm  #   32-bit strided store
+    vsse64.v   vs3, (rs1), rs2, vm  #   64-bit strided store
+----
+
+Negative and zero strides are supported.
+
+Element accesses within a strided instruction are unordered with
+respect to each other.
+
+When `rs2`=`x0`, then an implementation is allowed, but not required,
+to perform fewer memory operations than the number of active elements,
+and may perform different numbers of memory operations across
+different dynamic executions of the same static instruction.
+
+NOTE: Compilers must be aware to not use the `x0` form for rs2 when
+the immediate stride is `0` if the intent is to require all memory
+accesses are performed.
+
+When `rs2!=x0` and the value of `x[rs2]=0`, the implementation must
+perform one memory access for each active element (but these accesses
+will not be ordered).
+
+NOTE: As with other architectural mandates, implementations must
+_appear_ to perform each memory access. Microarchitectures are
+free to optimize away accesses that would not be observed by another
+agent, for example, in idempotent memory regions obeying RVWMO.  For
+non-idempotent memory regions, where by definition each access can be
+observed by a device, the optimization would not be possible.
+
+NOTE: When repeating ordered vector accesses to the same memory
+address are required, then an ordered indexed operation can be used.
+
+
+Floating-point reserved-frm rule (Vector Operands section):
+All standard vector floating-point arithmetic operations follow the
+IEEE-754/2008 standard.  All vector floating-point operations use the
+dynamic rounding mode in the `frm` register.  Use of the `frm` field
+when it contains an invalid rounding mode by any vector floating-point
+instruction--even those that do not depend on the rounding mode, or
+when `vl`=0, or when `vstart` {ge} `vl`--is reserved.
+
+NOTE: All vector floating-point code will rely on a valid value in
+`frm`.  Implementations can make all vector FP instructions report
+exceptions when the rounding mode is invalid to simplify control
+logic.

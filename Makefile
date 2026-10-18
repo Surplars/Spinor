@@ -557,3 +557,9 @@ verify-m42:
 	$(PYTHON) scripts/verify_m42.py
 package-m42:
 	$(PYTHON) scripts/package.py --milestone m42
+
+.PHONY: verify-m43 package-m43
+verify-m43:
+	$(PYTHON) scripts/verify_m43.py
+package-m43:
+	$(PYTHON) scripts/package.py --milestone m43

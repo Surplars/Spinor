@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Reuse the established memory oracle with concurrent monitor MMIO traffic."""
+import hashlib,json
 import sys
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
@@ -408,8 +409,19 @@ command(32'h4f029457,0,0,0,80'hfe0065,0,0,0,3,8'd2,64'h18);
 ctx(16,0,0,64'h3fefe00000000000);ctx(17,0,0,64'h3fcfe00000000000);
 command(32'h4f021457,0,0,0,80'hfe0064,0,0,0,3,8'd2,64'h18);
 ctx(16,0,0,64'h3fefe00000000000);ctx(17,0,0,64'h3fdfe00000000000);
+// M43 strided load/store, through the real public TileLink master.
+command(32'h0100f1d7,0,0,4,80'hfd0010,0,4,1,3,8'd4,64'h10);
+for(mi=0;mi<32;mi=mi+1)mem[7000+mi]=0;
+mem[7000]=1;mem[7008]=2;mem[7016]=3;mem[7024]=4;
+faultAddress=64'hffffffffffffffff;faultKind=0;latency=1;caseid=-43;commandStride=8;
+memory(32'h0a20e407,64'h80001b58,80'hfd0001,0,0,0,0,0,4,0);
+ctx(16,0,0,64'h0000000200000001);ctx(17,0,0,64'h0000000400000003);
+caseid=-44;commandStride=64'hfffffffffffffff8;
+memory(32'h0a20e427,64'h80001c38,80'hfd0002,0,0,0,0,0,4,0);
+if({mem[7203],mem[7202],mem[7201],mem[7200]}!==32'd4 || {mem[7211],mem[7210],mem[7209],mem[7208]}!==32'd3 ||
+ {mem[7219],mem[7218],mem[7217],mem[7216]}!==32'd2 || {mem[7227],mem[7226],mem[7225],mem[7224]}!==32'd1)$fatal(1,"public strided store data");
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h4201);monAccess(64'h18,4,0,64'hffffffff);
+monAccess(64'h10,4,0,64'h4301);monAccess(64'h18,4,0,64'hffffffff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});
@@ -431,3 +443,16 @@ ns['OUT']=ROOT/('build/monitor/integration-spinor' if spinor else 'build/monitor
 ns['MODEL']=ns['MODEL'].replace('dut.engine.','dut.vpu.engine.')+pins
 sys.argv += ['--top','SpinorVpu' if spinor else 'LishiVpuMonitored']
 ns['main']()
+
+# Independently validate the new full-address bus sequences, including byte masks.
+label='vector-memory-'+('mapped' if '--mapped' in sys.argv else 'smoke' if '--smoke' in sys.argv else 'rtl')
+log=(ns['OUT']/(label+'.log')).read_text();observed={-43:[],-44:[]}
+for line in log.splitlines():
+ if line.startswith('BUS '):
+  f=line.split();i=int(f[1])
+  if i in observed:observed[i].append((int(f[2],16),int(f[3]),int(f[4],16),int(f[5],16)))
+for i,base,step,opcode in [(-43,0x80000000+7000,8,4),(-44,0x80000000+7224,-8,0)]:
+ assert [(x[0],x[1],x[2]) for x in observed[i]]==[(base+e*step,opcode,15<<((base+e*step)%8)) for e in range(4)],observed
+result=ns['OUT']/(label+'-results.json');d=json.loads(result.read_text());d['strided_public_bus_sequences']=observed
+d['source_sha256']={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__).resolve(),original]}
+result.write_text(json.dumps(d,indent=2)+'\n')

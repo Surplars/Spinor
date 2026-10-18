@@ -46,3 +46,9 @@ context是独立调试/保存恢复端口，只能在CPU已排空且边界无所
 tests/test_host_boundary.py使用模拟CPU/VPU对端，RTL和映射网表各验证128次事务：112次返回、16次算术取消、6类失败关闭检查，以及错误head、标量访存/FP未排空、VPU反压、回复反压、访存stop、fault/illegal原因与80位高位身份。不是实际CPU数值程序或中断软件测试。Spinor实际数值/访存由独立顶层回归覆盖。
 
 M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真；CPU必须根据回显原指令解码FPR/GPR目标，不能直接将所有标量结果送入整数RF。SEW32结果已NaN-box为FLEN64。参数化整数配置移除FP CSR端口并拒绝FP指令；完整配置对外布局不变。
+
+## M43访存操作数
+
+单位步长与跨步指令均用`Command.scalar`传递解析后的rs1物理基址。跨步`vlse/vsse`用既有`scalar2`传递解析后的rs2有符号字节步长，完整64位捕获，元素地址按模2^64计算；指令rs2=x0时VPU强制零步长并忽略scalar2。rs2非零但值为零仍逐有效元素访问；当前x0也选择逐元素访问。标量寄存器依赖须由CPU先解决，不能在command握手后改变操作数。vsetvl原有scalar2传递vtype的用途保持，按原指令分别解释。
+
+跨步与单位步长适用同一物理普通RAM、单事务和不可撤销所有者规则。vstart恢复仍传原基址而非已偏移地址；CPU需保留原PC/操作数直至故障或停止处理完成。未增加MMIO、VM/PMP或一致性能力。[实现和验证范围](m43-strided-memory.md)。

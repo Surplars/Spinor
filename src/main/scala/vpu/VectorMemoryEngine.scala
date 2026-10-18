@@ -6,7 +6,7 @@ import chisel3.util._
 class VectorMemoryStatus extends Bundle {
   val fault=Bool();val interrupted=Bool();val cause=UInt(6.W);val address=UInt(64.W);val element=UInt(8.W)
 }
-/** Unit-stride physical normal-RAM prototype. Uses the arithmetic core's
+/** Unit/constant-stride physical normal-RAM prototype. Uses the arithmetic core's
   * context port for per-element architectural updates and dedicated vstart commit port.
   * Memory instructions are irrevocable ROB-head operations: flush requests a
   * boundary stop and DOES NOT silently cancel completion or issued stores.
@@ -22,10 +22,12 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val memoryRequest=Decoupled(new VpuMemoryRequest(VpuTLParams()))
     val memoryResponse=Flipped(Decoupled(new VpuMemoryResponse))
   })
+  val states=Enum(24)
   val Seq(idle,decode,validate,maskLow,maskLowWait,maskHigh,maskHighWait,checkElement,addressLow,addressHigh,
-    checkAddress,readChunk,readChunkWait,sendMemory,waitMemory,writeChunk,writeChunkWait,writeStart,reply)=Enum(19)
+    checkAddress,readChunk,readChunkWait,sendMemory,waitMemory,writeChunk,writeChunkWait,writeStart,reply)=states.take(19)
+  val Seq(strideSeek,strideAdd0,strideAdd1,strideAdd2,strideAdd3)=states.drop(19)
   val state=RegInit(idle);val cmd=Reg(new Command);val length=Reg(UInt(8.W));val typ=Reg(UInt(64.W))
-  val index=Reg(UInt(8.W));val width=Reg(UInt(2.W));val baseRegister=Reg(UInt(5.W));val store=Reg(Bool());val masked=Reg(Bool())
+  val lastIndex=Reg(UInt(8.W));val index=Reg(UInt(8.W));val width=Reg(UInt(2.W));val baseRegister=Reg(UInt(5.W));val store=Reg(Bool());val masked=Reg(Bool())
   val mask=Reg(UInt(128.W));val original=Reg(UInt(64.W));val result=Reg(UInt(64.W))
   // Reuse original as one write-through register-file chunk, never a whole group snapshot.
   val cachedValid=RegInit(false.B);val cachedAddress=Reg(UInt(6.W))
@@ -35,8 +37,15 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   // Separate 8-bit increments prevent LUT sharing from rebuilding a long
   // prefix chain through all 32 high bits, without adding an element cycle.
   val upperAddressPrefix=Reg(Vec(3,Bool()))
+  val strided=Reg(Bool());val zeroStride=Reg(Bool());val seeking=Reg(Bool());val seek=Reg(UInt(7.W))
+  // original is free until the first RF chunk read. Reuse it as the shifted
+  // multiplicand for a bounded seven-bit vstart seek; no DSP or extra 64-bit bank.
+  val stride=Mux(zeroStride,0.U(64.W),cmd.scalar2)
+  val addend=Mux(seeking,original,stride)
   val decodedBad=Reg(Bool());val illegal=Reg(Bool());val status=Reg(new VectorMemoryStatus);val nextStart=Reg(UInt(8.W));val finishAfterStart=Reg(Bool())
   val stop=stopped || io.stop
+  val nextIndex=ParallelIncrement(index,true.B)
+  val last=index===lastIndex
   io.busy:=state=/=idle;io.command.ready:=state===idle && !io.stop
   io.completion.valid:=state===reply;io.completion.bits:=0.U.asTypeOf(new Completion)
   io.completion.bits.token:=cmd.token;io.completion.bits.instruction:=cmd.instruction;io.completion.bits.illegal:=illegal
@@ -60,7 +69,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   io.memoryResponse.ready:=state===waitMemory
   when(io.command.fire) {
     cmd:=io.command.bits;length:=io.vl;typ:=io.vtype;index:=io.vstart
-    cachedValid:=false.B
+    cachedValid:=false.B;address:=io.command.bits.scalar
     stopped:=false.B;illegal:=false.B;status:=0.U.asTypeOf(new VectorMemoryStatus);state:=decode
   }
   when(io.stop && state=/=idle) { stopped:=true.B }
@@ -68,7 +77,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   def interrupt():Unit={ status.interrupted:=true.B;status.element:=index;setStart(index,true.B) }
   def fault(cause:UInt):Unit={ status.fault:=true.B;status.cause:=cause;status.address:=address;status.element:=index;setStart(index,true.B) }
   when(state===decode) {
-    val inst=cmd.instruction;val f3=inst(14,12)
+    val inst=cmd.instruction;val f3=inst(14,12);lastIndex:=length-1.U
     for(byte<-1 until 4) { upperAddressPrefix(byte-1):=cmd.scalar(31+8*byte,32).andR }
     val ew=MuxLookup(f3,0.U(2.W))(Seq(5.U->1.U,6.U->2.U,7.U->3.U))
     val lm=Mux(typ(2),typ(2,0).asSInt,typ(2,0).zext)
@@ -77,26 +86,54 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val vr=inst(11,7);val isStore=inst(6,0)==="h27".U
     val validOpcode=inst(6,0)==="h07".U || isStore
     val validWidth=f3===0.U || f3===5.U || f3===6.U || f3===7.U
+    val isStrided=inst(27,26)===2.U
     val bad= !validOpcode || !validWidth || typ(63) || typ(5,3)>3.U || emul<(-3).S || emul>3.S ||
-      inst(31,26)=/=0.U || inst(24,20)=/=0.U || (vr&(group-1.U))=/=0.U ||
+      inst(31,28)=/=0.U || !(inst(27,26)===0.U || isStrided) || (!isStrided && inst(24,20)=/=0.U) || (vr&(group-1.U))=/=0.U ||
       (vr+&group)>32.U || (!inst(25) && vr===0.U)
     store:=isStore;masked:= !inst(25);baseRegister:=vr;width:=ew
+    strided:=isStrided;zeroStride:=inst(24,20)===0.U || cmd.scalar2===0.U
+    seeking:=true.B;seek:=index(6,0);original:=Mux(inst(24,20)===0.U,0.U,cmd.scalar2)
     decodedBad:=bad;state:=validate
   }
   when(state===validate) {
     when(decodedBad) { illegal:=true.B;state:=reply }
       .elsewhen(index>=length) { setStart(0.U,true.B) }
-      .otherwise { state:=maskLow }
+      .otherwise { state:=Mux(masked,maskLow,Mux(strided,strideSeek,checkElement)) }
   }
   when(state===maskLow && io.context.fire) { state:=maskLowWait }
   when(state===maskLowWait && io.contextResult.valid) { mask:=io.contextResult.bits;state:=maskHigh }
   when(state===maskHigh && io.context.fire) { state:=maskHighWait }
-  when(state===maskHighWait && io.contextResult.valid) { mask:=Cat(io.contextResult.bits,mask(63,0));state:=checkElement }
+  when(state===maskHighWait && io.contextResult.valid) { mask:=Cat(io.contextResult.bits,mask(63,0));state:=Mux(strided,strideSeek,checkElement) }
   when(state===checkElement) {
     when(index>=length) { setStart(0.U,true.B) }
       .elsewhen(stop) { interrupt() }
-      .elsewhen(masked && !mask(index(6,0))) { index:=index+1.U }
-      .otherwise { state:=addressLow }
+      .elsewhen(masked && !mask(index(6,0))) {
+        index:=nextIndex;when(strided && !zeroStride && !last) {state:=strideAdd0}
+      }
+      .otherwise {
+        when(strided) {chunkAddress:=((baseRegister<<1)+byteOffset(6,3))(5,0)}
+        state:=Mux(strided,checkAddress,addressLow)
+      }
+  }
+  when(state===strideSeek) {
+    when(stop) {interrupt()}
+      .elsewhen(seek===0.U || zeroStride) {seeking:=false.B;state:=checkElement}
+      .elsewhen(seek(0)) {state:=strideAdd0}
+      .otherwise {original:=Cat(original(62,0),false.B);seek:=seek>>1}
+  }
+  // Four fixed 16-bit additions keep negative strides and modulo-64-bit wrap
+  // off a long combinational adder. The cursor stays stable while A or D stalls.
+  for((phase,part)<-Seq(strideAdd0,strideAdd1,strideAdd2,strideAdd3).zipWithIndex) {
+    when(state===phase) {
+      val sum=CarrySelect.add(address(16*part+15,16*part),addend(16*part+15,16*part),if(part==0)false.B else addressCarry)
+      val pieces=(0 until 4).reverse.map(k=>if(k==part)sum(15,0) else address(16*k+15,16*k))
+      address:=Cat(pieces);addressCarry:=sum(16)
+      if(part<3) {state:=Seq(strideAdd1,strideAdd2,strideAdd3)(part)}
+      else {
+        when(seeking) {original:=Cat(original(62,0),false.B);seek:=seek>>1;state:=strideSeek}
+          .otherwise {state:=checkElement}
+      }
+    }
   }
   when(state===addressLow) {
     chunkAddress:=((baseRegister<<1)+byteOffset(6,3))(5,0)
@@ -116,7 +153,13 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     when(stop) { interrupt() }
       .elsewhen((address(2,0)&alignment)=/=0.U) { fault(Mux(store,6.U,4.U)) }
       .elsewhen((address & regionMask.U(64.W))=/=regionBase.U) { fault(Mux(store,7.U,5.U)) }
-      .otherwise { state:=Mux(cachedValid && cachedAddress===chunkAddress,sendMemory,readChunk) }
+      .otherwise {
+        // A naturally aligned 64-bit load replaces the whole RF chunk; no
+        // read/modify/write source is needed. Keep Get payload deterministic.
+        val fullLoad= !store && width===3.U
+        when(fullLoad) {original:=0.U}
+        state:=Mux(fullLoad || cachedValid && cachedAddress===chunkAddress,sendMemory,readChunk)
+      }
   }
   when(state===readChunk && io.context.fire) { state:=readChunkWait }
   when(state===readChunkWait && io.contextResult.valid) {
@@ -129,8 +172,8 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val bad=response.denied || response.corrupt || response.protocolError || response.localError || response.token=/=cmd.token
     when(bad) { fault(Mux(store,7.U,5.U)) }
       .elsewhen(store) {
-        index:=index+1.U
-        setStart(Mux(index+1.U>=length,0.U,index+1.U),index+1.U>=length)
+        index:=nextIndex
+        setStart(Mux(last,0.U,nextIndex),last)
       }.elsewhen(stop) { interrupt() }
       .otherwise {
         val fieldMask=VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(width)
@@ -142,7 +185,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     when(stop) { interrupt() }.elsewhen(io.context.fire) { original:=result;state:=writeChunkWait }
   }
   when(state===writeChunkWait && io.contextResult.valid) {
-    index:=index+1.U;setStart(Mux(index+1.U>=length,0.U,index+1.U),index+1.U>=length)
+    index:=nextIndex;setStart(Mux(last,0.U,nextIndex),last)
   }
   val commitStalled=RegNext(io.commit.valid && !io.commit.ready,false.B)
   val previousCommit=RegNext(io.commit.bits)
@@ -150,7 +193,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     assert(io.commit.valid && io.commit.bits===previousCommit,"progress commit changed under backpressure")
   }
   when(io.commit.fire) {
-    state:=Mux(finishAfterStart,reply,checkElement)
+    state:=Mux(finishAfterStart,reply,Mux(strided && !zeroStride,strideAdd0,checkElement))
   }
   when(io.completion.fire) { state:=idle }
 }

@@ -5,11 +5,11 @@
 
 **当前是含整数与部分浮点的向量原型，不是完整 RVV，尚未接入 Orbital CPU。**
 尚未实现完整 V / Zvfhmin / Zvbb / Zvkt；不能向软件发布 `misa.V` 或 RVA23 合规声明。
-命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M42**：新增FP32/64倒数和倒平方根七位估算，整数→浮点归一化按字节跳过零高位，保留15种宽窄转换及RAM通路，不增加DSP。保留四种规模预设、VLEN128/ELEN64、单lane、容量1。见 [M42说明](docs/m42-estimates-and-efficiency.md)、[规模参数](docs/m39-configurations-and-fp-transfers.md)、[完整性计划](docs/rvv-completion-plan.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
+命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M43**：新增8种正/负/零步长向量load/store；未掩码访存省两次掩码RF读取，64位load省旧值读取；保持RAM通路和原算术单元。保留四种规模预设、VLEN128/ELEN64、单lane、容量1。见 [M43说明](docs/m43-strided-memory.md)、[规模参数](docs/m39-configurations-and-fp-transfers.md)、[完整性计划](docs/rvv-completion-plan.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
 仅物理普通 RAM、单事务，访存采用逐元素提交和延迟停止；不支持 MMIO/分页/PMP/一致性，尚未接入 Orbital CPU。
 **访存期间 flush 必须等待 Completion/status，不能按算术指令立即丢弃 token。** 见 [M10 合同](docs/m10-memory.md)。
 已加入 [M8 的 220 组性能对照](archive/m8/reports/performance.md)，并检查输出结果。
-M42保留两个顶层固定100ps/段云端条件预算≤3.333ns的交付门槛，实际结果及输入散列见 [M42报告](reports/m42/evaluation.md)。完整SoC时钟/接口尚未签核。
+M43保留两个顶层固定100ps/段云端条件预算≤3.333ns的交付门槛，实际结果及输入散列见 [M43报告](reports/m43/evaluation.md)。完整SoC时钟/接口尚未签核。
 本轮尚未经过Vivado实现，不能继承M31通过结论。最新已验证的本地结果和输入散列见 [M31 本地报告](reports/local-m31/evaluation.md)，原 [M31 云端报告](reports/m31/evaluation.md) 保留交付时的状态；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 保留为早期物理基线。
 命名与设计方向见 [项目介绍](docs/lishi.md)。
 M4 原始报告保存在 [归档](archive/m4/reports/evaluation.md)。后续本地 Vivado 的 M4 OOC 结果及其时钟限制另记录在 M5 报告中。
@@ -24,8 +24,8 @@ M1/M2 的原始证据保存在 [M1](archive/m1/reports/evaluation.md) / [M2](arc
 git clone https://github.com/Surplars/Spinor.git
 cd Spinor
 make bootstrap
-python3 scripts/verify_m42.py
-python3 scripts/package.py --milestone m42
+python3 scripts/verify_m43.py
+python3 scripts/package.py --milestone m43
 ```
 
 验证入口会准备固定版本 SoftFloat 和 RapidWright；首次执行需要网络访问工具锁文件中的下载地址。
@@ -115,9 +115,9 @@ M2 的 LMUL1 依赖 vadd 比 M1 慢：当前优先验证 RAM 和提交机制，�
 
 ## 尚未完成
 
-整数进位/借位，定点饱和加减、平均、饱和乘法、舍入移位和窄化clip；
-浮点宽化算术/FMA、宽化/窄化转换、倒数/倒平方根估算、FP标量搬运、vfslide1及FP16/Zvfhmin；Zvbb/Zvkt；
-完整向量LSU：分段、索引/步长、FOF、整组与mask访存，以及MMIO、译址/PMP/一致性和核级精确异常；OS上下文、Valence整核接入及完整架构验证。
+FP16数据格式/Zvfhmin及其他目标扩展的完整审计；
+完整向量LSU：分段、索引、FOF、整组与mask访存，以及MMIO、译址/PMP/一致性和核级精确异常；
+OS上下文、Valence整核接入、编译器程序闭环及完整架构验证。
 开发清单和边界见 [架构合同](docs/architecture.md)。
 独立原型的 FCSR 仍需与 Valence 标量 FP 状态统一，不能在整核中并存两份架构 FCSR。
 
@@ -152,3 +152,5 @@ M5 的本地 OOC 结果为 setup +0.477 ns、hold +0.036 ns；云端完成 M4/M5
 - M34：6种完整双宽整数乘法，复用原乘法器和RAM，含混合符号与串行返回目的偏移检查。
 - M35：8种单宽整数乘加，复用原乘法器与流水ALU；LSU块地址提前寄存，保持访存周期。
 - M36：7种宽化整数乘加、6种反减/大于比较、4种整组寄存器搬运；宽化旧目的操作数独立寻址，整组搬运忽略VL/LMUL/vill并支持vstart。
+
+- M43：8种跨步访存编码；无掩码访存及64位load减少RF读取；算术回归按精确输入/证据SHA安全复用，缺失缓存则完整执行。
