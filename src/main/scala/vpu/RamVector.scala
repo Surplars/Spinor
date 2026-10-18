@@ -66,6 +66,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val fpOp=Reg(UInt(5.W)); val fpDestMultiply=Reg(Bool()); val fpReverse=Reg(Bool())
   val fpFlags=if(enableFp)RegInit(0.U(5.W)) else WireDefault(0.U(5.W))
   val c=Reg(UInt(64.W))
+  val fixed=RegInit(false.B);val fixedMode=Reg(UInt(4.W));val fixedCarry=Reg(Bool());val fixedFlags=RegInit(false.B)
   val integerMac=RegInit(false.B)
   val macDestMultiply=Reg(Bool());val macSubtract=Reg(Bool())
   io.frm.foreach(x=>x:=frm); io.fflags.foreach(x=>x:=fflags)
@@ -164,6 +165,14 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val fpVV=enableFp.B && f3===1.U; val fpVF=enableFp.B && f3===5.U
   val fpUnary=fpVV && (f6===0x13.U || f6===0x12.U)
   val mulVV=f3===2.U; val mulVX=f3===6.U
+  val carryEncoding=f6(5,2)===4.U && (vv || vx || (vi && !f6(1)))
+  val saturatingEncoding=f6(5,2)===8.U && (vv || vx || (vi && !f6(1)))
+  val averagingEncoding=f6(5,2)===2.U && (mulVV || mulVX)
+  val roundingShiftEncoding=f6(5,1)===0x15.U && (vv || vx || vi)
+  val fixedEncoding=carryEncoding || saturatingEncoding || averagingEncoding || roundingShiftEncoding
+  val fixedDecoded=Mux(carryEncoding,Cat(0.U(2.W),f6(0),f6(1)),
+    Mux(saturatingEncoding,Cat(1.U(2.W),f6(1,0)),
+      Mux(averagingEncoding,Cat(2.U(2.W),f6(1,0)),Cat(6.U(3.W),f6(0)))))
   val integerMacEncoding=f6(5,3)===5.U && f6(0) && (mulVV || mulVX)
   val extensionEncoding=mulVV && f6===0x12.U && vs1(4,3)===0.U && vs1(2,1)=/=0.U
   val narrowEncoding=f6(5,1)===0x16.U && (vv || vx || vi) // vnsrl/vnsra.wv/wx/wi
@@ -277,6 +286,12 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(extensionEncoding) {supported:=true.B;decodedOp:=Op.move.U}
   when(narrowEncoding) {supported:=true.B;decodedOp:=Mux(f6(0),Op.sra.U,Op.srl.U)}
   when(widenEncoding) {supported:=true.B;decodedOp:=Mux(widenMultiply || widenMac,Op.mul.U,Mux(f6(1),Op.sub.U,Op.add.U))}
+  when(fixedEncoding) {
+    supported:= !carryEncoding || f6(0) || !vm
+    decodedMask:=carryEncoding && f6(0)
+    decodedOp:=Mux(roundingShiftEncoding,Mux(f6(0),Op.sra.U,Op.srl.U),
+      Mux(f6(1),Op.sub.U,Op.add.U))
+  }
   val producesMask=Mux(fpSupported,fpMask,decodedMask)
   // Register decode before alignment/overlap/permission checks in the FP top.
   val selectedOp=if(enableFp)Reg(UInt(Op.width.W)) else decodedOp
@@ -376,7 +391,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       VectorConfig.alignedGroupContains(vs1,vs2,alignment))
     val fpIllegal=selectedFp && (vtype(4,3)<2.U || (frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U))
     val bad=vtype(63) || !selectedSupported || fpIllegal || extensionBad || narrowBad || widenBad || wideningReductionBad || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias || compressBad ||
-      (!vm && !selectedMask && !selectedReduction && !selectedMaskScalar && vd === 0.U) ||
+      ((!vm || carryEncoding) && !selectedMask && !selectedReduction && !selectedMaskScalar && vd === 0.U) ||
       ((selectedReduction || selectedMaskScalar || selectedMaskPrefix || selectedIndexGenerate===1.U || selectedIndexGenerate===3.U) && vstart=/=0.U) ||
       (selectedMaskPrefix && (vd===vs2 || (!vm && vd===0.U))) ||
       (selectedIndexGenerate===1.U && VectorConfig.alignedGroupContains(vs2,vd,alignment)) ||
@@ -424,6 +439,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   }
   when(state === decode) {
     // Keep instruction decode out of the multiplier/ALU operand paths.
+    fixed:=fixedEncoding;fixedMode:=fixedDecoded;fixedCarry:=carryEncoding && !vm;fixedFlags:=false.B
     integerMac:=integerMacEncoding || widenMac;macDestMultiply:=integerMacEncoding && !f6(2);macSubtract:=integerMacEncoding && f6(1)
     reverseInteger:=f6===3.U && (vx || vi)
     invertComparison:=(f6===0x1e.U || f6===0x1f.U) && (vx || vi)
@@ -552,7 +568,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         }).asUInt
         state:=maskByteReadA
       }
-      .elsewhen((indexGenerate===3.U && !mask(index(6,0))) || (!vm && !mask(index(6,0)) && (fp || op =/= Op.merge.U))) { index := ParallelIncrement(index,true.B) }
+      .elsewhen((indexGenerate===3.U && !mask(index(6,0))) || (!vm && !(fixed && fixedMode<4.U) && !mask(index(6,0)) && (fp || op =/= Op.merge.U))) { index := ParallelIncrement(index,true.B) }
       .otherwise {
         val offset = (index<<sew)(6,0)
         sourceOffset := offset(6,4)
@@ -765,15 +781,15 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   lane.io.flush := io.flush
   val isMul=op===Op.mul.U || op===Op.mulh.U || op===Op.mulhu.U || op===Op.mulhsu.U
   val isDiv=op===Op.div.U || op===Op.divu.U || op===Op.rem.U || op===Op.remu.U
-  lane.io.in.valid := ((state === launch && !fp && !isMul && !isDiv) || state===macLaunch) && !io.flush
+  lane.io.in.valid := ((state === launch && !fixed && !fp && !isMul && !isDiv) || state===macLaunch) && !io.flush
   lane.io.in.bits.a := Mux(state===macLaunch && !macDestMultiply,c,a)
   lane.io.in.bits.b := Mux(state===macLaunch,reductionAccumulator,b)
   lane.io.in.bits.sew := arithmeticSew
   lane.io.in.bits.op := Mux(state===macLaunch,Mux(macSubtract,Op.sub.U,Op.add.U),op)
   lane.io.in.bits.select := mask(index(6,0)); lane.io.in.bits.tag := index
-  streaming := !fp && !comparison && !isMul && !isDiv && !reduction && !maskScalar && scalarMove===0.U && indexGenerate=/=3.U
+  streaming := !fixed && !fp && !comparison && !isMul && !isDiv && !reduction && !maskScalar && scalarMove===0.U && indexGenerate=/=3.U
   val streamActive=state===slideAddress || state===dispatch || state===readA || state===captureA || state===readB || state===captureB || state===launch || state===awaitResult
-  lane.io.out.ready := ((Mux(streaming,streamActive,state===awaitResult) && !fp && !isMul && !isDiv) || state===macAwait) && !io.flush
+  lane.io.out.ready := ((Mux(streaming,streamActive,state===awaitResult) && !fixed && !fp && !isMul && !isDiv) || state===macAwait) && !io.flush
   when(lane.io.in.fire) {
     when(streaming) { index:=ParallelIncrement(index,true.B);state:=dispatch }.otherwise { state:=Mux(state===macLaunch,macAwait,awaitResult) }
   }
@@ -802,8 +818,19 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(divider.io.in.fire) { state:=awaitResult }
   val integerFire=Mux(integerMac,lane.io.out.fire,Mux(isDiv,divider.io.out.fire,Mux(isMul,multiplier.io.out.fire,lane.io.out.fire)))
   val integerData=Mux(integerMac,lane.io.out.bits.data,Mux(isDiv,divider.io.out.bits.data,Mux(isMul,multiplier.io.out.bits.data,lane.io.out.bits.data)))
-  val resultFire=WireDefault(integerFire)
-  val resultData=WireDefault(integerData)
+  val fixedUnit=Module(new FixedPointLane)
+  fixedUnit.io.flush:=io.flush
+  fixedUnit.io.in.valid:=state===launch && fixed && !io.flush
+  fixedUnit.io.in.bits.a:=a;fixedUnit.io.in.bits.b:=b;fixedUnit.io.in.bits.sew:=sew
+  fixedUnit.io.in.bits.mode:=fixedMode;fixedUnit.io.in.bits.rounding:=vxrm
+  fixedUnit.io.in.bits.carry:=fixedCarry && mask(index(6,0));fixedUnit.io.in.bits.tag:=index
+  fixedUnit.io.out.ready:=state===awaitResult && fixed && !io.flush
+  when(fixedUnit.io.in.fire) {state:=awaitResult}
+  when(fixedUnit.io.out.fire) {fixedFlags:=fixedFlags || fixedUnit.io.out.bits.saturated}
+  val nonFpFire=Mux(fixed,fixedUnit.io.out.fire,integerFire)
+  val nonFpData=Mux(fixed,fixedUnit.io.out.bits.data,integerData)
+  val resultFire=WireDefault(nonFpFire)
+  val resultData=WireDefault(nonFpData)
   if(enableFp) {
     val unit=Module(new FloatingPointLane)
     unit.io.flush:=io.flush
@@ -819,8 +846,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       fpFlags:=fpFlags | unit.io.out.bits.flags
       when(unit.io.out.bits.illegal) { illegal:=true.B; state:=finish }
     }
-    resultFire:=Mux(fp,unit.io.out.fire && !unit.io.out.bits.illegal,integerFire)
-    resultData:=Mux(fp,unit.io.out.bits.data,integerData)
+    resultFire:=Mux(fp,unit.io.out.fire && !unit.io.out.bits.illegal,nonFpFire)
+    resultData:=Mux(fp,unit.io.out.bits.data,nonFpData)
   }
   when(resultFire) {
     when(indexGenerate===3.U) {scalarResult:=ParallelIncrement(scalarResult(7,0),true.B)}
@@ -869,6 +896,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
           }
         }.otherwise {
           when(hasElements) { rf.io.commit := true.B }
+          when(fixed) {vxsat:=vxsat || fixedFlags}
           if(enableFp) { when(fp) { fflags:=fflags | fpFlags } }
           vstart := 0.U
         }

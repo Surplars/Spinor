@@ -48,6 +48,8 @@ object Generate extends App {
   val vrf = ChiselStage.emitSystemVerilog(new VersionedRegisterFile,firtoolOpts=Array(
     "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays"))
   writeBundle("VersionedRegisterFileRam",vrf)
+  writeBundle("FixedPointLane",ChiselStage.emitSystemVerilog(new FixedPointLane,firtoolOpts=Array(
+    "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays")))
   val div = ChiselStage.emitSystemVerilog(new IntegerDivide,firtoolOpts=Array(
     "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays"))
   writeBundle("IntegerDivide",div)

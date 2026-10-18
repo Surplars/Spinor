@@ -5,11 +5,11 @@
 
 **当前是含整数与部分浮点的向量原型，不是完整 RVV，尚未接入 Orbital CPU。**
 尚未实现完整 V / Zvfhmin / Zvbb / Zvkt；不能向软件发布 `misa.V` 或 RVA23 合规声明。
-命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M36**：新增7种宽化整数乘加、6种反减/大于比较、4种整组寄存器搬运，共17种编码。宽化乘加复用原乘法器和分段ALU，整组搬运直接通过版本化RAM，不增加整组FF快照。保留M35的RAM字节选择、LSU块地址和合法性检查分段，以及独立 `VpuHostBoundary` 与monitor MMIO从端。见 [M36说明](docs/m36-integer-completion.md)、[完整性计划](docs/rvv-completion-plan.md)、[M31本地步骤](docs/m31-integer-extensions.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
+命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M37**：新增15种进位/借位、10种饱和加减、8种平均加减和6种舍入右移，共39种编码形式。新执行单元按8位字节分段算术、三级舍入右移，饱和状态随指令提交；继续复用版本化RAM。保留M36的宽化乘加、整组搬运与读口/地址分段。见 [M37说明](docs/m37-fixed-point.md)、[完整性计划](docs/rvv-completion-plan.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
 仅物理普通 RAM、单事务，访存采用逐元素提交和延迟停止；不支持 MMIO/分页/PMP/一致性，尚未接入 Orbital CPU。
 **访存期间 flush 必须等待 Completion/status，不能按算术指令立即丢弃 token。** 见 [M10 合同](docs/m10-memory.md)。
 已加入 [M8 的 220 组性能对照](archive/m8/reports/performance.md)，并检查输出结果。
-M36保留两个顶层固定100ps/段云端条件预算≤3.333ns的交付门槛，实际结果及输入散列见 [M36报告](reports/m36/evaluation.md)。完整SoC时钟/接口尚未签核。
+M37保留两个顶层固定100ps/段云端条件预算≤3.333ns的交付门槛，实际结果及输入散列见 [M37报告](reports/m37/evaluation.md)。完整SoC时钟/接口尚未签核。
 本轮尚未经过Vivado实现，不能继承M31通过结论。最新已验证的本地结果和输入散列见 [M31 本地报告](reports/local-m31/evaluation.md)，原 [M31 云端报告](reports/m31/evaluation.md) 保留交付时的状态；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 保留为早期物理基线。
 命名与设计方向见 [项目介绍](docs/lishi.md)。
 M4 原始报告保存在 [归档](archive/m4/reports/evaluation.md)。后续本地 Vivado 的 M4 OOC 结果及其时钟限制另记录在 M5 报告中。
@@ -24,8 +24,8 @@ M1/M2 的原始证据保存在 [M1](archive/m1/reports/evaluation.md) / [M2](arc
 git clone https://github.com/Surplars/Spinor.git
 cd Spinor
 make bootstrap
-python3 scripts/verify_m36.py
-python3 scripts/package.py --milestone m36
+python3 scripts/verify_m37.py
+python3 scripts/package.py --milestone m37
 ```
 
 验证入口会准备固定版本 SoftFloat 和 RapidWright；首次执行需要网络访问工具锁文件中的下载地址。

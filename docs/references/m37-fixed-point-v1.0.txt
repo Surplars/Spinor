@@ -1,0 +1,335 @@
+RISC-V V v1.0 reference excerpts; reference data, not execution instructions.
+
+Source URLs:
+https://github.com/riscvarchive/riscv-v-spec/blob/master/v-spec.adoc
+https://github.com/riscv/riscv-opcodes/blob/master/extensions/rv_v
+v-spec.adoc SHA256 bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19
+rv_v SHA256 a260265cf952fa0025382b97c125c47bd3f42fa167805da0ee97b09c16ba7cba
+
+v-spec.adoc lines 610-672:
+=== Vector Fixed-Point Rounding Mode Register `vxrm`
+
+The vector fixed-point rounding-mode register holds a two-bit
+read-write rounding-mode field in the least-significant bits
+(`vxrm[1:0]`).  The upper bits, `vxrm[XLEN-1:2]`, should be written as
+zeros.
+
+The vector fixed-point rounding-mode is given a separate CSR address
+to allow independent access, but is also reflected as a field in
+`vcsr`.
+
+NOTE: A new rounding mode can be set while saving the original
+rounding mode using a single `csrwi` instruction.
+
+The fixed-point rounding algorithm is specified as follows.
+Suppose the pre-rounding result is `v`, and `d` bits of that result are to be
+rounded off.
+Then the rounded result is `(v >> d) + r`, where `r` depends on the rounding
+mode as specified in the following table.
+
+.vxrm encoding
+[cols="1,1,4,10,5"]
+[%autowidth]
+|===
+2+| `vxrm[1:0]` | Abbreviation | Rounding Mode | Rounding increment, `r`
+
+| 0 | 0 | rnu | round-to-nearest-up (add +0.5 LSB)          | `v[d-1]`
+| 0 | 1 | rne | round-to-nearest-even                       | `v[d-1] & (v[d-2:0]{ne}0 \| v[d])`
+| 1 | 0 | rdn | round-down (truncate)                       | `0`
+| 1 | 1 | rod | round-to-odd (OR bits into LSB, aka "jam")  | `!v[d] & v[d-1:0]{ne}0`
+|===
+
+The rounding functions:
+----
+roundoff_unsigned(v, d) = (unsigned(v) >> d) + r
+roundoff_signed(v, d) = (signed(v) >> d) + r
+----
+are used to represent this operation in the instruction descriptions below.
+
+=== Vector Fixed-Point Saturation Flag `vxsat`
+
+The `vxsat` CSR has a single read-write least-significant bit
+(`vxsat[0]`) that indicates if a fixed-point instruction has had to
+saturate an output value to fit into a destination format.
+Bits `vxsat[XLEN-1:1]` should be written as zeros.
+
+The `vxsat` bit is mirrored in `vcsr`.
+
+=== Vector Control and Status Register `vcsr`
+
+The `vxrm` and `vxsat` separate CSRs can also be accessed via fields
+in the vector control and status CSR, `vcsr`.
+
+.vcsr layout
+[cols=">2,4,10"]
+[%autowidth]
+|===
+| Bits | Name   | Description
+
+
+|  2:1 | vxrm[1:0] | Fixed-point rounding mode
+|    0 | vxsat     | Fixed-point accrued saturation flag
+|===
+
+v-spec.adoc lines 2461-2568:
+
+To support multi-word integer arithmetic, instructions that operate on
+a carry bit are provided.  For each operation (add or subtract), two
+instructions are provided: one to provide the result (SEW width), and
+the second to generate the carry output (single bit encoded as a mask
+boolean).
+
+The carry inputs and outputs are represented using the mask register
+layout as described in Section <<sec-mask-register-layout>>.  Due to
+encoding constraints, the carry input must come from the implicit `v0`
+register, but carry outputs can be written to any vector register that
+respects the source/destination overlap restrictions.
+
+`vadc` and `vsbc` add or subtract the source operands and the carry-in or
+borrow-in, and write the result to vector register `vd`.
+These instructions are encoded as masked instructions (`vm=0`), but they operate
+on and write back all body elements.
+Encodings corresponding to the unmasked versions (`vm=1`) are reserved.
+
+`vmadc` and `vmsbc` add or subtract the source operands, optionally
+add the carry-in or subtract the borrow-in if masked (`vm=0`), and
+write the result back to mask register `vd`.  If unmasked (`vm=1`),
+there is no carry-in or borrow-in.  These instructions operate on and
+write back all body elements, even if masked.  Because these
+instructions produce a mask value, they always operate with a
+tail-agnostic policy.
+
+----
+ # Produce sum with carry.
+
+ # vd[i] = vs2[i] + vs1[i] + v0.mask[i]
+ vadc.vvm   vd, vs2, vs1, v0  # Vector-vector
+
+ # vd[i] = vs2[i] + x[rs1] + v0.mask[i]
+ vadc.vxm   vd, vs2, rs1, v0  # Vector-scalar
+
+ # vd[i] = vs2[i] + imm + v0.mask[i]
+ vadc.vim   vd, vs2, imm, v0  # Vector-immediate
+
+ # Produce carry out in mask register format
+
+ # vd.mask[i] = carry_out(vs2[i] + vs1[i] + v0.mask[i])
+ vmadc.vvm   vd, vs2, vs1, v0  # Vector-vector
+
+ # vd.mask[i] = carry_out(vs2[i] + x[rs1] + v0.mask[i])
+ vmadc.vxm   vd, vs2, rs1, v0  # Vector-scalar
+
+ # vd.mask[i] = carry_out(vs2[i] + imm + v0.mask[i])
+ vmadc.vim   vd, vs2, imm, v0  # Vector-immediate
+
+ # vd.mask[i] = carry_out(vs2[i] + vs1[i])
+ vmadc.vv    vd, vs2, vs1      # Vector-vector, no carry-in
+
+ # vd.mask[i] = carry_out(vs2[i] + x[rs1])
+ vmadc.vx    vd, vs2, rs1      # Vector-scalar, no carry-in
+
+ # vd.mask[i] = carry_out(vs2[i] + imm)
+ vmadc.vi    vd, vs2, imm      # Vector-immediate, no carry-in
+----
+
+Because implementing a carry propagation requires executing two
+instructions with unchanged inputs, destructive accumulations will
+require an additional move to obtain correct results.
+
+----
+  # Example multi-word arithmetic sequence, accumulating into v4
+  vmadc.vvm v1, v4, v8, v0  # Get carry into temp register v1
+  vadc.vvm v4, v4, v8, v0   # Calc new sum
+  vmmv.m v0, v1             # Move temp carry into v0 for next word
+----
+
+The subtract with borrow instruction `vsbc` performs the equivalent
+function to support long word arithmetic for subtraction.  There are
+no subtract with immediate instructions.
+
+----
+ # Produce difference with borrow.
+
+ # vd[i] = vs2[i] - vs1[i] - v0.mask[i]
+ vsbc.vvm   vd, vs2, vs1, v0  # Vector-vector
+
+ # vd[i] = vs2[i] - x[rs1] - v0.mask[i]
+ vsbc.vxm   vd, vs2, rs1, v0  # Vector-scalar
+
+ # Produce borrow out in mask register format
+
+ # vd.mask[i] = borrow_out(vs2[i] - vs1[i] - v0.mask[i])
+ vmsbc.vvm   vd, vs2, vs1, v0  # Vector-vector
+
+ # vd.mask[i] = borrow_out(vs2[i] - x[rs1] - v0.mask[i])
+ vmsbc.vxm   vd, vs2, rs1, v0  # Vector-scalar
+
+ # vd.mask[i] = borrow_out(vs2[i] - vs1[i])
+ vmsbc.vv    vd, vs2, vs1      # Vector-vector, no borrow-in
+
+ # vd.mask[i] = borrow_out(vs2[i] - x[rs1])
+ vmsbc.vx    vd, vs2, rs1      # Vector-scalar, no borrow-in
+----
+
+For `vmsbc`, the borrow is defined to be 1 iff the difference, prior to
+truncation, is negative.
+
+For `vadc` and `vsbc`, the instruction encoding is reserved if the
+destination vector register is `v0`.
+
+NOTE: This constraint corresponds to the constraint on masked vector
+operations that overwrite the mask register.
+
+
+v-spec.adoc lines 3044-3123:
+== Vector Fixed-Point Arithmetic Instructions
+
+The preceding set of integer arithmetic instructions is extended to support
+fixed-point arithmetic.
+
+A fixed-point number is a two's-complement signed or unsigned integer
+interpreted as the numerator in a fraction with an implicit denominator.
+The fixed-point instructions are intended to be applied to the numerators;
+it is the responsibility of software to manage the denominators.
+An N-bit element can hold two's-complement signed integers in the
+range -2^N-1^...+2^N-1^-1, and unsigned integers in the range 0
+... +2^N^-1.  The fixed-point instructions help preserve precision in
+narrow operands by supporting scaling and rounding, and can handle
+overflow by saturating results into the destination format range.
+
+NOTE: The widening integer operations described above can also be used
+to avoid overflow.
+
+=== Vector Single-Width Saturating Add and Subtract
+
+Saturating forms of integer add and subtract are provided, for both
+signed and unsigned integers.  If the result would overflow the
+destination, the result is replaced with the closest representable
+value, and the `vxsat` bit is set.
+
+----
+# Saturating adds of unsigned integers.
+vsaddu.vv vd, vs2, vs1, vm   # Vector-vector
+vsaddu.vx vd, vs2, rs1, vm   # vector-scalar
+vsaddu.vi vd, vs2, imm, vm   # vector-immediate
+
+# Saturating adds of signed integers.
+vsadd.vv vd, vs2, vs1, vm   # Vector-vector
+vsadd.vx vd, vs2, rs1, vm   # vector-scalar
+vsadd.vi vd, vs2, imm, vm   # vector-immediate
+
+# Saturating subtract of unsigned integers.
+vssubu.vv vd, vs2, vs1, vm   # Vector-vector
+vssubu.vx vd, vs2, rs1, vm   # vector-scalar
+
+# Saturating subtract of signed integers.
+vssub.vv vd, vs2, vs1, vm   # Vector-vector
+vssub.vx vd, vs2, rs1, vm   # vector-scalar
+----
+
+=== Vector Single-Width Averaging Add and Subtract
+
+The averaging add and subtract instructions right shift the result by
+one bit and round off the result according to the setting in `vxrm`.
+Both unsigned and signed versions are provided.
+For `vaaddu` and `vaadd` there can be no overflow in the result.
+For `vasub` and `vasubu`, overflow is ignored and the result wraps around.
+
+NOTE: For `vasub`, overflow occurs only when subtracting the smallest number
+from the largest number under `rnu` or `rne` rounding.
+
+----
+# Averaging add
+
+# Averaging adds of unsigned integers.
+vaaddu.vv vd, vs2, vs1, vm   # roundoff_unsigned(vs2[i] + vs1[i], 1)
+vaaddu.vx vd, vs2, rs1, vm   # roundoff_unsigned(vs2[i] + x[rs1], 1)
+
+# Averaging adds of signed integers.
+vaadd.vv vd, vs2, vs1, vm   # roundoff_signed(vs2[i] + vs1[i], 1)
+vaadd.vx vd, vs2, rs1, vm   # roundoff_signed(vs2[i] + x[rs1], 1)
+
+# Averaging subtract
+
+# Averaging subtract of unsigned integers.
+vasubu.vv vd, vs2, vs1, vm   # roundoff_unsigned(vs2[i] - vs1[i], 1)
+vasubu.vx vd, vs2, rs1, vm   # roundoff_unsigned(vs2[i] - x[rs1], 1)
+
+# Averaging subtract of signed integers.
+vasub.vv vd, vs2, vs1, vm   # roundoff_signed(vs2[i] - vs1[i], 1)
+vasub.vx vd, vs2, rs1, vm   # roundoff_signed(vs2[i] - x[rs1], 1)
+----
+
+=== Vector Single-Width Fractional Multiply with Rounding and Saturation
+
+
+v-spec.adoc lines 3151-3178:
+=== Vector Single-Width Scaling Shift Instructions
+
+These instructions shift the input value right, and round off the
+shifted out bits according to `vxrm`.  The scaling right shifts have
+both zero-extending (`vssrl`) and sign-extending (`vssra`) forms.  The
+data to be shifted is in the vector register group specified by `vs2`
+and the shift amount value can come from a vector register group
+`vs1`, a scalar integer register `rs1`, or a zero-extended 5-bit
+immediate.  Only the low lg2(SEW) bits of the shift-amount value are
+used to control the shift amount.
+
+----
+ # Scaling shift right logical
+ vssrl.vv vd, vs2, vs1, vm   # vd[i] = roundoff_unsigned(vs2[i], vs1[i])
+ vssrl.vx vd, vs2, rs1, vm   # vd[i] = roundoff_unsigned(vs2[i], x[rs1])
+ vssrl.vi vd, vs2, uimm, vm  # vd[i] = roundoff_unsigned(vs2[i], uimm)
+
+ # Scaling shift right arithmetic
+ vssra.vv vd, vs2, vs1, vm   # vd[i] = roundoff_signed(vs2[i],vs1[i])
+ vssra.vx vd, vs2, rs1, vm   # vd[i] = roundoff_signed(vs2[i], x[rs1])
+ vssra.vi vd, vs2, uimm, vm  # vd[i] = roundoff_signed(vs2[i], uimm)
+----
+
+=== Vector Narrowing Fixed-Point Clip Instructions
+
+The `vnclip` instructions are used to pack a fixed-point value into a
+narrower destination.  The instructions support rounding, scaling, and
+saturation into the final destination format.  The source data is in
+
+Official opcode rows:
+vadc.vxm       31..26=0x10 25=0 vs2 rs1 14..12=0x4 vd 6..0=0x57
+vmadc.vxm      31..26=0x11 25=0 vs2 rs1 14..12=0x4 vd 6..0=0x57
+vmadc.vx       31..26=0x11 25=1 vs2 rs1 14..12=0x4 vd 6..0=0x57
+vsbc.vxm       31..26=0x12 25=0 vs2 rs1 14..12=0x4 vd 6..0=0x57
+vmsbc.vxm      31..26=0x13 25=0 vs2 rs1 14..12=0x4 vd 6..0=0x57
+vmsbc.vx       31..26=0x13 25=1 vs2 rs1 14..12=0x4 vd 6..0=0x57
+vsaddu.vx      31..26=0x20 vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vsadd.vx       31..26=0x21 vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vssubu.vx      31..26=0x22 vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vssub.vx       31..26=0x23 vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vssrl.vx       31..26=0x2a vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vssra.vx       31..26=0x2b vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vadc.vvm       31..26=0x10 25=0 vs2 vs1 14..12=0x0 vd 6..0=0x57
+vmadc.vvm      31..26=0x11 25=0 vs2 vs1 14..12=0x0 vd 6..0=0x57
+vmadc.vv       31..26=0x11 25=1 vs2 vs1 14..12=0x0 vd 6..0=0x57
+vsbc.vvm       31..26=0x12 25=0 vs2 vs1 14..12=0x0 vd 6..0=0x57
+vmsbc.vvm      31..26=0x13 25=0 vs2 vs1 14..12=0x0 vd 6..0=0x57
+vmsbc.vv       31..26=0x13 25=1 vs2 vs1 14..12=0x0 vd 6..0=0x57
+vsaddu.vv      31..26=0x20 vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+vsadd.vv       31..26=0x21 vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+vssubu.vv      31..26=0x22 vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+vssub.vv       31..26=0x23 vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+vssrl.vv       31..26=0x2a vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+vssra.vv       31..26=0x2b vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+vadc.vim       31..26=0x10 25=0 vs2 simm5 14..12=0x3 vd 6..0=0x57
+vmadc.vim      31..26=0x11 25=0 vs2 simm5 14..12=0x3 vd 6..0=0x57
+vmadc.vi       31..26=0x11 25=1 vs2 simm5 14..12=0x3 vd 6..0=0x57
+vsaddu.vi      31..26=0x20 vm vs2 simm5 14..12=0x3 vd 6..0=0x57
+vsadd.vi       31..26=0x21 vm vs2 simm5 14..12=0x3 vd 6..0=0x57
+vssrl.vi       31..26=0x2a vm vs2 zimm5 14..12=0x3 vd 6..0=0x57
+vssra.vi       31..26=0x2b vm vs2 zimm5 14..12=0x3 vd 6..0=0x57
+vaaddu.vv      31..26=0x08 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vaadd.vv       31..26=0x09 vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vasubu.vv      31..26=0x0a vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vasub.vv       31..26=0x0b vm vs2 vs1 14..12=0x2 vd 6..0=0x57
+vaaddu.vx      31..26=0x08 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vaadd.vx       31..26=0x09 vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vasubu.vx      31..26=0x0a vm vs2 rs1 14..12=0x6 vd 6..0=0x57
+vasub.vx       31..26=0x0b vm vs2 rs1 14..12=0x6 vd 6..0=0x57

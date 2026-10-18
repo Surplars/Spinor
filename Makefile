@@ -518,3 +518,10 @@ verify-m36:
 	$(PYTHON) scripts/verify_m36.py
 package-m36:
 	$(PYTHON) scripts/package.py --milestone m36
+
+.PHONY: verify-m37 package-m37
+verify-m37:
+	$(PYTHON) scripts/verify_m37.py
+
+package-m37:
+	$(PYTHON) scripts/package.py --milestone m37
