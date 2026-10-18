@@ -70,3 +70,7 @@ M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真�
 ## M47跨步/索引分段
 
 沿用M46的整段vstart和部分字段重启策略。跨步的scalar2传完整有符号步长位模式，rs2=x0时忽略；索引形式忽略scalar2。索引分段load所有目标字段组都不得与vs2索引组重叠，同宽也保留，且VL0不能绕过检查。store可有同EEW源别名。旧NF0索引load合法重叠不受影响。仍由宿主保证物理普通RAM及不可撤销指令所有权，见[M47说明](m47-addressed-segments.md)。
+
+## M48 FOF与VL
+
+FOF元素0错误按原异常处理，原VL保持；后续元素错误则正常完成并缩短VL、清零vstart。CPU不能仅根据总线错误判断该指令要重试，须使用最终completion/status；FOF后的CSR读取和后续算术必须看到已提交的新VL。即使没有RF写回，VL缩短也改变向量架构状态，宿主仍须正确处理VS dirty。分段被截短的当前段可以保留已加载字段；不应把这些字段算入新的VL。停止保持原VL；同拍同步错误按FOF规则优先处理。调试watchpoint不能当作可截短的普通访问错误交给此接口。见[M48](m48-fault-only-first.md)。

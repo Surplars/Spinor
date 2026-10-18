@@ -79,7 +79,7 @@ for ew,n in [(0,3),(1,4),(2,2),(3,8)]:
   if ew:setstart(0);run(ew,n,write,base=BASE+1)
  config(ew<<3,0)
  for write in [False,True]:run(ew,n,write)
-for t,ew,n,vr,masked,bits in [(2,0,3,8,False,0),(1,0,8,8,False,0),(1,0,4,9,False,0),(0,0,8,25,False,0),(0,0,2,0,True,0),(0,0,2,8,False,1<<28),(0,0,2,8,False,16<<20)]:
+for t,ew,n,vr,masked,bits in [(2,0,3,8,False,0),(1,0,8,8,False,0),(1,0,4,9,False,0),(0,0,8,25,False,0),(0,0,2,0,True,0),(0,0,2,8,False,1<<28),(0,0,2,8,False,4<<20)]:
  config(t,0)
  for write in [False,True]:run(ew,n,write,vr,masked,illegal=True,bits=bits)
 # Stop can leave a prefix of fields inside the restart segment. Compare against

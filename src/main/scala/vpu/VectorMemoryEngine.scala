@@ -19,6 +19,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val vl=Input(UInt(8.W));val vtype=Input(UInt(64.W));val vstart=Input(UInt(7.W))
     val context=Decoupled(new ContextAccess);val contextResult=Flipped(Valid(UInt(64.W)))
     val commit=Decoupled(UInt(7.W))
+    val trim=Valid(UInt(8.W))
     val memoryRequest=Decoupled(new VpuMemoryRequest(VpuTLParams()))
     val memoryResponse=Flipped(Decoupled(new VpuMemoryResponse))
   })
@@ -52,6 +53,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   // Modes 1/2 reuse the four-slice adder for a field step / segment rewind.
   // Rewind the field cursor before adding the original scalar stride, including zero stride.
   val segmentAdd=RegInit(0.U(2.W));val segmentBack=Reg(UInt(8.W))
+  val faultOnlyFirst=Reg(Bool());val trimmed=RegInit(false.B)
   val fieldStep=(1.U(4.W)<<width)(3,0)
   // result is free once a field has committed. Reuse it for field deltas so
   // the ordinary stride operand does not acquire another mux before the adder.
@@ -75,6 +77,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   io.context.bits.address:=Mux(state===maskLow,0.U,Mux(state===maskHigh,1.U,Mux(state===indexRead,indexChunk,chunkAddress)))
   io.context.bits.write:=state===writeChunk;io.context.bits.data:=result
   io.commit.valid:=state===writeStart;io.commit.bits:=nextStart(6,0)
+  io.trim.valid:=state===writeStart && trimmed;io.trim.bits:=length
   io.memoryRequest.valid:=state===sendMemory
   io.memoryRequest.bits.address:=address;io.memoryRequest.bits.size:=width;io.memoryRequest.bits.write:=store
   io.memoryRequest.bits.data:=original>>bitOffset
@@ -86,13 +89,21 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     when(io.command.bits.instruction(27,26)===2.U && io.command.bits.instruction(24,20)===0.U) {
       cmd.scalar2:=0.U
     }
-    cachedValid:=false.B;segmentAdd:=0.U;address:=io.command.bits.scalar
+    cachedValid:=false.B;segmentAdd:=0.U;trimmed:=false.B;address:=io.command.bits.scalar
     stopped:=false.B;illegal:=false.B;status:=0.U.asTypeOf(new VectorMemoryStatus);state:=decode
   }
   when(io.stop && state=/=idle) { stopped:=true.B }
   def setStart(value:UInt,finish:Bool):Unit={ nextStart:=value;finishAfterStart:=finish;state:=writeStart }
   def interrupt():Unit={ status.interrupted:=true.B;status.element:=index;setStart(index,true.B) }
-  def fault(cause:UInt):Unit={ status.fault:=true.B;status.cause:=cause;status.address:=address;status.element:=index;setStart(index,true.B) }
+  def fault(cause:UInt):Unit={
+    when(faultOnlyFirst && index=/=0.U) {
+      // Absolute element index, including masked-off element zero / nonzero vstart.
+      // Reuse length after the terminating fault; no separate VL data bank.
+      length:=index;trimmed:=true.B;setStart(0.U,true.B)
+    }.otherwise {
+      status.fault:=true.B;status.cause:=cause;status.address:=address;status.element:=index;setStart(index,true.B)
+    }
+  }
   when(state===decode) {
     val inst=cmd.instruction;val f3=inst(14,12);lastIndex:=length-1.U
     for(byte<-1 until 4) { upperAddressPrefix(byte-1):=cmd.scalar(31+8*byte,32).andR }
@@ -103,17 +114,20 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val (group,validEmul,integralEmul)=MemoryGeometry.decode(typ,ew)
     val vr=inst(11,7);val isStore=inst(6,0)==="h27".U
     val validOpcode=inst(6,0)==="h07".U || isStore
+    val isFof= !isStore && inst(27,26)===0.U && inst(24,20)===16.U
+    faultOnlyFirst:=isFof
     val validWidth=f3===0.U || f3===5.U || f3===6.U || f3===7.U
     val isStrided=inst(27,26)===2.U
     val isIndexed=inst(26)
     val dataGroup=Mux(isIndexed,Mux(lm>0.S,(1.U(4.W)<<lm.asUInt(1,0))(3,0),1.U(4.W)),group)
     val indexBase=inst(24,20)
     val bad= !validOpcode || !validWidth || typ(63) || typ(5,3)>3.U || !validEmul ||
-      inst(28) || (!isStrided && !isIndexed && inst(24,20)=/=0.U) || (vr&(dataGroup-1.U))=/=0.U ||
+      inst(28) || (!isStrided && !isIndexed && inst(24,20)=/=0.U && !isFof) || (vr&(dataGroup-1.U))=/=0.U ||
       (!inst(25) && vr===0.U) ||
       (isIndexed && ((indexBase&(group-1.U))=/=0.U ||
         (!inst(25) && indexBase===0.U) || typ(2,0)===4.U || !VectorConfig.fractionalLegal(typ)))
-    val isSegment=inst(31,29)=/=0.U && (isStrided || isIndexed || inst(24,20)===0.U)
+    // Treat a scalar-field FOF as a one-field segment too, sharing all vtype checks.
+    val isSegment=isFof || (inst(31,29)=/=0.U && (isStrided || isIndexed || inst(24,20)===0.U))
     segmented:=isSegment;segmentLast:=inst(31,29);segmentField:=0.U;segmentGroup:=dataGroup
     store:=isStore;masked:= !inst(25);baseRegister:=vr;width:=Mux(isIndexed,typ(4,3),ew)
     indexed:=isIndexed;indexWidth:=ew;dataAlignment:=VectorConfig.countAlignment(dataGroup)
@@ -300,8 +314,10 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   }
   val commitStalled=RegNext(io.commit.valid && !io.commit.ready,false.B)
   val previousCommit=RegNext(io.commit.bits)
+  val previousTrim=RegNext(io.trim.valid,false.B);val previousLength=RegNext(io.trim.bits)
   when(commitStalled) {
     assert(io.commit.valid && io.commit.bits===previousCommit,"progress commit changed under backpressure")
+    assert(io.trim.valid===previousTrim && (!io.trim.valid || io.trim.bits===previousLength),"VL trim changed under progress backpressure")
   }
   when(io.commit.fire) {
     when(finishAfterStart) {state:=reply}
@@ -317,7 +333,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
 class LishiVpuMemory(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28,chunkBits:Int=32,enableFp:Boolean=true) extends Module {
   require(Set(16,32).contains(chunkBits))
   override def desiredName=if(chunkBits==16)"LishiVpuMemory16" else "LishiVpuMemory"
-  val vpu=Module(new RamVector(chunkBits=chunkBits,enableFp=enableFp,enableMemoryCommit=true,stageControl=true));val engine=Module(new VectorMemoryEngine(regionBase,regionBytes))
+  val vpu=Module(new MemoryRamVector(chunkBits=chunkBits,enableFp=enableFp));val engine=Module(new VectorMemoryEngine(regionBase,regionBytes))
   val bridge=Module(new TileLinkReservation)
   val io=IO(new Bundle {
     val core=chiselTypeOf(vpu.io);val tl=new VpuTileLinkMaster(VpuTLParams())
@@ -334,6 +350,7 @@ class LishiVpuMemory(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=
   vpu.memoryCommit.get.valid:=engine.io.commit.valid && busy
   vpu.memoryCommit.get.bits:=engine.io.commit.bits
   engine.io.commit.ready:=vpu.memoryCommit.get.ready && busy
+  vpu.memoryVl.valid:=engine.io.trim.valid && busy;vpu.memoryVl.bits:=engine.io.trim.bits
   vpu.io.completion.ready:=io.core.completion.ready && !busy
   io.core.completion.valid:=Mux(busy,engine.io.completion.valid,vpu.io.completion.valid)
   io.core.completion.bits:=Mux(busy,engine.io.completion.bits,vpu.io.completion.bits)

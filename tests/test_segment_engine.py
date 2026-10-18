@@ -69,7 +69,7 @@ for ew,n in [(0,3),(1,4),(2,2),(3,8)]:
   issue(ew,n,write,ew<<3,2,base=M-(n*(1<<ew))+1,start=1)
   issue(ew,n,write,ew<<3,2,pred=0,base=BASE+1)
 # Illegal geometry must still reject at empty VL / restart beyond VL.
-for ew,n,typ,vr,pred,bits in [(0,3,2,8,None,0),(0,8,1,8,None,0),(0,4,1,9,None,0),(0,8,0,25,None,0),(0,2,1<<63,8,None,0),(0,2,4,8,None,0),(0,2,24|5,8,None,0),(3,2,3,8,None,0),(0,2,0,0,1,0),(0,2,0,8,None,1<<28),(0,2,0,8,None,16<<20)]:
+for ew,n,typ,vr,pred,bits in [(0,3,2,8,None,0),(0,8,1,8,None,0),(0,4,1,9,None,0),(0,8,0,25,None,0),(0,2,1<<63,8,None,0),(0,2,4,8,None,0),(0,2,24|5,8,None,0),(3,2,3,8,None,0),(0,2,0,0,1,0),(0,2,0,8,None,1<<28),(0,2,0,8,None,4<<20)]:
  for write in [False,True]:issue(ew,n,write,typ,0,127,vr,pred,bits=bits)
 for ew,n in [(0,3),(3,2)]:
  for write in [False,True]:

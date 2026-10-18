@@ -23,7 +23,7 @@ always @(posedge clock)begin
   if(io_tl_d_valid && io_tl_d_ready)io_tl_d_valid<=0;
   if(io_tl_a_valid && io_tl_a_ready)begin
    if(io_tl_d_valid)$fatal(1,"multiple TL requests");
-   if(io_tl_a_bits_address[63:3]!==61'h10000000)$fatal(1,"memory address");
+   if(io_tl_a_bits_address[63:3]!==61'h10000000 && io_tl_a_bits_address[63:3]!==61'h11ffffff)$fatal(1,"memory address");
    transfers<=transfers+1;io_tl_d_valid<=1;io_tl_d_bits_opcode<=io_tl_a_bits_opcode==4?1:0;
    io_tl_d_bits_size<=io_tl_a_bits_size;io_tl_d_bits_source<=io_tl_a_bits_source;io_tl_d_bits_data<=memword;
    if(io_tl_a_bits_opcode!=4)begin
@@ -49,7 +49,7 @@ def command(inst,scalar=0,scalar2=0,avl=0,result=0,writes=0,bad=0,vl=4,typ=16):
  body.append(f"command(32'h{inst:x},64'h{scalar:x},64'h{scalar2:x},{avl},80'h{0x390000+count:x},{bad},64'h{result:x},{writes},3,{vl},64'h{typ:x});");count+=1
 def ctx(addr,value,write=False):body.append(f"ctx({addr},{int(write)},64'h{value:x},64'h{value:x});")
 for addr in range(64):ctx(addr,0,True)
-body += [f"mon(16,64'h4701);mon(24,64'h{cfg['monitor_caps'][2:]});mon(32,64'h1002000400080);mon(40,64'h800000200);"]
+body += [f"mon(16,64'h4801);mon(24,64'h{cfg['monitor_caps'][2:]});mon(32,64'h1002000400080);mon(40,64'h800000200);"]
 command(0x0100f1d7,avl=4,result=4,writes=1)
 ctx(16,0x0000000200000001,True);ctx(17,0x0000000400000003,True);ctx(32,0x0000000600000005,True);ctx(33,0x0000000800000007,True)
 command(0x02880c57);ctx(48,0x0000000800000006);ctx(49,0x0000000c0000000a)
@@ -116,6 +116,17 @@ ctx(16,0x765432fe765432fe);ctx(18,0xfedcba98fedcba98)
 command(0x2780e427,scalar=0x80000000,vl=2,typ=16)
 command(0x2e90e407,scalar=0x80000000,bad=1,vl=2,typ=16)
 body.append('if(transfers!=38 || memword!==64\'hfedcba98765432fe)$fatal(1,"addressed segment preset transfers");')
+# M48: real architectural VL trim, CSR read, and a two-field load at the RAM edge.
+command(0x0180f1d7,avl=2,result=2,writes=1,vl=2,typ=24)
+ctx(16,0xaaaabbbbccccdddd,True);ctx(17,0xeeeeffff12345678,True)
+command(0x0300f407,scalar=0x8ffffff8,vl=1,typ=24)
+ctx(16,0xfedcba98765432fe);ctx(17,0xeeeeffff12345678)
+command(0xc20021f3,result=1,writes=1,vl=1,typ=24)
+command(0x0100f1d7,avl=2,result=2,writes=1,vl=2,typ=16)
+ctx(16,0xaabbccdd00000000,True);ctx(18,0x1122334400000000,True)
+command(0x2300e407,scalar=0x8ffffff8,vl=1,typ=16)
+ctx(16,0xaabbccdd765432fe);ctx(18,0x11223344fedcba98)
+body.append('if(transfers!=41)$fatal(1,"FOF preset transfers");')
 body.append(f'$display("PASS profile {a.top} commands=%0d cycles=%0d",cmds,cycles);$finish;end endmodule')
 label=a.top+('-mapped' if a.mapped else '-rtl');tb=OUT/(label+'-tb.sv');tb.write_text('\n'.join(body));rtl=ROOT/(f'build/synth/{a.top}/mapped.v' if a.mapped else f'build/rtl/{a.top}.sv');files=[tb,rtl];extra=[]
 if a.mapped:files += [ROOT/'tools/oss-cad-suite/share/yosys/xilinx/cells_sim.v',ROOT/'third_party/xilinx-unisim/DSP48E2.v',ROOT/'tests/fp_mapped_global.sv'];extra=['-s','glbl']

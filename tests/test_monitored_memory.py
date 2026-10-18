@@ -481,8 +481,40 @@ caseid=-57;memory(32'h47808427,64'h80001f30,80'hfd0004,0,0,0,0,0,6,0);
 if(mem[8112]!==8'h22 || mem[8113]!==8'h11 || mem[8116]!==8'h66 || mem[8120]!==8'h88 || mem[8124]!==8'hcc || mem[8111]!==8'h77 || mem[8126]!==8'h88)$fatal(1,"public indexed segment store");
 command(32'h0080f1d7,0,0,0,80'hfd0005,0,0,1,0,0,64'h8);
 caseid=-58;memory(32'h4ea08407,64'h80001f30,80'hfd0006,1,0,0,0,0,0,0);
+// M48: a later segment field fault trims VL; an immediate ALU op observes VL=1.
+command(32'h0080f1d7,0,0,3,80'hfe1000,0,3,1,0,3,64'h8);
+ctx(16,1,64'haaaaaaaaaaaaaaaa,0);ctx(17,1,64'hdddddddddddddddd,0);
+ctx(18,1,64'hbbbbbbbbbbbbbbbb,0);ctx(20,1,64'hcccccccccccccccc,0);
+mem[8160]=8'h22;mem[8161]=8'h11;mem[8162]=8'h44;mem[8163]=8'h33;mem[8164]=8'h66;mem[8165]=8'h55;
+mem[8166]=8'h88;mem[8167]=8'h77;mem[8168]=8'haa;mem[8169]=8'h99;mem[8170]=8'hcc;mem[8171]=8'hbb;
+faultAddress=64'h80001fea;faultKind=1;caseid=-59;
+memory(32'h4300d407,64'h80001fe0,80'hfe1001,0,0,0,0,0,6,0);
+if(io_core_vl!==1 || io_core_vtype!==8)$fatal(1,"public FOF VL");
+ctx(16,0,0,64'haaaaaaaa77881122);ctx(18,0,0,64'hbbbbbbbb99aa3344);ctx(20,0,0,64'hcccccccccccc5566);ctx(17,0,0,64'hdddddddddddddddd);
+command(32'hc20021f3,0,0,0,80'hfe1002,0,1,1,0,1,64'h8);
+command(32'h0280b457,0,0,0,80'hfe1003,0,0,0,0,1,64'h8);
+ctx(16,0,0,64'haaaaaaaa77881123);
+command(32'h0080f1d7,0,0,2,80'hfe1010,0,2,1,0,2,64'h8);
+faultAddress=64'h80001fe2;caseid=-60;
+memory(32'h4300d407,64'h80001fe0,80'hfe1011,0,1,5,0,0,2,64'h80001fe2);
+if(io_core_vl!==2)$fatal(1,"first segment fault changed VL");
+command(32'h0000f1d7,0,0,4,80'hfe1020,0,4,1,0,4,0);
+ctx(0,1,2,0);ctx(1,1,0,0);ctx(16,1,64'hdeadbeefcafebabe,0);
+faultAddress=64'h80001fe1;faultKind=2;caseid=-61;
+memory(32'h01008407,64'h80001fe0,80'hfe1021,0,0,0,0,0,1,0);
+if(io_core_vl!==1)$fatal(1,"masked zero FOF is absolute-index based");ctx(16,0,0,64'hdeadbeefcafebabe);
+command(32'h0180f1d7,0,0,2,80'hfe1030,0,2,1,0,2,24);
+command(32'h00809073,1,0,0,80'hfe1031,0,0,0,0,2,24);
+caseid=-62;memory(32'h0300f407,64'h8ffffff8,80'hfe1032,0,0,0,0,0,0,0);
+if(io_core_vl!==1)$fatal(1,"local later FOF fault did not trim");
+command(32'h0180f1d7,0,0,2,80'hfe1040,0,2,1,0,2,24);
+caseid=-63;memory(32'h0300f407,64'h90000000,80'hfe1041,0,1,5,0,0,0,64'h90000000);
+if(io_core_vl!==2)$fatal(1,"local element zero FOF fault changed VL");
+command(32'h00809073,1,0,0,80'hfe1050,0,0,0,0,2,24);
+caseid=-64;memory(32'h0200f407,64'h8ffffff8,80'hfe1051,0,1,5,1,1,0,64'h90000000);
+if(io_core_vl!==2)$fatal(1,"FOF mode leaked into normal load");
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h4701);monAccess(64'h18,4,0,64'hffffffff);
+monAccess(64'h10,4,0,64'h4801);monAccess(64'h18,4,0,64'hffffffff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});
@@ -557,4 +589,14 @@ for ident,base,step,op in [(-54,0x80000000+8072,-8,4),(-55,0x80000000+8096,8,0),
  want=[(base+e*step+2*f,op,3<<((base+e*step+2*f)%8)) for e in range(2) for f in range(3)]
  assert addressed_segment_observed[ident]==want,(ident,addressed_segment_observed[ident],want)
 d['addressed_segment_public_bus_sequences']=addressed_segment_observed
+result.write_text(json.dumps(d,indent=2)+'\n')
+
+fof_observed={i:[] for i in range(-64,-58)}
+for line in log.splitlines():
+ if line.startswith('BUS '):
+  f=line.split();i=int(f[1])
+  if i in fof_observed:fof_observed[i].append((int(f[2],16),int(f[3]),int(f[4],16)))
+for ident,width,count,base in [(-59,2,6,0x80001fe0),(-60,2,2,0x80001fe0),(-61,1,1,0x80001fe1),(-62,8,0,0),(-63,8,0,0),(-64,8,0,0)]:
+ assert fof_observed[ident]==[(base+k*width,4,((1<<width)-1)<<((base+k*width)%8)) for k in range(count)],(ident,fof_observed[ident])
+d['fof_public_bus_sequences']=fof_observed
 result.write_text(json.dumps(d,indent=2)+'\n')

@@ -1,0 +1,81 @@
+RISC-V V 1.0 tag: https://github.com/riscv/riscv-v-spec/blob/v1.0/v-spec.adoc
+Full document SHA-256: bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19
+
+=== Unit-stride Fault-Only-First Loads
+
+The unit-stride fault-only-first load instructions are used to
+vectorize loops with data-dependent exit conditions ("while" loops).
+These instructions execute as a regular load except that they will
+only take a trap caused by a synchronous exception on element 0.  If
+element 0 raises an exception, `vl` is not modified, and the trap is
+taken.  If an element > 0 raises an exception, the corresponding trap
+is not taken, and the vector length `vl` is reduced to the index of
+the element that would have raised an exception.
+
+Load instructions may overwrite active destination vector register
+group elements past the element index at which the trap is reported.
+Similarly, fault-only-first load instructions may update active destination
+elements past the element that causes trimming of the vector length
+(but not past the original vector length).  The values of these
+spurious updates do not have to correspond to the values in memory at
+the addressed memory locations.  Non-idempotent memory locations can
+only be accessed when it is known the corresponding element load
+operation will not be restarted due to a trap or vector-length
+trimming.
+
+----
+    # Vector unit-stride fault-only-first loads
+
+    # vd destination, rs1 base address, vm is mask encoding (v0.t or <missing>)
+    vle8ff.v    vd, (rs1), vm  #    8-bit unit-stride fault-only-first load
+    vle16ff.v   vd, (rs1), vm  #   16-bit unit-stride fault-only-first load
+    vle32ff.v   vd, (rs1), vm  #   32-bit unit-stride fault-only-first load
+    vle64ff.v   vd, (rs1), vm  #   64-bit unit-stride fault-only-first load
+----
+
+----
+strlen example using unit-stride fault-only-first instruction
+
+include::example/strlen.s[lines=4..-1]
+----
+
+NOTE: There is a security concern with fault-on-first loads, as they
+can be used to probe for valid effective addresses.  The unit-stride
+versions only allow probing a region immediately contiguous to a known
+region, and so reduce the security impact when used in unprivileged
+code.  However, code running in S-mode can establish arbitrary page
+translations that allow probing of random guest physical addresses
+provided by a hypervisor.  Strided and scatter/gather fault-only-first
+instructions are not provided due to lack of encoding space, but they
+can also represent a larger security hole, allowing even unprivileged
+software to easily check multiple random pages for accessibility
+without experiencing a trap.  This standard does not address possible
+security mitigations for fault-only-first instructions.
+
+Even when an exception is not raised, implementations are permitted to process
+fewer than `vl` elements and reduce `vl` accordingly, but if `vstart`=0 and
+`vl`>0, then at least one element must be processed.
+
+When the fault-only-first instruction takes a trap due to an
+interrupt, implementations should not reduce `vl` and should instead
+set a `vstart` value.
+
+NOTE: When the fault-only-first instruction would trigger a debug
+data-watchpoint trap on an element after the first, implementations
+should not reduce `vl` but instead should trigger the debug trap as
+otherwise the event might be lost.
+
+There are also fault-only-first versions of the unit-stride instructions.
+
+----
+    # Template for vector fault-only-first unit-stride segment loads.
+    vlseg<nf>e<eew>ff.v vd, (rs1),  vm    # Unit-stride fault-only-first segment loads
+----
+
+For fault-only-first segment loads, if an exception is detected partway
+through accessing a segment, regardless of whether the element index is zero,
+it is implementation-defined whether a subset of the segment is loaded.
+
+These instructions may overwrite destination vector register group
+elements past the point at which a trap is reported or past the point
+at which vector length is trimmed.

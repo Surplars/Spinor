@@ -90,9 +90,15 @@ for mop in [1,3]:
   issue(inst,BASE,ew<<3,1,2)
  inst=(2<<29)|(mop<<26)|(1<<25)|(10<<20)|(1<<15)|(8<<7)|0x27
  issue(inst,BASE,8,1,2)
+# FOF traps on absolute element zero, for every unit/segment encoding.
+for n in range(1,9):
+ for ew in range(4):
+  inst=((n-1)<<29)|(1<<25)|(16<<20)|(1<<15)|([0,5,6,7][ew]<<12)|(8<<7)|7
+  if ew:issue(inst,BASE+1,ew<<3,2,4)
+  issue(inst,0x90000000,ew<<3,2,5)
 lines.append('$display("PASS memory-boundary cases=%0d cycles=%0d",cases,cycles);$finish;end endmodule')
 label='mapped' if a.mapped else 'rtl';tb=OUT/(label+'-tb.sv');tb.write_text('\n'.join(lines));sources=[ROOT/(f'build/synth/{top}/mapped.v' if a.mapped else f'build/rtl/{top}.sv') for top in ['VectorMemoryEngine','VpuHostBoundary']];files=[tb,*sources]
 if a.mapped:files.append(ROOT/'tools/oss-cad-suite/share/yosys/xilinx/cells_sim.v')
 with (OUT/(label+'-compile.log')).open('w') as f:subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/iverilog'),'-g2012','-s','tb','-o',str(OUT/label),*map(str,files)],stdout=f,stderr=f,check=True)
 r=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],capture_output=True,text=True);(OUT/(label+'.log')).write_text(r.stdout+r.stderr);assert r.returncode==0,r.stdout+r.stderr
-inputs=[tb,*sources,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/VpuHostBoundary.scala',ROOT/'src/main/scala/vpu/VectorMemoryEngine.scala'];d=dict(status='PASS',cold_reset_each_case=True,segment_pre_access_fault_cases=24,cases=len(specs),specs=specs,scope='ACTUAL_LSU_AND_HOST_BOUNDARY; FAULTS_BEFORE_RAM_ACCESS; NO_ORBITAL_CPU_OR_TILELINK_MODEL',summary=next(x for x in r.stdout.splitlines() if x.startswith('PASS memory-boundary')),sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in inputs});(OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(d['summary'])
+inputs=[tb,*sources,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/VpuHostBoundary.scala',ROOT/'src/main/scala/vpu/VectorMemoryEngine.scala'];d=dict(status='PASS',cold_reset_each_case=True,segment_pre_access_fault_cases=24,fof_pre_access_fault_cases=56,cases=len(specs),specs=specs,scope='ACTUAL_LSU_AND_HOST_BOUNDARY; FAULTS_BEFORE_RAM_ACCESS; NO_ORBITAL_CPU_OR_TILELINK_MODEL',summary=next(x for x in r.stdout.splitlines() if x.startswith('PASS memory-boundary')),sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in inputs});(OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(d['summary'])
