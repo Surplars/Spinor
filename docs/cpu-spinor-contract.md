@@ -78,3 +78,7 @@ FOF元素0错误按原异常处理，原VL保持；后续元素错误则正常�
 ## M49程序适配器
 
 新增ELF测试执行器直接驱动公共VPU命令端，动态取指并使用实际VL/标量返回执行循环；它不经过真实Orbital，也未替代CPU退休边界、VS/FS或异常管理。程序回归通过不能作为本合同的整核集成验收。见[M49验证范围](m49-compiled-programs.md)。
+
+## M50浮点广播与合并
+
+`vfmv.v.f`及`vfmerge.vfm`使用`Command.scalar`接收FPR的完整FLEN64位模式，f0是有效源，不能套用x0取零。SEW32检查NaN boxing：高32位非全1时使用规范NaN；合法sNaN位模式按数据复制，不quiet、不增加fflags。合并的v0是选择数据，vm=0时全部body元素执行，非普通写掩码。仍在completion握手时发布候选RF版本，flush撤销；CPU负责FP权限/FS与向量脏状态。monitor实现ID更新为0x5001，ABI1和能力布局不变。

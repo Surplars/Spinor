@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M45）
+# Spinor 指令覆盖矩阵（M50）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -12,7 +12,7 @@
 | 单宽整数归约 | M18新增vredsum/and/or/xor/min[u]/max[u].vs | seed/目的可不按LMUL对齐；合法源重叠；非零vstart非法 |
 | 宽化整数归约 | M29：vwredsum[u].vs，源SEW8/16/32，18种SEW/LMUL（含m8），标量2×SEW | SEW64→128超出ELEN64；不同EEW的seed/data不能重叠 |
 | 宽化FP算术 | M40：vfwadd/vfwsub vv/vf/wv/wf、vfwmul vv/vf及四类宽化FMA vv/vf，共18编码 | FP32→64、目的EMUL≤8，复用原FP单元 |
-| 基本FP | 加减/反减、乘除/反除、sqrt、FMA系列、min/max、比较、sign注入、分类 | FP32/64，回归对照固定SoftFloat；非完整FP向量集合 |
+| 基本FP | 加减/反减、乘除/反除、sqrt、FMA系列、min/max、比较、sign注入、分类 | FP32/64，固定SoftFloat数值参考；M50加入Spike独立差分，补vfmerge.vfm/vfmv.v.f |
 | FP估算 | M42：vfrec7.v、vfrsqrt7.v，FP32/64、mask/vstart/合法LMUL | 七位估算；vfrsqrt7忽略frm，倒数溢出使用frm；独立精确整数参考 |
 | FP转换 | 6种同宽；M41新增15种宽化/窄化编码，含ROD、整数16↔FP32的6种合法形式 | FP16数据格式、Zvfhmin/Zvfh未实现 |
 | FP归约 | M28单宽FP32/64求和/min/max；M30新增vfwredosum/vfwredusum，FP32源→FP64累加；unordered用ordered折叠 | FP16及FP64→128未支持；非零vstart非法 |
@@ -27,7 +27,7 @@
 | Linux监控 | ABI1.0，UIO用户态工具 | 未作真实内核/上板测试；不是计算作业驱动 |
 | 双发射/乱序 | 独立8项实验窗口 | 不属于当前Spinor执行数据通路 |
 
-完整性计划见[目标与验收清单](rvv-completion-plan.md)。近期推进分段/FOF和基础V程序闭环；Zvfhmin等RVA23额外要求另行补齐，每轮核对资源和云端条件时序；Orbital程序闭环另行推进。只有指令、异常、上下文和内存模型都满足目标配置并完成架构测试后，才能宣称完整目标ISA支持。
+完整性计划见[目标与验收清单](rvv-completion-plan.md)。分段/FOF已有定向回归，M49已有编译器程序闭环；M50覆盖314种算术编码的独立模型差分，接下来推进访存架构差分与系统异常；Zvfhmin等RVA23额外要求另行补齐，每轮核对资源和云端条件时序；Orbital程序闭环另行推进。只有指令、异常、上下文和内存模型都满足目标配置并完成架构测试后，才能宣称完整目标ISA支持。
 
 M26已统一执行mask（EEW1）与v0数据源（SEW≥8）的保留编码检查，覆盖普通INT/FP、乘除、归约seed、滑移、gather及masked store/load v0。VL0、全mask关闭和vstart越过VL也先检查。EEW1的vcpop/vfirst、前缀mask、viota源可合法使用v0；FP单目selector0、标量寄存器编号0不是向量数据源。EI16仍独立检查不同EEW的数据/索引物理组重叠。新检查修复已知缺口，回归仍不构成完整架构合规证明。
 
@@ -63,6 +63,8 @@ M45整组访存忽略VL/vtype/vill，EVL按NREG×VLEN/EEW计算，支持EEW8/16/
 
 M46单位步长分段支持2～8字段、EEW8/16/32/64、合法分数/整数EMUL及mask/vstart；故障或停止允许当前段留下字段前缀，重启从该段字段0重新执行。没有新增DSP或整组快照。[规则与验证](m46-segment-memory.md)。
 
-M47跨步/索引分段支持2～8字段、数据/索引独立EEW与EMUL、逐段mask/vstart及正负/零步长。索引分段load的所有字段均不得与索引组重叠，同宽也保留；store继续允许同EEW源别名。FOF仍待实现。[规则与验证](m47-addressed-segments.md)。
+M47跨步/索引分段支持2～8字段、数据/索引独立EEW与EMUL、逐段mask/vstart及正负/零步长。索引分段load的所有字段均不得与索引组重叠，同宽也保留；store继续允许同EEW源别名。FOF后由M48实现。[规则与验证](m47-addressed-segments.md)。
 
 M48补单位步长/分段FOF：绝对元素0出错保留VL并报异常，后续元素出错抑制异常并缩短VL，停止保持VL。使用访存包装层原子提交VL/vstart；完整性仍需架构差分和程序/系统验收。[规则与验证](m48-fault-only-first.md)。
+
+M50新增FP广播/合并，复用整数选择通路和版本化RAM；314种整数/浮点算术编码在Spike差分中各有合法执行点。该统计不包含访存，也不等于所有保留编码、异常/重启或操作数组合完整验收。见[M50范围](m50-spike-and-fp-select.md)。

@@ -514,7 +514,7 @@ command(32'h00809073,1,0,0,80'hfe1050,0,0,0,0,2,24);
 caseid=-64;memory(32'h0200f407,64'h8ffffff8,80'hfe1051,0,1,5,1,1,0,64'h90000000);
 if(io_core_vl!==2)$fatal(1,"FOF mode leaked into normal load");
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h4801);monAccess(64'h18,4,0,64'hffffffff);
+monAccess(64'h10,4,0,64'h5001);monAccess(64'h18,4,0,64'hffffffff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});

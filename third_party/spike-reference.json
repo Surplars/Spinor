@@ -1,0 +1,63 @@
+{
+  "repository": "https://github.com/riscv-software-src/riscv-isa-sim",
+  "source": {
+    "revision": "5a760667bf0d0ab893173b9eeff9c109c8d7dd9a",
+    "url": "https://codeload.github.com/riscv-software-src/riscv-isa-sim/tar.gz/5a760667bf0d0ab893173b9eeff9c109c8d7dd9a",
+    "sha256": "7e59ed05df857727a9f3c07ab99502351a649f9f41e37ecaeeb20a50a3988446",
+    "source_dir": "tools/spike/riscv-isa-sim-5a760667bf0d0ab893173b9eeff9c109c8d7dd9a"
+  },
+  "packages": {
+    "libboost1.74-dev": {
+      "url": "https://deb.debian.org/debian/pool/main/b/boost1.74/libboost1.74-dev_1.74.0+ds1-21_amd64.deb",
+      "file": "libboost1.74-dev_1.74.0+ds1-21_amd64.deb",
+      "sha256": "ba14fe04d7f138f874bd3ab3a20c4fd1e9f654e271449b8f3e48d20f942dbb93"
+    },
+    "libboost-regex1.74-dev": {
+      "url": "https://deb.debian.org/debian/pool/main/b/boost1.74/libboost-regex1.74-dev_1.74.0+ds1-21_amd64.deb",
+      "file": "libboost-regex1.74-dev_1.74.0+ds1-21_amd64.deb",
+      "sha256": "087d32c9755bb3afb359d348e12924cca8317073917262cfb951bc3b63c87deb"
+    },
+    "libboost-regex1.74.0": {
+      "url": "https://deb.debian.org/debian/pool/main/b/boost1.74/libboost-regex1.74.0_1.74.0+ds1-21_amd64.deb",
+      "file": "libboost-regex1.74.0_1.74.0+ds1-21_amd64.deb",
+      "sha256": "e95ab82396a81f746e1b8bf40f54f13770318f2999f66f5b2768a27a6f966eae"
+    },
+    "libboost-system1.74-dev": {
+      "url": "https://deb.debian.org/debian/pool/main/b/boost1.74/libboost-system1.74-dev_1.74.0+ds1-21_amd64.deb",
+      "file": "libboost-system1.74-dev_1.74.0+ds1-21_amd64.deb",
+      "sha256": "d32a82618c48f9a8570c3f9b0213643be98f91cc4882dd6b0a06be78c75a1428"
+    },
+    "libboost-system1.74.0": {
+      "url": "https://deb.debian.org/debian/pool/main/b/boost1.74/libboost-system1.74.0_1.74.0+ds1-21_amd64.deb",
+      "file": "libboost-system1.74.0_1.74.0+ds1-21_amd64.deb",
+      "sha256": "39afb5f0caec23a152e2e04409e4336a6e33abda453e8a8f661a4a5405fdc4bd"
+    },
+    "device-tree-compiler": {
+      "url": "https://deb.debian.org/debian/pool/main/d/device-tree-compiler/device-tree-compiler_1.6.1-4+b1_amd64.deb",
+      "file": "device-tree-compiler_1.6.1-4+b1_amd64.deb",
+      "sha256": "f56fbb1e1da6545619dd2a17b7a85b2c4c674bd276d1b844e01a8b9901dd349d"
+    },
+    "libfdt1": {
+      "url": "https://deb.debian.org/debian/pool/main/d/device-tree-compiler/libfdt1_1.6.1-4+b1_amd64.deb",
+      "file": "libfdt1_1.6.1-4+b1_amd64.deb",
+      "sha256": "e7312b61267979a58ae1fa9e34746d077707560c955f6455d02a9ff0f8fa7995"
+    }
+  },
+  "configure_flags": [
+    "--with-boost=<local-deps>",
+    "--with-boost-libdir=<local-deps>/lib/x86_64-linux-gnu"
+  ],
+  "optimization": [
+    "-O1",
+    "-g0"
+  ],
+  "warning_flags": [
+    "-Wno-error"
+  ],
+  "isa": "rv64gcv_zvl128b",
+  "privilege": "M",
+  "vlen": 128,
+  "elen": 64,
+  "vstart_alu": false,
+  "semantics_modified": false
+}

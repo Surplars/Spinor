@@ -205,7 +205,10 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val fpScalarRead=fpVV && f6===0x10.U && vm && vs1===0.U
   val fpScalarWrite=fpVF && f6===0x10.U && vm && vs2===0.U
   val fpSlide=fpVF && (f6===0x0e.U || f6===0x0f.U)
-  val fpTransfer=fpScalarRead || fpScalarWrite || fpSlide
+  // FP broadcast/merge are bit transfers through the integer select lane.
+  // Keep FP width/boxing validation, but never enter the FP arithmetic unit.
+  val fpSelect=fpVF && f6===0x17.U && (!vm || vs2===0.U)
+  val fpTransfer=fpScalarRead || fpScalarWrite || fpSlide || fpSelect
   val fpScalarValue=Mux(vtype(4,3)===2.U && !command.scalar(63,32).andR,"h7fc00000".U(64.W),command.scalar)
   val scalarReadEncoding=fpScalarRead || mulVV && f6===0x10.U && vm && vs1===0.U
   val scalarWriteEncoding=fpScalarWrite || mulVX && f6===0x10.U && vm && vs2===0.U
@@ -286,6 +289,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     supported := !vm || vs2 === 0.U
     decodedOp := Mux(vm,Op.move.U,Op.merge.U)
   }
+  when(fpSelect) {supported:=true.B;decodedOp:=Mux(vm,Op.move.U,Op.merge.U)}
   for((code,operation)<-Seq((0x20,Op.divu),(0x21,Op.div),(0x22,Op.remu),(0x23,Op.rem),(0x25,Op.mul),(0x27,Op.mulh),(0x24,Op.mulhu),(0x26,Op.mulhsu))) {
     when(f6===code.U && (mulVV || mulVX)) { supported:=true.B;decodedOp:=operation.U }
   }
@@ -758,7 +762,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val immediate = Cat(Fill(59,vs1(4)),vs1)
     val isShift = op === Op.sll.U || op === Op.srl.U || op === Op.sra.U
     val fpScalar=Mux(sew===2.U && !command.scalar(63,32).andR,"h7fc00000".U,command.scalar)
-    b := Mux(reduction,reductionAccumulator,Mux(fp,fpScalar,Mux(vx || mulVX,command.scalar,Mux(isShift,vs1.pad(64),immediate))))&accumulatorMask
+    b := Mux(reduction,reductionAccumulator,Mux(fp || fpSelect,fpScalar,Mux(vx || mulVX,command.scalar,Mux(isShift,vs1.pad(64),immediate))))&accumulatorMask
     when(widenEncoding) {b:=Mux(fpWidenEncoding,fpScalarValue,Mux(widenSignedB,configuredSignExtend(command.scalar),command.scalar&configuredMask))}
     when(reverseInteger) {
       a:=Mux(vx,command.scalar,immediate)&elementMask

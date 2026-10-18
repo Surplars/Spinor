@@ -605,3 +605,10 @@ verify-m49:
 package-m49:
 	$(PYTHON) scripts/package.py --milestone m49
 	$(PYTHON) scripts/audit_package.py --milestone m49
+
+.PHONY: verify-m50 package-m50
+verify-m50:
+	$(PYTHON) scripts/verify_m50.py
+package-m50:
+	$(PYTHON) scripts/package.py --milestone m50
+	$(PYTHON) scripts/audit_package.py --milestone m50
