@@ -44,7 +44,10 @@ class VpuHostBoundary extends Module {
   val illegal=io.completion.bits.illegal
   val memoryFault=memory && io.memoryStatus.bits.fault
   io.reply.bits.exception:=illegal || memoryFault
-  val memoryCause=Mux(io.memoryStatus.bits.cause===1.U,Mux(store,6.U,4.U),Mux(store,7.U,5.U))
+  // VectorMemoryEngine reports architectural physical causes: 4/5 load,
+  // 6/7 store. Code 1 was an obsolete synthetic-peer convention.
+  val misaligned=Mux(store,io.memoryStatus.bits.cause===6.U,io.memoryStatus.bits.cause===4.U)
+  val memoryCause=Mux(misaligned,Mux(store,6.U,4.U),Mux(store,7.U,5.U))
   io.reply.bits.cause:=Mux(illegal,2.U,Mux(memoryFault,memoryCause,0.U))
   io.reply.bits.tval:=Mux(illegal,instruction.pad(64),Mux(memoryFault,io.memoryStatus.bits.address,0.U))
   io.reply.bits.rawMemoryCause:=Mux(memory,io.memoryStatus.bits.cause,0.U)

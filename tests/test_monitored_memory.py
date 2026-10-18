@@ -431,8 +431,24 @@ ctx(16,0,0,64'h000000160000000b);ctx(17,0,0,64'h0000002c00000021);
 ctx(48,1,64'h000000040008000c,64'h000000040008000c);caseid=-46;
 memory(32'h0f80d427,64'h80001db0,80'hfc0002,0,0,0,0,0,4,0);
 if({mem[7603],mem[7602],mem[7601],mem[7600]}!==32'd44 || {mem[7615],mem[7614],mem[7613],mem[7612]}!==32'd11)$fatal(1,"public indexed store data");
+// M45: real whole-register restore/save under vill and packed mask I/O.
+command(32'h0200f1d7,0,0,0,80'hfb0010,0,0,1,3,8'd0,64'h8000000000000000);
+for(mi=0;mi<16;mi=mi+1)mem[7800+mi]=mi+1;
+caseid=-47;memory(32'h0280f407,64'h80001e78,80'hfb0001,0,0,0,0,0,2,0);
+ctx(16,0,0,64'h0807060504030201);ctx(17,0,0,64'h100f0e0d0c0b0a09);
+caseid=-48;memory(32'h02808427,64'h80001ea0,80'hfb0002,0,0,0,0,0,16,0);
+for(mi=0;mi<16;mi=mi+1)if(mem[7840+mi]!==mi+1)$fatal(1,"public whole register store");
+if(io_core_vl!==0 || io_core_vtype!==64'h8000000000000000)$fatal(1,"whole transfer changed type");
+caseid=-49;memory(32'h02b08007,64'h80001ed2,80'hfb0003,1,0,0,0,0,0,0);
+command(32'h0030f1d7,0,0,9,80'hfb0011,0,9,1,3,8'd9,64'h3);
+ctx(0,1,64'haabbccddeeffabcd,64'haabbccddeeffabcd);ctx(1,1,64'h1122334455667788,64'h1122334455667788);
+mem[7890]=8'h96;mem[7891]=8'h01;mem[7893]=8'h55;mem[7896]=8'haa;
+caseid=-50;memory(32'h02b08007,64'h80001ed2,80'hfb0004,0,0,0,0,0,2,0);
+ctx(0,0,0,64'haabbccddeeff0196);ctx(1,0,0,64'h1122334455667788);
+caseid=-51;memory(32'h02b08027,64'h80001ed6,80'hfb0005,0,0,0,0,0,2,0);
+if(mem[7894]!==8'h96 || mem[7895]!==8'h01 || mem[7893]!==8'h55 || mem[7896]!==8'haa)$fatal(1,"public packed mask store");
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h4401);monAccess(64'h18,4,0,64'hffffffff);
+monAccess(64'h10,4,0,64'h4501);monAccess(64'h18,4,0,64'hffffffff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});
@@ -476,4 +492,14 @@ for line in log.splitlines():
 for i,addresses,opcode in [(-45,[0x80000000+7500+4*e for e in range(4)],4),(-46,[0x80000000+7600+4*e for e in reversed(range(4))],0)]:
  assert [(x[0],x[1],x[2]) for x in indexed_observed[i]]==[(addr,opcode,15<<(addr%8)) for addr in addresses],indexed_observed
  d['indexed_public_bus_sequences']=indexed_observed
+result.write_text(json.dumps(d,indent=2)+'\n')
+
+context_observed={-47:[],-48:[],-50:[],-51:[]}
+for line in log.splitlines():
+ if line.startswith('BUS '):
+  f=line.split();i=int(f[1]);assert i!=-49,'mask vill emitted request'
+  if i in context_observed:context_observed[i].append((int(f[2],16),int(f[3]),int(f[4],16)))
+for i,base,count,width,op in [(-47,0x80000000+7800,2,8,4),(-48,0x80000000+7840,16,1,0),(-50,0x80000000+7890,2,1,4),(-51,0x80000000+7894,2,1,0)]:
+ assert context_observed[i]==[(base+e*width,op,((1<<width)-1)<<((base+e*width)%8)) for e in range(count)],context_observed
+ d['context_public_bus_sequences']=context_observed
 result.write_text(json.dumps(d,indent=2)+'\n')

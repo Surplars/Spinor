@@ -570,3 +570,10 @@ verify-m44:
 package-m44:
 	$(PYTHON) scripts/package.py --milestone m44
 	$(PYTHON) scripts/audit_package.py --milestone m44
+
+.PHONY: verify-m45 package-m45
+verify-m45:
+	$(PYTHON) scripts/verify_m45.py
+package-m45:
+	$(PYTHON) scripts/package.py --milestone m45
+	$(PYTHON) scripts/audit_package.py --milestone m45

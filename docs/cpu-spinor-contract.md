@@ -31,7 +31,7 @@ stop直接传到Spinor flush。算术所有者被取消时，canceled.valid提�
 
 访存stop必须保留active，等待已发布的A/D排空以及memoryStatus/completion。当前LSU逐元素提交前缀和vstart，发出的store不可撤销。边界不会在stop时释放访存token，也不把stopped自动当作成功退休。stopped回复要求CPU保存原PC、前缀状态并决定中断/恢复；只有同意处理该返回时才能拉高reply.ready。stop恰逢已完全完成的指令可以得到普通完成，不能凭stop电平伪造interrupted状态。
 
-非法指令映射exception cause=2、tval为零扩展原instruction；原始LSU cause=1映射load/store地址不对齐cause=4/6，其余当前LSU fault映射物理访问错误5/7、tval为LSU地址。stopped没有伪造的中断cause，由CPU根据实际中断源决定。当前没有页故障/虚拟tval映射。异常/停止时禁止标量结果写回。vstart非零的归约非法，vstart保持原值。
+非法指令映射exception cause=2、tval为零扩展原instruction；load原始LSU cause=4、store原始cause=6分别映射地址不对齐cause=4/6，其余当前LSU fault映射物理访问错误5/7（旧cause=1不再识别为不对齐）、tval为LSU地址。stopped没有伪造的中断cause，由CPU根据实际中断源决定。当前没有页故障/虚拟tval映射。异常/停止时禁止标量结果写回。vstart非零的归约非法，vstart保持原值。
 
 completion必须与拥有的完整token和instruction匹配，访存必须同时提供memoryStatus，算术必须没有memoryStatus。无所有者、身份错误或元数据错位会置粘滞protocolError，阻止消费completion及接收新命令；不能通过“丢弃不匹配完成”来意外触发VPU版本提交。此错误属于集成协议错误，不是可向应用报告的正常非法指令。恢复需协调CPU/VPU/总线的停止、排空和联合复位，不能只重置适配器并重用token。
 
@@ -43,7 +43,7 @@ context是独立调试/保存恢复端口，只能在CPU已排空且边界无所
 
 ## 已验证范围
 
-tests/test_host_boundary.py使用模拟CPU/VPU对端，RTL和映射网表各验证128次事务：112次返回、16次算术取消、6类失败关闭检查，以及错误head、标量访存/FP未排空、VPU反压、回复反压、访存stop、fault/illegal原因与80位高位身份。不是实际CPU数值程序或中断软件测试。Spinor实际数值/访存由独立顶层回归覆盖。
+tests/test_host_boundary.py使用模拟CPU/VPU对端，RTL和映射网表各验证256次事务：240次返回、16次算术取消；含128种原始cause/访存方向组合、6类失败关闭检查，以及错误head、标量访存/FP未排空、VPU反压、回复反压、访存stop、fault/illegal原因与80位高位身份。不是实际CPU数值程序或中断软件测试。`test_memory_boundary.py`另将真实LSU和真实宿主边界连接，RTL/网表各验证26例访问前故障、完整tval/身份和回复保持；不含RAM响应或实际Orbital。Spinor实际数值/访存由独立顶层回归覆盖。
 
 M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真；CPU必须根据回显原指令解码FPR/GPR目标，不能直接将所有标量结果送入整数RF。SEW32结果已NaN-box为FLEN64。参数化整数配置移除FP CSR端口并拒绝FP指令；完整配置对外布局不变。
 
@@ -56,3 +56,9 @@ M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真�
 ## M44索引访存
 
 `vluxei/vloxei/vsuxei/vsoxei`用`scalar`传rs1基址，从指令vs2指定的向量组读取索引，忽略`scalar2`。vs2=v0是向量源，不是标量x0；无掩码时可以合法使用。索引EEW取指令编码，数据EEW=SEW；索引为零扩展字节偏移，不乘数据宽度，完整64位加法回绕。ordered和unordered在当前实现均按元素序发出/排空，保留单事务和前缀停止合同。仍不支持MMIO、VM/PMP或一致性。[范围和重叠规则](m44-indexed-memory.md)。
+
+## M45整组与mask访存
+
+整组`vl<n>re<eew>/vs<n>r`忽略当前VL和全部vtype（包括vill），按NREG×VLEN/EEW作为EVL；vstart按编码EEW的元素数解释，store编码EEW固定8。mask`vlm/vsm`仍尊重vill，传ceil(VL/8)个字节，vstart按字节解释。两者均vm1，允许v0作为普通数据，使用原始`scalar`基址并忽略scalar2，完成仅清零vstart而不改变VL/vtype/flags。错误/停止返回的element和vstart须按当前指令单位解释，不能一律当当前SEW元素。
+
+保存完整上下文仍需CPU/驱动先排空并处理VS/FS、VL/vtype/vstart、FCSR和vcsr。保存或恢复VRF前须先在标量侧保存原vstart并清零，避免跳过头部；可用4组vs8r保存512字节VRF，再用4组vl8re64恢复；恢复原vstart应放在恢复指令完成之后。访存期间必须保留owner和PC直到completion，仍仅物理普通RAM，无VM/PMP/一致性。[M45规则](m45-context-memory.md)。

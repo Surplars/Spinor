@@ -22,10 +22,10 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val memoryRequest=Decoupled(new VpuMemoryRequest(VpuTLParams()))
     val memoryResponse=Flipped(Decoupled(new VpuMemoryResponse))
   })
-  val states=Enum(28)
+  val states=Enum(30)
   val Seq(idle,decode,validate,maskLow,maskLowWait,maskHigh,maskHighWait,checkElement,addressLow,addressHigh,
     checkAddress,readChunk,readChunkWait,sendMemory,waitMemory,writeChunk,writeChunkWait,writeStart,reply)=states.take(19)
-  val Seq(strideSeek,strideAdd0,strideAdd1,strideAdd2,strideAdd3,indexValidate,indexRead,indexReadWait,indexExtract)=states.drop(19)
+  val Seq(strideSeek,strideAdd0,strideAdd1,strideAdd2,strideAdd3,indexValidate,indexRead,indexReadWait,indexExtract,specialDecode,specialValidate)=states.drop(19)
   val state=RegInit(idle);val cmd=Reg(new Command);val length=Reg(UInt(8.W));val typ=Reg(UInt(64.W))
   val lastIndex=Reg(UInt(8.W));val index=Reg(UInt(8.W));val width=Reg(UInt(2.W));val baseRegister=Reg(UInt(5.W));val store=Reg(Bool());val masked=Reg(Bool())
   val mask=Reg(UInt(128.W));val original=Reg(UInt(64.W));val result=Reg(UInt(64.W))
@@ -105,8 +105,26 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     indexAlignment:=VectorConfig.countAlignment(group);indexIntegral:=emul>=0.S
     strided:=isStrided;zeroStride:=inst(24,20)===0.U || cmd.scalar2===0.U
     seeking:=true.B;seek:=index(6,0);original:=Mux(inst(24,20)===0.U,0.U,cmd.scalar2)
-    decodedBad:=bad;state:=validate
+    decodedBad:=bad
+    // Keep special EVL/type handling off the existing EMUL decode chain.
+    // These two setup states affect only mask and whole-register transfers.
+    val special=inst(27,26)===0.U && (inst(24,20)===8.U || inst(24,20)===11.U)
+    state:=Mux(special,specialDecode,validate)
   }
+  when(state===specialDecode) {
+    val inst=cmd.instruction;val whole=inst(24,20)===8.U;val nf=inst(31,29);val f3=inst(14,12)
+    val ew=f3(1,0);val count=Cat(0.U(1.W),nf)+1.U
+    val wholeLength=MuxLookup(ew,(count<<4).pad(8))(Seq(1.U->(count<<3).pad(8),2.U->(count<<2).pad(8),3.U->(count<<1).pad(8)))
+    val maskLength=length(7,3)+&length(2,0).orR
+    val validWidth=f3===0.U || f3===5.U || f3===6.U || f3===7.U
+    val validCount=nf===0.U || nf===1.U || nf===3.U || nf===7.U
+    val wholeBad= !validCount || (inst(11,7)&nf.pad(5))=/=0.U || !validWidth || (store && f3=/=0.U)
+    val maskBad=nf=/=0.U || f3=/=0.U || typ(63) || typ(5,3)>3.U
+    decodedBad:= !(inst(6,0)==="h07".U || store) || !inst(25) || inst(28) || Mux(whole,wholeBad,maskBad)
+    length:=Mux(whole,wholeLength,maskLength.pad(8));width:=Mux(whole,ew,0.U)
+    masked:=false.B;state:=specialValidate
+  }
+  when(state===specialValidate) {lastIndex:=length-1.U;state:=validate}
   when(state===validate) {
     when(decodedBad) { illegal:=true.B;state:=reply }
       .elsewhen(indexed) {state:=indexValidate}

@@ -8,7 +8,7 @@ import zipfile
 
 root=Path(__file__).resolve().parents[1]
 parser=argparse.ArgumentParser()
-parser.add_argument('--milestone',choices=['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12','m13','m14','m15','m16','m17','m18','m19','m20','m21','m22','m23','m24','m25','m26','m27','m28','m29','m30','m31','m32','m33','m34','m35','m36','m37','m38','m39','m40','m41','m42','m43','m44'],default='m1')
+parser.add_argument('--milestone',choices=['m1','m2','m3','m4','m5','m6','m7','m8','m9','m10','m11','m12','m13','m14','m15','m16','m17','m18','m19','m20','m21','m22','m23','m24','m25','m26','m27','m28','m29','m30','m31','m32','m33','m34','m35','m36','m37','m38','m39','m40','m41','m42','m43','m44','m45'],default='m1')
 args=parser.parse_args()
 receipt=root/(f'reports/{args.milestone}/receipt.json' if args.milestone!='m1' else 'reports/receipt.json')
 if not receipt.exists():raise SystemExit('Run the corresponding make verify target first')
@@ -18,7 +18,7 @@ for rel,expected in evidence['source_sha256'].items():
     if not path.exists() or hashlib.sha256(path.read_bytes()).hexdigest()!=expected:
         raise SystemExit(f'Source changed since {receipt.relative_to(root)}: {rel}; regenerate its report before packaging')
 project='lishi-vpu' if args.milestone in ['m7','m8','m9','m10','m11','m12','m13','m14','m15','m16','m17'] else 'zu15-vpu'
-if args.milestone in ['m18','m19','m20','m21','m22','m23','m24','m25','m26','m27','m28','m29','m30','m31','m32','m33','m34','m35','m36','m37','m38','m39','m40','m41','m42','m43','m44']:project='spinor-vpu'
+if args.milestone in ['m18','m19','m20','m21','m22','m23','m24','m25','m26','m27','m28','m29','m30','m31','m32','m33','m34','m35','m36','m37','m38','m39','m40','m41','m42','m43','m44','m45']:project='spinor-vpu'
 target=root/f'{project}-{args.milestone}.zip'
 files=[root/n for n in ['build.mill','.mill-version','.mill-jvm-opts','.gitignore','mill','Makefile','tools.lock.json','README.md']]
 folders=['src','scripts','tests','docs','third_party','reports/m3','build/rtl','archive/m1/reports','archive/m2/reports'] if args.milestone=='m3' else ['src','scripts','tests','docs','reports/m2','build/rtl','archive/m1/reports'] if args.milestone=='m2' else ['src','scripts','tests','docs','reports','build/rtl']
@@ -181,6 +181,10 @@ if args.milestone=='m43':
 if args.milestone=='m44':
     folders=['src','scripts','tests','docs','software','third_party','reports/m44','reports/local-m31','reports/cloud-m5','build/rtl',
              *[f'archive/m{i}/reports' for i in range(1,44)]]
+    files += [root/p for p in evidence['artifact_sha256']]
+if args.milestone=='m45':
+    folders=['src','scripts','tests','docs','software','third_party','reports/m45','reports/local-m31','reports/cloud-m5','build/rtl',
+             *[f'archive/m{i}/reports' for i in range(1,45)]]
     files += [root/p for p in evidence['artifact_sha256']]
 files += [p for name in folders
           for p in (root/name).rglob('*') if p.is_file() and '__pycache__' not in str(p)]

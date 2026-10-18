@@ -65,7 +65,7 @@ for(n=0;n<128;n=n+1)begin
   tick();io_completion_valid=0;io_stop=0;io_reply_ready=0;
   #1;if(io_active || io_canceled_valid || io_protocolError)$fatal(1,"cancel owner");cancels=cancels+1;
  end else begin
-  stopped=mem && n%3==0;bad=n%11==0;fault=mem && n%5==0;raw=((n/4)%4)+1;
+  stopped=mem && n%3==0;bad=n%11==0;fault=mem && n%5==0;raw=((n/4)%2)==0?(store?6:4):(store?7:5);
   if(stopped)begin
    io_stop=1;
    repeat(4)begin #1;if(!io_active || !io_vpuFlush || io_canceled_valid || io_offer_ready)$fatal(1,"memory owner lost on stop");tick();end
@@ -75,7 +75,7 @@ for(n=0;n<128;n=n+1)begin
   io_completion_bits_scalar=64'h123456789abcdef0+n;io_completion_bits_writesScalar=1;io_completion_bits_illegal=bad;
   io_memoryStatus_valid=mem;io_memoryStatus_bits_fault=fault;io_memoryStatus_bits_interrupted=stopped;
   io_memoryStatus_bits_cause=raw;io_memoryStatus_bits_address=64'h8000000034567800+n;io_memoryStatus_bits_element=n;
-  expectedCause=bad?2:!fault?0:raw==1?(store?6:4):(store?7:5);
+  expectedCause=bad?2:!fault?0:raw==(store?6:4)?(store?6:4):(store?7:5);
   expectedTval=bad?{32'h0,inst}:fault?(64'h8000000034567800+n):0;
   repeat(5)begin
    #1;if(!io_reply_valid || io_completion_ready || io_protocolError || io_canceled_valid || !io_active ||
@@ -90,6 +90,22 @@ for(n=0;n<128;n=n+1)begin
   tick();io_completion_valid=0;io_memoryStatus_valid=0;io_reply_ready=0;io_stop=0;
   #1;if(io_active || io_protocolError)$fatal(1,"retirement owner");replies=replies+1;
  end
+end
+// Exhaust all raw six-bit causes with held replies for both load/store owners.
+for(j=0;j<2;j=j+1)for(raw=0;raw<64;raw=raw+1)begin
+ store=j!=0;inst=store?32'h02808427:32'h0280f407;token=80'hc1000000000000000000+128*j+raw;launch(inst,token);
+ io_completion_valid=1;io_completion_bits_token=token;io_completion_bits_instruction=inst;io_completion_bits_illegal=0;
+ io_completion_bits_scalar=0;io_completion_bits_writesScalar=1;io_memoryStatus_valid=1;
+ io_memoryStatus_bits_fault=1;io_memoryStatus_bits_interrupted=0;io_memoryStatus_bits_cause=raw;
+ io_memoryStatus_bits_address=64'h80000001+raw;io_memoryStatus_bits_element=raw;
+ expectedCause=store?(raw==6?6:7):(raw==4?4:5);
+ repeat(3)begin
+  #1;if(!io_reply_valid || io_reply_bits_cause!==expectedCause || io_reply_bits_rawMemoryCause!==raw ||
+   io_reply_bits_tval!==(64'h80000001+raw) || !io_reply_bits_exception || io_reply_bits_completion_writesScalar ||
+   io_reply_bits_completion_token!==token || io_completion_ready)$fatal(1,"raw fault map %0d/%0d",j,raw);tick();
+ end
+ io_reply_ready=1;tick();io_reply_ready=0;io_completion_valid=0;io_memoryStatus_valid=0;replies=replies+1;
+ #1;if(io_active || io_protocolError)$fatal(1,"raw fault owner");
 end
 // High bits, wrong instruction and missing/extra memory metadata fail closed.
 for(j=0;j<5;j=j+1)begin
@@ -106,7 +122,7 @@ for(j=0;j<5;j=j+1)begin
 end
 restart();io_completion_valid=1;io_completion_bits_token=0;io_reply_ready=1;
 #1;if(!io_protocolError || io_completion_ready || io_reply_valid)$fatal(1,"stray completion");tick();poisons=poisons+1;
-restart();if(replies!=112 || cancels!=16 || poisons!=6)$fatal(1,"coverage");
+restart();if(replies!=240 || cancels!=16 || poisons!=6)$fatal(1,"coverage");
 $display("PASS host-boundary replies=%0d cancels=%0d poisons=%0d cycles=%0d",replies,cancels,poisons,cycles);$finish;end endmodule
 '''
 label='mapped' if args.mapped else 'rtl';path=OUT/'tb.sv';path.write_text(tb)
@@ -117,6 +133,6 @@ with (OUT/(label+'-compile.log')).open('w') as log:
  subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/iverilog'),'-g2012','-s','tb',*extra,'-o',str(OUT/label),*map(str,files)],check=True,stdout=log,stderr=log)
 run=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],capture_output=True,text=True)
 (OUT/(label+'.log')).write_text(run.stdout+run.stderr);assert run.returncode==0,run.stdout+run.stderr
-d=dict(status='PASS',scope='SYNTHETIC_PEERS_NO_ACTUAL_CPU_INTEGRATION',mapped=args.mapped,summary=next(x for x in run.stdout.splitlines() if x.startswith('PASS host-boundary')),
+d=dict(status='PASS',scope='SYNTHETIC_PEERS_NO_ACTUAL_CPU_INTEGRATION',mapped=args.mapped,raw_cause_combinations=128,summary=next(x for x in run.stdout.splitlines() if x.startswith('PASS host-boundary')),
  sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,path,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/VpuHostBoundary.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(json.dumps(d,indent=2))
