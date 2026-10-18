@@ -49,10 +49,12 @@ import chisel3.util.log2Up
 import scala.math._
 import consts._
 
-class StagedFloatToInt(expWidth: Int, sigWidth: Int, intWidth: Int) extends chisel3.Module
+class StagedFloatToInt(expWidth: Int, sigWidth: Int, intWidth: Int, flexible: Boolean=false) extends chisel3.Module
 {
-    override def desiredName = s"StagedFloatToInt_e${expWidth}_s${sigWidth}_i${intWidth}"
+    require(!flexible || intWidth==64,"Flexible conversion shares the 64-bit rounding datapath")
+    override def desiredName = s"StagedFloatToInt_e${expWidth}_s${sigWidth}_i${intWidth}"+(if(flexible)"Flex" else "")
     val io = IO(new Bundle {
+        val narrow=if(flexible)Some(Input(UInt(2.W))) else None
         val start=Input(Bool());val flush=Input(Bool());val done=Output(Bool())
         val in = Input(Bits((expWidth + sigWidth + 1).W))
         val roundingMode = Input(UInt(3.W))
@@ -68,7 +70,7 @@ class StagedFloatToInt(expWidth: Int, sigWidth: Int, intWidth: Int) extends chis
     when(io.start) { state:=align }
     when(state===align) { state:=calculate }
     when(state===calculate) { state:=low }
-    when(state===low) { state:= (if(intWidth==64) high else reply) }
+    when(state===low) { state:= (if(flexible) Mux(io.narrow.get=/=0.U,reply,high) else if(intWidth==64) high else reply) }
     when(state===high) { state:=reply }
     when(io.flush) { state:=idle }
     io.done:=state===reply && !io.flush
@@ -149,10 +151,33 @@ class StagedFloatToInt(expWidth: Int, sigWidth: Int, intWidth: Int) extends chis
 //*** CHANGE TO TAKE BITS FROM THE ORIGINAL 'rawIn.sig' INSTEAD OF FROM
 //***  'unroundedInt'?:
     val roundCarryBut2 = unroundedInt(intWidth - 3, 0).andR && roundIncr
-    val common_overflow =
+    def overflowAt(width:Int):Bool = {
+      val magGeOne_atOverflowEdge = (posExp === (width - 1).U)
+//*** CHANGE TO TAKE BITS FROM THE ORIGINAL 'rawIn.sig' INSTEAD OF FROM
+//***  'unroundedInt'?:
+    val roundCarryBut2 = unroundedInt(width - 3, 0).andR && roundIncr
+      val overflow =
         Mux(magGeOne,
+            (posExp >= width.U) ||
+                Mux(io.signedOut,
+                    Mux(rawIn.sign,
+                        magGeOne_atOverflowEdge &&
+                            (unroundedInt(width - 2, 0).orR || roundIncr),
+                        magGeOne_atOverflowEdge ||
+                            ((posExp === (width - 2).U) && roundCarryBut2)
+                    ),
+                    rawIn.sign ||
+                        (magGeOne_atOverflowEdge &&
+                             unroundedInt(width - 2) && roundCarryBut2)
+                ),
+            !io.signedOut && rawIn.sign && roundIncr
+        )
+
+      overflow
+    }
+    val common_overflow = if(flexible) Mux(io.narrow.get===2.U,overflowAt(16),Mux(io.narrow.get===1.U,overflowAt(32),overflowAt(64))) else Mux(magGeOne,
             (posExp >= intWidth.U) ||
-                Mux(io.signedOut, 
+                Mux(io.signedOut,
                     Mux(rawIn.sign,
                         magGeOne_atOverflowEdge &&
                             (unroundedInt(intWidth - 2, 0).orR || roundIncr),
@@ -165,7 +190,6 @@ class StagedFloatToInt(expWidth: Int, sigWidth: Int, intWidth: Int) extends chis
                 ),
             !io.signedOut && rawIn.sign && roundIncr
         )
-
     //------------------------------------------------------------------------
     //------------------------------------------------------------------------
     val invalidExc = rawIn.isNaN || rawIn.isInf
@@ -173,15 +197,18 @@ class StagedFloatToInt(expWidth: Int, sigWidth: Int, intWidth: Int) extends chis
     val inexact  = !invalidExc && !common_overflow && common_inexact
 
     val excSign = !rawIn.isNaN && rawIn.sign
-    val excOut =
+    val excOutFull =
         Mux((io.signedOut === excSign),
             (BigInt(1)<<(intWidth - 1)).U,
             0.U
         ) |
         Mux(!excSign, ((BigInt(1)<<(intWidth - 1)) - 1).U, 0.U)
 
+    def exceptionAt(width:Int):UInt = (Mux(io.signedOut===excSign,(BigInt(1)<<(width-1)).U(width.W),0.U(width.W)) | Mux(!excSign,((BigInt(1)<<(width-1))-1).U(width.W),0.U(width.W))).pad(64)
+    val excOut=if(flexible) Mux(io.narrow.get===2.U,exceptionAt(16),Mux(io.narrow.get===1.U,exceptionAt(32),excOutFull)) else excOutFull
+    val packed=if(flexible) Mux(io.narrow.get===2.U,roundedInt(15,0).pad(64),Mux(io.narrow.get===1.U,roundedInt(31,0).pad(64),roundedInt)) else roundedInt
     val bad=Reg(Bool());val exception=Reg(UInt(intWidth.W));val flags=Reg(UInt(3.W))
     when(state===calculate) { bad:=invalidExc||common_overflow;exception:=excOut;flags:=invalidExc ## overflow ## inexact }
-    io.out := Mux(bad,exception,roundedInt)
+    io.out := Mux(bad,exception,packed)
     io.intExceptionFlags := flags
 }

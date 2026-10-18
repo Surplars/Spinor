@@ -47,6 +47,7 @@ object FpOp {
   val fma=5; val fmsub=6; val fnmsub=7; val fnmadd=8
   val min=9; val max=10; val eq=11; val ne=12; val lt=13; val le=14; val gt=15; val ge=16
   val toUInt=21; val toInt=22; val fromUInt=23; val fromInt=24; val toUIntRtz=25; val toIntRtz=26
+  val convertFloat=28;val convertOdd=29
   val widenAdd=27 // internal FP32 A + FP64 B -> FP64; not a standalone ISA conversion
   val sgnj=17; val sgnjn=18; val sgnjx=19; val classify=20
 }
@@ -110,9 +111,11 @@ object FpBits {
   * Staged align, tiled product/CSA, split add, normalize, round and div/sqrt.
   * Capacity remains one; device timing and throughput remain unqualified.
   */
-class FloatingPointLane(enableWiden:Boolean=false) extends Module {
-  override def desiredName=if(enableWiden)"FloatingPointLaneWiden" else "FloatingPointLane"
+class FloatingPointLane(enableWiden:Boolean=false, enableResize:Boolean=false) extends Module {
+  override def desiredName=if(enableResize)"FloatingPointLaneResize" else if(enableWiden)"FloatingPointLaneWiden" else "FloatingPointLane"
   val narrowOperands=if(enableWiden)Some(IO(Input(UInt(2.W)))) else None
+  val conversionWidths=if(enableResize)Some(IO(Input(UInt(3.W)))) else None
+  val conversionMode=if(enableResize)Some(Reg(UInt(3.W))) else None
   val operandWidths=if(enableWiden)Reg(UInt(2.W)) else WireDefault(0.U(2.W))
   val io=IO(new Bundle {
     val flush=Input(Bool()); val in=Flipped(Decoupled(new FpRequest)); val out=Decoupled(new FpResponse)
@@ -133,11 +136,21 @@ class FloatingPointLane(enableWiden:Boolean=false) extends Module {
   val isMisc=request.op>=FpOp.min.U && !isWideAdd
   when(io.in.fire) {
     request:=io.in.bits
+    if(enableResize) {conversionMode.get:=conversionWidths.get}
     if(enableWiden) {operandWidths:=narrowOperands.get}
     response:=0.U.asTypeOf(new FpResponse)
     response.tag:=io.in.bits.tag
     val rtz=io.in.bits.op>=FpOp.toUIntRtz.U && io.in.bits.op<=FpOp.toIntRtz.U
-    val legal=(io.in.bits.rounding<=4.U || rtz) && (io.in.bits.op<=FpOp.toIntRtz.U ||
+    val legal=if(enableResize) {
+      val legalBase=(io.in.bits.rounding<=4.U || rtz) && (io.in.bits.op<=FpOp.toIntRtz.U ||
+      (io.in.bits.op===FpOp.widenAdd.U && io.in.bits.double))
+      val conversion=io.in.bits.op>=FpOp.toUInt.U && io.in.bits.op=/=FpOp.widenAdd.U && io.in.bits.op<=FpOp.convertOdd.U
+      val fixedRm=rtz || io.in.bits.op===FpOp.convertOdd.U
+      Mux(conversion,io.in.bits.rounding<=4.U || fixedRm,legalBase) &&
+        (conversionWidths.get===0.U || conversion && (conversionWidths.get===1.U && io.in.bits.double || conversionWidths.get===2.U && !io.in.bits.double || (conversionWidths.get===5.U || conversionWidths.get===6.U) && !io.in.bits.double)) &&
+        (io.in.bits.op<FpOp.convertFloat.U || conversionWidths.get=/=0.U) &&
+        (io.in.bits.op=/=FpOp.convertOdd.U || conversionWidths.get===2.U)
+    } else (io.in.bits.rounding<=4.U || rtz) && (io.in.bits.op<=FpOp.toIntRtz.U ||
       (io.in.bits.op===FpOp.widenAdd.U && io.in.bits.double))
     val widthsLegal=if(enableWiden) narrowOperands.get===0.U ||
       (io.in.bits.double && (narrowOperands.get===2.U && io.in.bits.op<=FpOp.sub.U ||
@@ -267,12 +280,22 @@ class FloatingPointLane(enableWiden:Boolean=false) extends Module {
     response.data:=Mux(FpBits.nan(ieee,request.double),FpBits.canonical(request.double),ieee)
     state:=reply
   }
+  if(enableResize) {
+    val converter=Module(new FloatingPointConvertResize)
+    converter.io.widthMode:=conversionMode.get
+  converter.io.flush:=io.flush;converter.io.in.bits:=request
+  converter.io.in.valid:=state===convertStart && !io.flush
+  converter.io.out.ready:=state===convertWait && !io.flush
+  when(converter.io.in.fire) { state:=convertWait }
+  when(converter.io.out.fire) { response:=converter.io.out.bits;state:=reply }
+  } else {
   val converter=Module(new FloatingPointConvert)
   converter.io.flush:=io.flush;converter.io.in.bits:=request
   converter.io.in.valid:=state===convertStart && !io.flush
   converter.io.out.ready:=state===convertWait && !io.flush
   when(converter.io.in.fire) { state:=convertWait }
   when(converter.io.out.fire) { response:=converter.io.out.bits;state:=reply }
+  }
   val cmp=Module(new CompareRecFN(11,53))
   cmp.io.a:=ra; cmp.io.b:=rb
   cmp.io.signaling:=request.op>=FpOp.lt.U && request.op<=FpOp.ge.U

@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M40）
+# Spinor 指令覆盖矩阵（M41）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -11,9 +11,9 @@
 | 宽化整数乘加 | M36：vwmaccu/vwmacc/vwmaccsu vv/vx、vwmaccus vx，共7种编码；源SEW8/16/32、目的2×SEW | 目的EMUL≤8；旧vd也是宽源，不允许与窄源组重叠；复用乘法器/ALU/RAM |
 | 单宽整数归约 | M18新增vredsum/and/or/xor/min[u]/max[u].vs | seed/目的可不按LMUL对齐；合法源重叠；非零vstart非法 |
 | 宽化整数归约 | M29：vwredsum[u].vs，源SEW8/16/32，18种SEW/LMUL（含m8），标量2×SEW | SEW64→128超出ELEN64；不同EEW的seed/data不能重叠 |
-| 宽化FP算术 | M40：vfwadd/vfwsub vv/vf/wv/wf、vfwmul vv/vf及四类宽化FMA vv/vf，共18编码 | FP32→64、目的EMUL≤8，复用原FP单元；宽窄转换仍缺 |
+| 宽化FP算术 | M40：vfwadd/vfwsub vv/vf/wv/wf、vfwmul vv/vf及四类宽化FMA vv/vf，共18编码 | FP32→64、目的EMUL≤8，复用原FP单元 |
 | 基本FP | 加减/反减、乘除/反除、sqrt、FMA系列、min/max、比较、sign注入、分类 | FP32/64，回归对照固定SoftFloat；非完整FP向量集合 |
-| FP转换 | 6种同宽整数/浮点及RTZ转换 | 宽化/窄化、FP16、Zvfhmin/Zvfh未实现 |
+| FP转换 | 6种同宽；M41新增15种宽化/窄化编码，含ROD、整数16↔FP32的6种合法形式 | FP16数据格式、Zvfhmin/Zvfh未实现 |
 | FP归约 | M28单宽FP32/64求和/min/max；M30新增vfwredosum/vfwredusum，FP32源→FP64累加；unordered用ordered折叠 | FP16及FP64→128未支持；非零vstart非法 |
 | 排列/索引生成 | vid.v、viota.m；M24新增整数slideup/down vx/vi、slide1up/down vx；mask、22种SEW/LMUL、除viota外可vstart恢复；M25新增vrgather vv/vx/vi、vrgatherei16 vv；M27新增vcompress.vm | M39新增vfslide1up/down.vf |
 | 显式mask运算 | 8种mask逻辑.mm、vcpop.m/vfirst.m，M22新增vmsbf/vmsif/vmsof | 8位通路；viota使用独立元素结果路径 |
@@ -49,3 +49,5 @@ M38 vsmul保留完整2×SEW乘积并按SEW-1舍入饱和；vnclip[u]先对2×SEW
 M39提供四个规模预设；VLEN/ELEN/lane仍128/64/1。整数配置删除FP硬件、FP CSR端口及对应monitor位。[配置与新增FP搬运](m39-configurations-and-fp-transfers.md)。
 
 M40宽化FP的窄源/宽源/目的独立寻址，FMA旧vd按64位读取，标量源按32位检查NaN boxing。[宽化FP说明](m40-wide-floating-point.md)。
+
+M41新增跨宽转换，目的/源EEW独立，RTZ与ROD忽略frm数值。[转换说明](m41-width-conversions.md)。

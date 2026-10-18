@@ -1,0 +1,50 @@
+# M41：共享通路的宽化与窄化转换
+
+新增15种基础V浮点宽窄转换编码。当前仍是部分RVV原型；VLEN128、ELEN64、单lane、指令容量1，四个生产预设及512架构字节的版本化RAM寄存器文件保留。
+
+| 编码族 | 形式 | 数量 |
+|---|---|---:|
+| vfwcvt.x[u].f.v / vfwcvt.f.x[u].v | 浮点↔整数宽化 | 4 |
+| vfwcvt.f.f.v | 浮点宽化 | 1 |
+| vfwcvt.rtz.x[u].f.v | 固定RTZ的浮点→整数 | 2 |
+| vfncvt.x[u].f.w / vfncvt.f.x[u].w | 浮点↔整数窄化 | 4 |
+| vfncvt.f.f.w / vfncvt.rod.f.f.w | 浮点窄化，动态舍入/round-to-odd | 2 |
+| vfncvt.rtz.x[u].f.w | 固定RTZ的浮点→整数 | 2 |
+
+SEW32支持上述全部形式：FP32、整数32与FP64、整数64之间转换。SEW16另支持整数16→FP32，以及FP32→整数16（含RTZ），共6种形式；它们不要求FP16算术。需要FP16数据格式的其余SEW16形式、SEW8及结果/源超过ELEN64的SEW64形式拒绝。尚未实现FP16/Zvfhmin，不能宣称RVA23或完整V合规。
+
+目的或源的EMUL不得超过8。SEW32允许m1/m2/m4/mf2，SEW16的上述6种形式允许m1/m2/m4/mf2/mf4，共9种合法配置。宽化时窄源只能与目的最高部分按规范重叠，分数LMUL不得使用这种重叠；窄化允许目的位于宽源最低部分。vs1是转换选择器，不作为第二个向量源或寄存器组检查。
+
+四个预设的完整验证层分别保存在`build/profiles/rtl/<Top>/`，兼容的顶层SV和manifest仍复制到`build/rtl/`。不同预设的同名辅助模块验证层不再相互覆盖，默认生成入口另有重生成逐字节核对。
+
+## 数值通路
+
+实际VPU使用可选的FloatingPointLaneResize和FloatingPointConvertResize。既有FloatingPointLane、FloatingPointLaneWiden和FloatingPointConvert保留默认生成行为，旧数值/存储单元以生成RTL散列约束。
+
+转换器共享一个64位整数绝对值/串行归一化器、FP32和FP64舍入器，以及一个可选16/32/64位目标的StagedFloatToInt。FP32先精确扩展到统一的FP64 recoded表示，再进行整数转换；不存在先舍入成其他浮点格式的步骤。浮点→整数的移位、舍入和分段进位共享，目标宽度独立选择越界边界和RISC-V饱和值。整数→浮点和浮点→浮点共享舍入器，整数raw指数改用11位指数域，避免并列增加一套跨宽转换单元。
+
+内部3位conversionWidths在请求握手时锁存：0是原同宽模式，1是32→64，2是64→32，5是整数16→FP32，6是FP32→整数16，3/4/7保留。对外Command/Completion、context、TileLink和FP CSR接口布局不变；这些内部精度位不交给CPU软件设置。
+
+动态舍入使用五种有效frm；RTZ及round-to-odd使用编码指定模式，忽略frm数值，包括保留frm。round-to-odd为截断后在不精确时将结果最低有效位设为1，覆盖subnormal、溢出和有符号零的规范行为。信号NaN置NV并产生canonical NaN或相应整数饱和值，整数越界只置NV而不同时置NX。向量源不要求标量NaN boxing。
+
+## RAM与提交
+
+窄源、宽源和目的分别按EEW寻址。完成源读取后恢复目的偏移，窄化的第二个32位/16位结果不会错误写到64位源位置。目的组预复制、候选版本、完成时发布、mask/prestart/tail保留以及flush撤销沿用现有RAM通路，未建立整组FF快照。
+
+fflags先在指令内累积，完成被接收后发布；完成被阻塞时保持全部回复和架构状态，flush同时撤销候选数据、版本及异常标志。vxrm/vxsat保留。VL0、无有效元素时仍检查编码、组对齐、类型与保留frm，合法空指令清除vstart。
+
+## 验证与时序边界
+
+独立参考使用固定的未修改Berkeley SoftFloat，分别调用直接跨宽转换API。FP32→整数16使用SoftFloat的32位舍入结果再做独立16位范围判定和RISC-V异常饱和；不复用RTL的移位、指数或越界公式。另有8项已知答案锚点，包含half-ULP的RNE/ROD差异、sNaN、最小FP32 subnormal、32→64整数结果和16位边界。
+
+新数值单元分别在转换器和接入FP通路的实例测试，同宽兼容、保留精度组合、8种frm、边界/随机值、反压、握手后改变精度输入、各状态撤销及复位均覆盖。整核逐命令检查32个完整向量寄存器、版本、vstart、fflags/frm及整数定点状态；精简网表另覆盖两个ALU分段、无FP拒绝和公共SoC接口的字面量已知答案。定向网表范围不能替代完整架构合规或编译器程序验证。
+
+monitor ABI1.0、实现ID=0x4101。FP配置caps仍0xffffffff，整数配置仍0xfffd7ff3，能力位仍只代表部分指令族。旧FP向量测试将一条现已合法的宽化转换负例改为保留选择器13，命令数与非法总数保持。
+
+沿用冻结M25家族权重和100ps/段条件，默认两个顶层与四个预设均要求≤3.333ns。云端没有器件布局布线、-2速度档校准或SDF；DSP端点、RAM写、hold、时钟树和IO不在该门槛覆盖范围，实际300/500MHz仍需Vivado。[结果与输入散列](../reports/m41/evaluation.md)。
+
+后续优先补倒数/倒平方根估算、FP16相关转换、扩展访存模式，以及独立ISA模型差分和Orbital程序接入验证。
+
+[官方15条编码](references/m41-width-conversions-v1.0.txt) · [规模参数](m39-configurations-and-fp-transfers.md) · [完整性计划](rvv-completion-plan.md)
+
+复现：`make bootstrap`，`python3 scripts/verify_m41.py`，`python3 scripts/package.py --milestone m41`。

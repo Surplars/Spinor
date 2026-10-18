@@ -70,6 +70,9 @@ object Generate extends App {
   val reserved = ChiselStage.emitSystemVerilog(new LishiVpuTileLinkReserved,firtoolOpts=Array(
     "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays"))
   writeBundle("LishiVpuTileLinkReserved",reserved)
+  for((name,gen)<-Seq[(String,()=>chisel3.RawModule)](("FloatingPointConvertResize",()=>new FloatingPointConvertResize),("FloatingPointLaneResize",()=>new FloatingPointLane(enableWiden=true,enableResize=true)))) {
+    writeBundle(name,ChiselStage.emitSystemVerilog(gen(),firtoolOpts=Array("-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays")))
+  }
   val convert = ChiselStage.emitSystemVerilog(new FloatingPointConvert,firtoolOpts=Array(
     "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays"))
   writeBundle("FloatingPointConvert",convert)

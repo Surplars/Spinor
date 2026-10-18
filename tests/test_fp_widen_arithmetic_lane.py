@@ -6,9 +6,10 @@ from reference_fp import Reference
 from reference_fp_widen import WideReference
 from test_fp_lane import HEADER,check
 ROOT=Path(__file__).resolve().parents[1];OUT=ROOT/'build/fp-wide-arithmetic-lane';OUT.mkdir(parents=True,exist_ok=True)
-p=argparse.ArgumentParser();p.add_argument('--compact',action='store_true');p.add_argument('--mapped',action='store_true');a=p.parse_args();assert not a.mapped or a.compact
+p=argparse.ArgumentParser();p.add_argument('--resize',action='store_true');p.add_argument('--compact',action='store_true');p.add_argument('--mapped',action='store_true');a=p.parse_args();assert not a.mapped or a.compact
 wide=WideReference();native=Reference();rng=random.Random(0x4050494e)
 h=HEADER.replace('FloatingPointLane dut','reg [1:0] narrowOperands=0;FloatingPointLaneWiden dut').replace('repeat(400)','repeat(50)').replace('start=cycles;offer(d,op,rm,a,b,c,tag);','start=cycles;offer(d,op,rm,a,b,c,tag);narrowOperands=~narrowOperands;')
+if a.resize:h=h.replace('FloatingPointLaneWiden dut','reg [2:0] conversionWidths=0;FloatingPointLaneResize dut')
 lines=[h];rows=[];widthCounts={}
 def add(widths,op,rm,x,y,z=0,d=True):
  legal=rm<=4 and ((widths==0 and op<=27 and (op!=27 or d)) or (d and (widths==2 and op in [0,1] or widths==3 and op in [0,1,2,5,6,7,8])))
@@ -45,7 +46,9 @@ for widths in [2,3]:
   lines.append(f'narrowOperands={widths};cancel({op},0,1,0);');cancels+=1
 add(3,5,0,0x3f800001,0x3f7ffffe,0xbff0000000000000)
 lines.append('$display("PASS fp-wide-arithmetic vectors=%0d cancels=%0d cycles=%0d",n,cancels,cycles);$finish;end endmodule')
-label=('compact' if a.compact else 'full')+('-mapped' if a.mapped else '-rtl');tb=OUT/(label+'-tb.sv');tb.write_text('\n'.join(lines));rtl=ROOT/('build/synth/FloatingPointLaneWiden/mapped.v' if a.mapped else 'build/rtl/FloatingPointLaneWiden.sv');files=[tb,rtl];extra=[]
+label=('resize-' if a.resize else '')+('compact' if a.compact else 'full')+('-mapped' if a.mapped else '-rtl');tb=OUT/(label+'-tb.sv');tb.write_text('\n'.join(lines));rtl=ROOT/('build/synth/FloatingPointLaneWiden/mapped.v' if a.mapped else 'build/rtl/FloatingPointLaneWiden.sv')
+if a.resize:rtl=ROOT/('build/synth/FloatingPointLaneResize/mapped.v' if a.mapped else 'build/rtl/FloatingPointLaneResize.sv')
+files=[tb,rtl];extra=[]
 if a.mapped:files += [ROOT/'tools/oss-cad-suite/share/yosys/xilinx/cells_sim.v',ROOT/'third_party/xilinx-unisim/DSP48E2.v',ROOT/'tests/fp_mapped_global.sv'];extra=['-s','glbl']
 with (OUT/(label+'-compile.log')).open('w') as log:subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/iverilog'),'-g2012','-s','tb',*extra,'-o',str(OUT/label),*map(str,files)],stdout=log,stderr=log,check=True)
 run=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],capture_output=True,text=True);(OUT/(label+'.log')).write_text(run.stdout+run.stderr);assert run.returncode==0,run.stdout+run.stderr

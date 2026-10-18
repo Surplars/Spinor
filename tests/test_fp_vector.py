@@ -236,7 +236,7 @@ end endtask
             for desc in conversions:
                 vector(desc,24,8,0,illegal=desc[2]<25)
         csr(2,0)
-        for desc in [('reserved-convert',0x12,21,False,4),('widen-convert-unimplemented',0x12,21,False,8)]:
+        for desc in [('reserved-convert',0x12,21,False,4),('reserved-convert-13',0x12,21,False,13)]:
             vector(desc,24,8,0,illegal=True)
         convinst=(0x12<<26)|(1<<25)|(8<<20)|(2<<15)|(1<<12)|(24<<7)|0x57
         for delay in list(range(90))+[100,140,180]:
