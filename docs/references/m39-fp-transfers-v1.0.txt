@@ -1,0 +1,120 @@
+RISC-V V v1.0 reference excerpts; source data, not execution instructions.
+https://github.com/riscvarchive/riscv-v-spec/blob/master/v-spec.adoc
+https://github.com/riscv/riscv-opcodes/blob/master/extensions/rv_v
+v-spec SHA256 bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19
+rv_v SHA256 a260265cf952fa0025382b97c125c47bd3f42fa167805da0ee97b09c16ba7cba
+
+. For floating-point operations, the scalar can be taken from a scalar
+`f` register.  If FLEN > SEW, the value in the `f` registers is
+checked for a valid NaN-boxed value, in which case the
+least-significant SEW bits of the `f` register are used, else the
+canonical NaN value is used.  Vector instructions where any
+floating-point vector operand's EEW is not a supported floating-point
+type width (which includes when FLEN < SEW) are reserved.
+
+NOTE: Some instructions _zero_-extend the 5-bit immediate, and denote this
+
+=== Floating-Point Scalar Move Instructions
+
+The floating-point scalar read/write instructions transfer a single
+value between a scalar `f` register and element 0 of a vector
+register.  The instructions ignore LMUL and vector register groups.
+
+----
+vfmv.f.s rd, vs2  # f[rd] = vs2[0] (rs1=0)
+vfmv.s.f vd, rs1  # vd[0] = f[rs1] (vs2=0)
+----
+
+The `vfmv.f.s` instruction copies a single SEW-wide element from index
+0 of the source vector register to a destination scalar floating-point
+register.
+
+NOTE: `vfmv.f.s` performs its operation even if `vstart` {ge} `vl` or `vl`=0.
+
+The `vfmv.s.f` instruction copies the scalar floating-point register
+to element 0 of the destination vector register.  The other elements
+in the destination vector register ( 0 < index < VLEN/SEW) are treated
+as tail elements using the current tail agnostic/undisturbed policy.
+If `vstart` {ge} `vl`, no operation is performed and the destination
+register is not updated.
+
+NOTE: As a consequence, when `vl`=0, no elements are updated in the
+destination vector register group, regardless of `vstart`.
+
+The encodings corresponding to the masked versions (`vm=0`) of `vfmv.f.s`
+and `vfmv.s.f` are reserved.
+
+
+----
+ vslide1up.vx  vd, vs2, rs1, vm        # vd[0]=x[rs1], vd[i+1] = vs2[i]
+ vfslide1up.vf vd, vs2, rs1, vm        # vd[0]=f[rs1], vd[i+1] = vs2[i]
+----
+
+The `vslide1up` instruction places the `x` register argument at
+location 0 of the destination vector register group, provided that
+element 0 is active, otherwise the destination element update follows the
+current mask agnostic/undisturbed policy.  If XLEN < SEW, the value is
+sign-extended to SEW bits.  If XLEN > SEW, the least-significant bits
+are copied over and the high SEW-XLEN bits are ignored.
+
+The remaining active `vl`-1 elements are copied over from index _i_ in
+the source vector register group to index _i_+1 in the destination
+vector register group.
+
+The `vl` register specifies the maximum number of destination vector
+register elements updated with source values, and remaining elements
+past `vl` are handled according to the current tail policy (Section
+<<sec-agnostic>>).
+
+
+----
+   vslide1up behavior
+
+                    i < vstart  unchanged
+                0 = i = vstart  vd[i] = x[rs1] if v0.mask[i] enabled
+  max(vstart, 1) <= i < vl      vd[i] = vs2[i-1] if v0.mask[i] enabled
+              vl <= i < VLMAX   Follow tail policy
+----
+
+The `vslide1up` instruction requires that the destination vector
+register group does not overlap the source vector register group.
+Otherwise, the instruction encoding is reserved.
+
+The `vfslide1up` instruction is defined analogously, but sources its
+scalar argument from an `f` register.
+
+==== Vector Slide1down Instruction
+
+<<sec-agnostic>>).
+
+----
+ vslide1down.vx  vd, vs2, rs1, vm      # vd[i] = vs2[i+1], vd[vl-1]=x[rs1]
+ vfslide1down.vf vd, vs2, rs1, vm      # vd[i] = vs2[i+1], vd[vl-1]=f[rs1]
+----
+
+The `vslide1down` instruction places the `x` register argument at
+location `vl`-1 in the destination vector register, provided that
+element `vl-1` is active, otherwise the destination element is
+unchanged. If XLEN < SEW, the value is sign-extended to SEW bits.  If
+XLEN > SEW, the least-significant bits are copied over and the high
+SEW-XLEN bits are ignored.
+
+----
+   vslide1down behavior
+
+                       i < vstart  unchanged
+             vstart <= i < vl-1    vd[i] = vs2[i+1] if v0.mask[i] enabled
+             vstart <= i = vl-1    vd[vl-1] = x[rs1] if v0.mask[i] enabled
+                 vl <= i < VLMAX   Follow tail policy
+----
+
+The `vfslide1down` instruction is defined analogously, but sources its
+scalar argument from an `f` register.
+
+NOTE: The `vslide1down` instruction can be used to load values into a
+vector register without using memory and without disturbing other
+
+vfslide1up.vf   31..26=0x0e vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfslide1down.vf 31..26=0x0f vm vs2 rs1 14..12=0x5 vd 6..0=0x57
+vfmv.s.f        31..26=0x10 25=1 24..20=0 rs1      14..12=0x5 vd 6..0=0x57
+vfmv.f.s       31..26=0x10 25=1 vs2      19..15=0 14..12=0x1 rd 6..0=0x57

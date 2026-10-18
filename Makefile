@@ -531,3 +531,11 @@ verify-m38:
 	$(PYTHON) scripts/verify_m38.py
 package-m38:
 	$(PYTHON) scripts/package.py --milestone m38
+
+.PHONY: verify-m39 package-m39 profiles
+verify-m39:
+	$(PYTHON) scripts/verify_m39.py
+package-m39:
+	$(PYTHON) scripts/package.py --milestone m39
+profiles:
+	$(PYTHON) scripts/generate_profiles.py

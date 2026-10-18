@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M38）
+# Spinor 指令覆盖矩阵（M39）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -14,9 +14,9 @@
 | 基本FP | 加减/反减、乘除/反除、sqrt、FMA系列、min/max、比较、sign注入、分类 | FP32/64，回归对照固定SoftFloat；非完整FP向量集合 |
 | FP转换 | 6种同宽整数/浮点及RTZ转换 | 宽化/窄化、FP16、Zvfhmin/Zvfh未实现 |
 | FP归约 | M28单宽FP32/64求和/min/max；M30新增vfwredosum/vfwredusum，FP32源→FP64累加；unordered用ordered折叠 | FP16及FP64→128未支持；非零vstart非法 |
-| 排列/索引生成 | vid.v、viota.m；M24新增整数slideup/down vx/vi、slide1up/down vx；mask、22种SEW/LMUL、除viota外可vstart恢复；M25新增vrgather vv/vx/vi、vrgatherei16 vv；M27新增vcompress.vm | vfslide1等未实现 |
+| 排列/索引生成 | vid.v、viota.m；M24新增整数slideup/down vx/vi、slide1up/down vx；mask、22种SEW/LMUL、除viota外可vstart恢复；M25新增vrgather vv/vx/vi、vrgatherei16 vv；M27新增vcompress.vm | M39新增vfslide1up/down.vf |
 | 显式mask运算 | 8种mask逻辑.mm、vcpop.m/vfirst.m，M22新增vmsbf/vmsif/vmsof | 8位通路；viota使用独立元素结果路径 |
-| 标量/整组搬运 | M19新增vmv.x.s和vmv.s.x；M36新增vmv1r/2r/4r/8r.v，直接RAM整组复制 | 整组搬运忽略VL/LMUL/vill，按SEW解释vstart；FP标量搬运未实现 |
+| 标量/整组搬运 | M19新增vmv.x.s和vmv.s.x；M36新增vmv1r/2r/4r/8r.v，直接RAM整组复制 | 整组搬运忽略VL/LMUL/vill，按SEW解释vstart；M39新增vfmv.f.s/vfmv.s.f，注意f0可写 |
 | 宽化整数加减 | M33：vwaddu/vwadd/vwsubu/vwsub 的 vv/vx/wv/wx 共16种编码，SEW8/16/32，目的2×SEW/2×LMUL | 目的EMUL≤8；允许最高部分窄源重叠和同宽源原地写回；mask/vstart与不同EEW源别名检查 |
 | 宽化整数乘法 | M34：vwmulu/vwmulsu/vwmul vv/vx，SEW8/16/32，完整2×SEW积 | 原单DSP分时乘法器；目的EMUL≤8；高位重叠、mask/vstart |
 | 定点/宽窄/进位 | vzext/vsext.vf2/vf4/vf8；M32新增vnsrl/vnsra.wv/wx/wi，支持mask/vstart和宽窄源独立寻址；M37新增饱和加减10种、平均8种、舍入移位6种、carry/borrow15种 ；M38补vsmul和vnclip[u] | 基础V定点族已覆盖目标ELEN范围，仍需完整架构差分 |
@@ -44,3 +44,5 @@ M36整组搬运只允许vm=1、NREG=1/2/4/8及相应源/目的对齐；独立于
 M37 carry的vm=0仍执行全部body元素，v0提供进位/借位数据。饱和私有累计只在完成握手时并入vxsat；平均与舍入右移实现全部四种vxrm模式，不设置vxsat。详见[M37说明](m37-fixed-point.md)。
 
 M38 vsmul保留完整2×SEW乘积并按SEW-1舍入饱和；vnclip[u]先对2×SEW源舍入，再检查目标区间。默认IntegerMultiply接口不变，目标VPU使用可选分数配置共享原DSP。详见[M38说明](m38-fractional-and-clip.md)。
+
+M39提供四个规模预设；VLEN/ELEN/lane仍128/64/1。整数配置删除FP硬件、FP CSR端口及对应monitor位。[配置与新增FP搬运](m39-configurations-and-fp-transfers.md)。

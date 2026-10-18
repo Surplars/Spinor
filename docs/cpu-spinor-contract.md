@@ -44,3 +44,5 @@ context是独立调试/保存恢复端口，只能在CPU已排空且边界无所
 ## 已验证范围
 
 tests/test_host_boundary.py使用模拟CPU/VPU对端，RTL和映射网表各验证128次事务：112次返回、16次算术取消、6类失败关闭检查，以及错误head、标量访存/FP未排空、VPU反压、回复反压、访存stop、fault/illegal原因与80位高位身份。不是实际CPU数值程序或中断软件测试。Spinor实际数值/访存由独立顶层回归覆盖。
+
+M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真；CPU必须根据回显原指令解码FPR/GPR目标，不能直接将所有标量结果送入整数RF。SEW32结果已NaN-box为FLEN64。参数化整数配置移除FP CSR端口并拒绝FP指令；完整配置对外布局不变。

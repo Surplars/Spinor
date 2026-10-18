@@ -5,11 +5,11 @@
 
 **当前是含整数与部分浮点的向量原型，不是完整 RVV，尚未接入 Orbital CPU。**
 尚未实现完整 V / Zvfhmin / Zvbb / Zvkt；不能向软件发布 `misa.V` 或 RVA23 合规声明。
-命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M38**：新增vsmul.vv/vx及vnclip[u].wv/wx/wi共8种编码，补齐目标ELEN64范围内基础V定点指令族的已知实现缺口。vsmul复用原分时乘法器，vnclip先完成宽源舍入再裁剪；继续使用版本化RAM和完成时提交vxsat。见 [M38说明](docs/m38-fractional-and-clip.md)、[完整性计划](docs/rvv-completion-plan.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
+命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M39**：统一规模配置与四种可生成预设（整数/浮点、16/32位ALU分段），保留RAM寄存器文件和300MHz云端条件门槛；新增vfmv.f.s、vfmv.s.f、vfslide1up/down.vf。VLEN128/ELEN64、单lane和容量1仍固定。见 [M39说明](docs/m39-configurations-and-fp-transfers.md)、[完整性计划](docs/rvv-completion-plan.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
 仅物理普通 RAM、单事务，访存采用逐元素提交和延迟停止；不支持 MMIO/分页/PMP/一致性，尚未接入 Orbital CPU。
 **访存期间 flush 必须等待 Completion/status，不能按算术指令立即丢弃 token。** 见 [M10 合同](docs/m10-memory.md)。
 已加入 [M8 的 220 组性能对照](archive/m8/reports/performance.md)，并检查输出结果。
-M38保留两个顶层固定100ps/段云端条件预算≤3.333ns的交付门槛，实际结果及输入散列见 [M38报告](reports/m38/evaluation.md)。完整SoC时钟/接口尚未签核。
+M39保留两个顶层固定100ps/段云端条件预算≤3.333ns的交付门槛，实际结果及输入散列见 [M39报告](reports/m39/evaluation.md)。完整SoC时钟/接口尚未签核。
 本轮尚未经过Vivado实现，不能继承M31通过结论。最新已验证的本地结果和输入散列见 [M31 本地报告](reports/local-m31/evaluation.md)，原 [M31 云端报告](reports/m31/evaluation.md) 保留交付时的状态；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 保留为早期物理基线。
 命名与设计方向见 [项目介绍](docs/lishi.md)。
 M4 原始报告保存在 [归档](archive/m4/reports/evaluation.md)。后续本地 Vivado 的 M4 OOC 结果及其时钟限制另记录在 M5 报告中。
@@ -24,8 +24,8 @@ M1/M2 的原始证据保存在 [M1](archive/m1/reports/evaluation.md) / [M2](arc
 git clone https://github.com/Surplars/Spinor.git
 cd Spinor
 make bootstrap
-python3 scripts/verify_m38.py
-python3 scripts/package.py --milestone m38
+python3 scripts/verify_m39.py
+python3 scripts/package.py --milestone m39
 ```
 
 验证入口会准备固定版本 SoftFloat 和 RapidWright；首次执行需要网络访问工具锁文件中的下载地址。

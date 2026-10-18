@@ -6,6 +6,6 @@ package vpu
   * CPU retirement boundary. This is a partial RVV implementation, not a CPU.
   * Internal Lishi/RamVector names remain compatibility implementation details.
   */
-class SpinorVpu(monitorBase:BigInt=0) extends LishiVpuMonitored(monitorBase) {
+class SpinorVpu(monitorBase:BigInt=0,config:SpinorParams=SpinorParams()) extends LishiVpuMonitored(monitorBase,config) {
   override def desiredName="SpinorVpu"
 }

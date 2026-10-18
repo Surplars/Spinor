@@ -158,10 +158,10 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
 /** Current physical normal-RAM load/store top. Host must keep irrevocable
   * memory-command ownership until completion, including after a stop/flush.
   */
-class LishiVpuMemory(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28,chunkBits:Int=32) extends Module {
+class LishiVpuMemory(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28,chunkBits:Int=32,enableFp:Boolean=true) extends Module {
   require(Set(16,32).contains(chunkBits))
   override def desiredName=if(chunkBits==16)"LishiVpuMemory16" else "LishiVpuMemory"
-  val vpu=Module(new RamVector(chunkBits=chunkBits,enableFp=true,enableMemoryCommit=true));val engine=Module(new VectorMemoryEngine(regionBase,regionBytes))
+  val vpu=Module(new RamVector(chunkBits=chunkBits,enableFp=enableFp,enableMemoryCommit=true,stageControl=true));val engine=Module(new VectorMemoryEngine(regionBase,regionBytes))
   val bridge=Module(new TileLinkReservation)
   val io=IO(new Bundle {
     val core=chiselTypeOf(vpu.io);val tl=new VpuTileLinkMaster(VpuTLParams())
@@ -192,7 +192,7 @@ class LishiVpuMemory(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=
   engine.io.vl:=vpu.io.vl;engine.io.vtype:=vpu.io.vtype;engine.io.vstart:=vpu.io.vstart
   io.core.vl:=vpu.io.vl;io.core.vtype:=vpu.io.vtype;io.core.vstart:=vpu.io.vstart
   io.core.vxrm:=vpu.io.vxrm;io.core.vxsat:=vpu.io.vxsat;io.core.versions:=vpu.io.versions
-  io.core.frm.get:=vpu.io.frm.get;io.core.fflags.get:=vpu.io.fflags.get
+  if(enableFp) {io.core.frm.get:=vpu.io.frm.get;io.core.fflags.get:=vpu.io.fflags.get}
   io.core.busy:=vpu.io.busy || busy || bridge.io.busy
   bridge.io.request<>engine.io.memoryRequest;engine.io.memoryResponse<>bridge.io.response
   bridge.io.flush:=false.B;io.tl<>bridge.io.tl
