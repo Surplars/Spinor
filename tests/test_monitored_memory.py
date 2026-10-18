@@ -447,8 +447,20 @@ caseid=-50;memory(32'h02b08007,64'h80001ed2,80'hfb0004,0,0,0,0,0,2,0);
 ctx(0,0,0,64'haabbccddeeff0196);ctx(1,0,0,64'h1122334455667788);
 caseid=-51;memory(32'h02b08027,64'h80001ed6,80'hfb0005,0,0,0,0,0,2,0);
 if(mem[7894]!==8'h96 || mem[7895]!==8'h01 || mem[7893]!==8'h55 || mem[7896]!==8'haa)$fatal(1,"public packed mask store");
+// M46: three fields, nonzero vstart, masked whole segment, separate data groups.
+command(32'h0080f1d7,0,0,3,80'hfc0000,0,3,1,0,3,64'h8);
+ctx(0,1,64'h4,0);ctx(1,1,0,0);ctx(16,1,0,0);ctx(17,1,0,0);ctx(18,1,0,0);ctx(19,1,0,0);ctx(20,1,0,0);ctx(21,1,0,0);
+mem[7932]=8'h22;mem[7933]=8'h11;mem[7934]=8'h44;mem[7935]=8'h33;mem[7936]=8'h66;mem[7937]=8'h55;
+command(32'h00809073,1,0,0,80'hfc0001,0,0,0,0,3,64'h8);
+caseid=-52;memory(32'h4000d407,64'h80001ef0,80'hfc0002,0,0,0,0,0,3,0);
+ctx(16,0,0,64'h0000112200000000);ctx(18,0,0,64'h0000334400000000);ctx(20,0,0,64'h0000556600000000);
+ctx(17,0,0,0);ctx(19,0,0,0);ctx(21,0,0,0);
+mem[7963]=8'h99;mem[7970]=8'haa;
+command(32'h00809073,1,0,0,80'hfc0003,0,0,0,0,3,64'h8);
+caseid=-53;memory(32'h4000d427,64'h80001f10,80'hfc0004,0,0,0,0,0,3,0);
+if(mem[7964]!==8'h22 || mem[7965]!==8'h11 || mem[7966]!==8'h44 || mem[7967]!==8'h33 || mem[7968]!==8'h66 || mem[7969]!==8'h55 || mem[7963]!==8'h99 || mem[7970]!==8'haa)$fatal(1,"public segment pack");
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h4501);monAccess(64'h18,4,0,64'hffffffff);
+monAccess(64'h10,4,0,64'h4601);monAccess(64'h18,4,0,64'hffffffff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});
@@ -502,4 +514,14 @@ for line in log.splitlines():
 for i,base,count,width,op in [(-47,0x80000000+7800,2,8,4),(-48,0x80000000+7840,16,1,0),(-50,0x80000000+7890,2,1,4),(-51,0x80000000+7894,2,1,0)]:
  assert context_observed[i]==[(base+e*width,op,((1<<width)-1)<<((base+e*width)%8)) for e in range(count)],context_observed
  d['context_public_bus_sequences']=context_observed
+result.write_text(json.dumps(d,indent=2)+'\n')
+
+segment_observed={-52:[],-53:[]}
+for line in log.splitlines():
+ if line.startswith('BUS '):
+  f=line.split();i=int(f[1])
+  if i in segment_observed:segment_observed[i].append((int(f[2],16),int(f[3]),int(f[4],16)))
+for ident,base,op in [(-52,0x80000000+7932,4),(-53,0x80000000+7964,0)]:
+ assert segment_observed[ident]==[(base+2*f,op,3<<((base+2*f)%8)) for f in range(3)],segment_observed
+d['segment_public_bus_sequences']=segment_observed
 result.write_text(json.dumps(d,indent=2)+'\n')

@@ -62,3 +62,7 @@ M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真�
 整组`vl<n>re<eew>/vs<n>r`忽略当前VL和全部vtype（包括vill），按NREG×VLEN/EEW作为EVL；vstart按编码EEW的元素数解释，store编码EEW固定8。mask`vlm/vsm`仍尊重vill，传ceil(VL/8)个字节，vstart按字节解释。两者均vm1，允许v0作为普通数据，使用原始`scalar`基址并忽略scalar2，完成仅清零vstart而不改变VL/vtype/flags。错误/停止返回的element和vstart须按当前指令单位解释，不能一律当当前SEW元素。
 
 保存完整上下文仍需CPU/驱动先排空并处理VS/FS、VL/vtype/vstart、FCSR和vcsr。保存或恢复VRF前须先在标量侧保存原vstart并清零，避免跳过头部；可用4组vs8r保存512字节VRF，再用4组vl8re64恢复；恢复原vstart应放在恢复指令完成之后。访存期间必须保留owner和PC直到completion，仍仅物理普通RAM，无VM/PMP/一致性。[M45规则](m45-context-memory.md)。
+
+## M46分段访存
+
+单位步长分段的VL/vstart以整段为单位；仅当该段全部字段完成才推进vstart。fault/stop允许当前段有字段前缀已写回，宿主须保留原PC和基址，从vstart对应段的字段0重启；已发store不可撤销，不能套用算术取消。当前仍只访问物理普通RAM。上下文保存/恢复和CPU异常处理不能丢弃部分段，见[M46规则](m46-segment-memory.md)。

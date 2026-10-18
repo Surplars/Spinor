@@ -22,7 +22,7 @@
 | 宽化整数加减 | M33：vwaddu/vwadd/vwsubu/vwsub 的 vv/vx/wv/wx 共16种编码，SEW8/16/32，目的2×SEW/2×LMUL | 目的EMUL≤8；允许最高部分窄源重叠和同宽源原地写回；mask/vstart与不同EEW源别名检查 |
 | 宽化整数乘法 | M34：vwmulu/vwmulsu/vwmul vv/vx，SEW8/16/32，完整2×SEW积 | 原单DSP分时乘法器；目的EMUL≤8；高位重叠、mask/vstart |
 | 定点/宽窄/进位 | vzext/vsext.vf2/vf4/vf8；M32新增vnsrl/vnsra.wv/wx/wi，支持mask/vstart和宽窄源独立寻址；M37新增饱和加减10种、平均8种、舍入移位6种、carry/borrow15种 ；M38补vsmul和vnclip[u] | 基础V定点族已覆盖目标ELEN范围，仍需完整架构差分 |
-| 访存 | 单位步长vle/vse、M43跨步vlse/vsse、M44索引vluxei/vloxei/vsuxei/vsoxei，EEW8/16/32/64，独立EMUL、mask、物理故障/停止/vstart前缀 | M45新增20种whole-register与2种mask load/store；尚无segments/FOF；仅物理普通RAM |
+| 访存 | 单位步长vle/vse、M43跨步vlse/vsse、M44索引vluxei/vloxei/vsuxei/vsoxei，EEW8/16/32/64，独立EMUL、mask、物理故障/停止/vstart前缀 | M45新增20种whole-register与2种mask load/store；M46新增56种单位步长segment编码；尚无跨步/索引segments及FOF；仅物理普通RAM |
 | CPU/SoC | SpinorVpu顶层、TL物理主端、monitor从端、独立VpuHostBoundary | 尚未接Orbital；需VM/PMP/一致性、精确异常和上下文集成 |
 | Linux监控 | ABI1.0，UIO用户态工具 | 未作真实内核/上板测试；不是计算作业驱动 |
 | 双发射/乱序 | 独立8项实验窗口 | 不属于当前Spinor执行数据通路 |
@@ -59,4 +59,6 @@ M43支持正/负/零字节步长、rs2=x0、mask/vstart、全64位地址与回�
 
 M44新增16种索引访存：索引为零扩展字节偏移，数据按SEW/LMUL解释，支持标准合法重叠与有序形式；仅物理普通RAM。[实现说明](m44-indexed-memory.md)。
 
-M45整组访存忽略VL/vtype/vill，EVL按NREG×VLEN/EEW计算，支持EEW8/16/32/64 load和EEW8 store；mask尊重vill、按ceil(VL/8)字节传送、vstart以字节计。NF用于整组数量不代表分段访存已实现。[规则和验证](m45-context-memory.md)。
+M45整组访存忽略VL/vtype/vill，EVL按NREG×VLEN/EEW计算，支持EEW8/16/32/64 load和EEW8 store；mask尊重vill、按ceil(VL/8)字节传送、vstart以字节计。M45的NF用于整组数量；单位步长分段另由M46实现。[规则和验证](m45-context-memory.md)。
+
+M46单位步长分段支持2～8字段、EEW8/16/32/64、合法分数/整数EMUL及mask/vstart；故障或停止允许当前段留下字段前缀，重启从该段字段0重新执行。没有新增DSP或整组快照。[规则与验证](m46-segment-memory.md)。

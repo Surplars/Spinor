@@ -22,10 +22,10 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val memoryRequest=Decoupled(new VpuMemoryRequest(VpuTLParams()))
     val memoryResponse=Flipped(Decoupled(new VpuMemoryResponse))
   })
-  val states=Enum(30)
+  val states=Enum(33)
   val Seq(idle,decode,validate,maskLow,maskLowWait,maskHigh,maskHighWait,checkElement,addressLow,addressHigh,
     checkAddress,readChunk,readChunkWait,sendMemory,waitMemory,writeChunk,writeChunkWait,writeStart,reply)=states.take(19)
-  val Seq(strideSeek,strideAdd0,strideAdd1,strideAdd2,strideAdd3,indexValidate,indexRead,indexReadWait,indexExtract,specialDecode,specialValidate)=states.drop(19)
+  val Seq(strideSeek,strideAdd0,strideAdd1,strideAdd2,strideAdd3,indexValidate,indexRead,indexReadWait,indexExtract,specialDecode,specialValidate,segmentDecode,segmentSeek,segmentAdvance)=states.drop(19)
   val state=RegInit(idle);val cmd=Reg(new Command);val length=Reg(UInt(8.W));val typ=Reg(UInt(64.W))
   val lastIndex=Reg(UInt(8.W));val index=Reg(UInt(8.W));val width=Reg(UInt(2.W));val baseRegister=Reg(UInt(5.W));val store=Reg(Bool());val masked=Reg(Bool())
   val mask=Reg(UInt(128.W));val original=Reg(UInt(64.W));val result=Reg(UInt(64.W))
@@ -45,6 +45,10 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   val indexChunk=Reg(UInt(6.W));val indexByte=Reg(UInt(3.W))
   val stride=Mux(zeroStride,0.U(64.W),cmd.scalar2)
   val addend=Mux(indexed,result,Mux(seeking,original,stride))
+  // A segment contains several field groups, each rounded up to one RF register.
+  // Only small cursors are added; the original 64-bit chunk remains the sole data cache.
+  val segmented=Reg(Bool());val segmentLast=Reg(UInt(3.W));val segmentField=Reg(UInt(3.W))
+  val segmentGroup=Reg(UInt(4.W));val segmentBytes=Reg(UInt(7.W));val unitOffset=Reg(UInt(13.W))
   val decodedBad=Reg(Bool());val illegal=Reg(Bool());val status=Reg(new VectorMemoryStatus);val nextStart=Reg(UInt(8.W));val finishAfterStart=Reg(Bool())
   val stop=stopped || io.stop
   val nextIndex=ParallelIncrement(index,true.B)
@@ -96,10 +100,12 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val dataGroup=Mux(isIndexed,Mux(lm>0.S,(1.U(4.W)<<lm.asUInt(1,0))(3,0),1.U(4.W)),group)
     val indexBase=inst(24,20)
     val bad= !validOpcode || !validWidth || typ(63) || typ(5,3)>3.U || emul<(-3).S || emul>3.S ||
-      inst(31,28)=/=0.U || (!isStrided && !isIndexed && inst(24,20)=/=0.U) || (vr&(dataGroup-1.U))=/=0.U ||
+      (inst(28) || (inst(31,29)=/=0.U && (isStrided || isIndexed))) || (!isStrided && !isIndexed && inst(24,20)=/=0.U) || (vr&(dataGroup-1.U))=/=0.U ||
       (vr+&dataGroup)>32.U || (!inst(25) && vr===0.U) ||
       (isIndexed && ((indexBase&(group-1.U))=/=0.U || (indexBase+&group)>32.U ||
         (!inst(25) && indexBase===0.U) || typ(2,0)===4.U || !VectorConfig.fractionalLegal(typ)))
+    val isSegment=inst(31,29)=/=0.U && inst(27,26)===0.U && inst(24,20)===0.U
+    segmented:=isSegment;segmentLast:=inst(31,29);segmentField:=0.U;segmentGroup:=group
     store:=isStore;masked:= !inst(25);baseRegister:=vr;width:=Mux(isIndexed,typ(4,3),ew)
     indexed:=isIndexed;indexWidth:=ew;dataAlignment:=VectorConfig.countAlignment(dataGroup)
     indexAlignment:=VectorConfig.countAlignment(group);indexIntegral:=emul>=0.S
@@ -109,7 +115,29 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     // Keep special EVL/type handling off the existing EMUL decode chain.
     // These two setup states affect only mask and whole-register transfers.
     val special=inst(27,26)===0.U && (inst(24,20)===8.U || inst(24,20)===11.U)
-    state:=Mux(special,specialDecode,validate)
+    state:=Mux(special,specialDecode,Mux(isSegment,segmentDecode,validate))
+  }
+  when(state===segmentDecode) {
+    val count=Cat(0.U(1.W),segmentLast)+1.U
+    val span=MuxLookup(segmentGroup,(count<<3).pad(7))(Seq(1.U->count.pad(7),2.U->(count<<1).pad(7),4.U->(count<<2).pad(7)))
+    decodedBad:=decodedBad || span>8.U || (baseRegister+&span)>32.U || typ(2,0)===4.U || !VectorConfig.fractionalLegal(typ)
+    segmentBytes:=(count<<width)(6,0);unitOffset:=0.U;seek:=count;state:=segmentSeek
+  }
+  // Bounded repeated addition positions the first segment at vstart. No multiplier
+  // or wide combinational NF*index*EEW expression is placed on the address path.
+  when(state===segmentSeek) {
+    unitOffset:=unitOffset+(index<<width)
+    seek:=seek-1.U
+    when(seek===1.U || decodedBad) {state:=validate}
+  }
+  when(state===segmentAdvance) {
+    unitOffset:=unitOffset+(1.U(4.W)<<width)
+    when(segmentField===segmentLast) {
+      segmentField:=0.U;baseRegister:=cmd.instruction(11,7);index:=nextIndex
+      setStart(Mux(last,0.U,nextIndex),last)
+    }.otherwise {
+      segmentField:=segmentField+1.U;baseRegister:=baseRegister+segmentGroup;state:=checkElement
+    }
   }
   when(state===specialDecode) {
     val inst=cmd.instruction;val whole=inst(24,20)===8.U;val nf=inst(31,29);val f3=inst(14,12)
@@ -152,9 +180,10 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     when(index>=length) { setStart(0.U,true.B) }
       .elsewhen(stop) { interrupt() }
       .elsewhen(masked && !mask(index(6,0))) {
-        index:=nextIndex;when(strided && !zeroStride && !last) {state:=strideAdd0}
+        index:=nextIndex;when(segmented) {unitOffset:=unitOffset+segmentBytes};when(strided && !zeroStride && !last) {state:=strideAdd0}
       }
       .otherwise {
+        when(!segmented) {unitOffset:=index<<width}
         when(strided || indexed) {chunkAddress:=((baseRegister<<1)+byteOffset(6,3))(5,0)}
         val offset=(index<<indexWidth)(6,0)
         indexChunk:=((cmd.instruction(24,20)<<1)+offset(6,3))(5,0);indexByte:=offset(2,0)
@@ -191,7 +220,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   }
   when(state===addressLow) {
     chunkAddress:=((baseRegister<<1)+byteOffset(6,3))(5,0)
-    val sum=CarrySelect.add(cmd.scalar(31,0),(index<<width).pad(32),false.B)
+    val sum=CarrySelect.add(cmd.scalar(31,0),unitOffset.pad(32),false.B)
     address:=Cat(cmd.scalar(63,32),sum(31,0));addressCarry:=sum(32);state:=addressHigh
   }
   when(state===addressHigh) {
@@ -226,8 +255,9 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val bad=response.denied || response.corrupt || response.protocolError || response.localError || response.token=/=cmd.token
     when(bad) { fault(Mux(store,7.U,5.U)) }
       .elsewhen(store) {
-        index:=nextIndex
-        setStart(Mux(last,0.U,nextIndex),last)
+        when(segmented) {state:=segmentAdvance}.otherwise {
+          index:=nextIndex;setStart(Mux(last,0.U,nextIndex),last)
+        }
       }.elsewhen(stop) { interrupt() }
       .otherwise {
         val fieldMask=VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(width)
@@ -239,7 +269,9 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     when(stop) { interrupt() }.elsewhen(io.context.fire) { original:=result;state:=writeChunkWait }
   }
   when(state===writeChunkWait && io.contextResult.valid) {
-    index:=nextIndex;setStart(Mux(last,0.U,nextIndex),last)
+    when(segmented) {state:=segmentAdvance}.otherwise {
+      index:=nextIndex;setStart(Mux(last,0.U,nextIndex),last)
+    }
   }
   val commitStalled=RegNext(io.commit.valid && !io.commit.ready,false.B)
   val previousCommit=RegNext(io.commit.bits)

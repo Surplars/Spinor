@@ -38,7 +38,7 @@ object GenerateConfigured extends App {
   "instruction_capacity":1, "architectural_vrf_bytes":512, "vrf":"versioned-ram",
   "alu_stage_bits":${cfg.aluStageBits}, "fp32_fp64":${cfg.enableFp}, "has_fp_csr_ports":${cfg.enableFp},
   "physical_region_base":"0x${cfg.regionBase.toString(16)}", "physical_region_bytes":"0x${cfg.regionBytes.toString(16)}",
-  "monitor_base":"0x${base.toString(16)}", "monitor_implementation":"0x4501", "monitor_abi":"1.0", "monitor_caps":"0x${caps.toString(16)}",
+  "monitor_base":"0x${base.toString(16)}", "monitor_implementation":"0x4601", "monitor_abi":"1.0", "monitor_caps":"0x${caps.toString(16)}",
   "device_timing_verified":false, "full_rvv":false
 }
 """)
