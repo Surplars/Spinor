@@ -48,7 +48,7 @@ def command(inst,scalar=0,avl=0,result=0,writes=0,bad=0,vl=4,typ=16):
  body.append(f"command(32'h{inst:x},64'h{scalar:x},0,{avl},80'h{0x390000+count:x},{bad},64'h{result:x},{writes},3,{vl},64'h{typ:x});");count+=1
 def ctx(addr,value,write=False):body.append(f"ctx({addr},{int(write)},64'h{value:x},64'h{value:x});")
 for addr in range(64):ctx(addr,0,True)
-body += [f"mon(16,64'h4101);mon(24,64'h{cfg['monitor_caps'][2:]});mon(32,64'h1002000400080);mon(40,64'h800000200);"]
+body += [f"mon(16,64'h4201);mon(24,64'h{cfg['monitor_caps'][2:]});mon(32,64'h1002000400080);mon(40,64'h800000200);"]
 command(0x0100f1d7,avl=4,result=4,writes=1)
 ctx(16,0x0000000200000001,True);ctx(17,0x0000000400000003,True);ctx(32,0x0000000600000005,True);ctx(33,0x0000000800000007,True)
 command(0x02880c57);ctx(48,0x0000000800000006);ctx(49,0x0000000c0000000a)

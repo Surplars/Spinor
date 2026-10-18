@@ -250,6 +250,9 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       entryFp(base,FpOp.fma); entryFp(base+1,FpOp.fnmadd)
       entryFp(base+2,FpOp.fmsub); entryFp(base+3,FpOp.fnmsub)
     }
+    when(fpVV && f6===0x13.U && (vs1===4.U || vs1===5.U)) {
+      fpSupported:=true.B;fpDecoded:=Mux(vs1===5.U,30.U,31.U)
+    }
     when(fpVV && f6===0x13.U && (vs1===0.U || vs1===16.U)) {
       fpSupported:=true.B; fpDecoded:=Mux(vs1===0.U,FpOp.sqrt.U,FpOp.classify.U)
     }
@@ -416,7 +419,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val smallFpConvert=fpResizeEncoding && vtype(4,3)===1.U &&
       (fpWideConvert && (selectedFpOp===FpOp.fromUInt.U || selectedFpOp===FpOp.fromInt.U) ||
        fpNarrowConvert && (selectedFpOp===FpOp.toUInt.U || selectedFpOp===FpOp.toInt.U || selectedFpOp===FpOp.toUIntRtz.U || selectedFpOp===FpOp.toIntRtz.U))
-    val fpIllegal=selectedFp && (vtype(4,3)<2.U && !smallFpConvert || (!fpTransfer && frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U && selectedFpOp=/=FpOp.convertOdd.U))
+    val fpIllegal=selectedFp && (vtype(4,3)<2.U && !smallFpConvert || (!fpTransfer && frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U && selectedFpOp=/=FpOp.convertOdd.U && selectedFpOp=/=31.U))
     val bad=vtype(63) || !selectedSupported || fpIllegal || extensionBad || narrowBad || widenBad || wideningReductionBad || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias || compressBad ||
       ((!vm || carryEncoding) && !selectedMask && !selectedReduction && !selectedMaskScalar && vd === 0.U) ||
       ((selectedReduction || selectedMaskScalar || selectedMaskPrefix || selectedIndexGenerate===1.U || selectedIndexGenerate===3.U) && vstart=/=0.U) ||
@@ -867,20 +870,27 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     unit.conversionWidths.get:=Mux(fpResizeEncoding,Cat(vtype(4,3)===1.U,Mux(fpWideConvert,1.U(2.W),2.U(2.W))),0.U(3.W))
     unit.narrowOperands.get:=Mux(fpWidenEncoding,Mux(wideSource2,2.U,3.U),0.U)
     unit.io.flush:=io.flush
-    unit.io.in.valid:=state===launch && fp && !io.flush
+    val estimate=Module(new FloatingPointEstimate)
+    val isEstimate=fpOp>=30.U
+    estimate.io.flush:=io.flush;estimate.io.in.bits:=unit.io.in.bits
+    estimate.io.in.valid:=state===launch && fp && isEstimate && !io.flush
+    estimate.io.out.ready:=state===awaitResult && fp && isEstimate && !io.flush
+    unit.io.in.valid:=state===launch && fp && !isEstimate && !io.flush
     unit.io.in.bits.a:=Mux(fpReverse,b,Mux(fpDestMultiply,c,a))
     unit.io.in.bits.b:=Mux(fpReverse,a,b)
     unit.io.in.bits.c:=Mux(fpDestMultiply,a,c)
     unit.io.in.bits.op:=fpOp; unit.io.in.bits.double:=Mux(fpResizeEncoding,fpWideConvert && vtype(4,3)===2.U,arithmeticSew===3.U)
     unit.io.in.bits.rounding:=frm; unit.io.in.bits.tag:=index
-    unit.io.out.ready:=state===awaitResult && fp && !io.flush
-    when(unit.io.in.fire) { state:=awaitResult }
-    when(unit.io.out.fire) {
-      fpFlags:=fpFlags | unit.io.out.bits.flags
-      when(unit.io.out.bits.illegal) { illegal:=true.B; state:=finish }
+    unit.io.out.ready:=state===awaitResult && fp && !isEstimate && !io.flush
+    val fpFire=Mux(isEstimate,estimate.io.out.fire,unit.io.out.fire)
+    val fpResult=Mux(isEstimate,estimate.io.out.bits,unit.io.out.bits)
+    when(unit.io.in.fire || estimate.io.in.fire) { state:=awaitResult }
+    when(fpFire) {
+      fpFlags:=fpFlags | fpResult.flags
+      when(fpResult.illegal) { illegal:=true.B; state:=finish }
     }
-    resultFire:=Mux(fp,unit.io.out.fire && !unit.io.out.bits.illegal,nonFpFire)
-    resultData:=Mux(fp,unit.io.out.bits.data,nonFpData)
+    resultFire:=Mux(fp,fpFire && !fpResult.illegal,nonFpFire)
+    resultData:=Mux(fp,fpResult.data,nonFpData)
   }
   when(resultFire) {
     when(indexGenerate===3.U) {scalarResult:=ParallelIncrement(scalarResult(7,0),true.B)}

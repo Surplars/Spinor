@@ -46,10 +46,15 @@ class FloatingPointConvertResize extends Module {
   }
   when(state===absoluteHigh) {
     val sum=CarrySelect.add(magnitude(63,32)^Fill(32,negative),0.U(32.W),carry)
-    magnitude:=Mux(sourceDouble,Cat(sum(31,0),magnitude(31,0)),magnitude(31,0).pad(64));state:=normalize
+    // Place the effective integer MSB at bit 63 before normalization.
+    // Absolute value has already been taken at its source width.
+    magnitude:=Mux(sourceDouble,Cat(sum(31,0),magnitude(31,0)),
+      Mux(widths===5.U,Cat(magnitude(15,0),0.U(48.W)),Cat(magnitude(31,0),0.U(32.W))))
+    leading:=Mux(sourceDouble,0.U,Mux(widths===5.U,48.U,32.U));state:=normalize
   }
   when(state===normalize) {
     when(magnitude===0.U || magnitude(63)) { state:=roundStart }
+      .elsewhen(!magnitude(63,56).orR) { magnitude:=Cat(magnitude(55,0),0.U(8.W));leading:=leading+8.U }
       .otherwise { magnitude:=Cat(magnitude(62,0),false.B);leading:=leading+1.U }
   }
   val rec64=Reg(UInt(65.W))

@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M41）
+# Spinor 指令覆盖矩阵（M42）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -13,6 +13,7 @@
 | 宽化整数归约 | M29：vwredsum[u].vs，源SEW8/16/32，18种SEW/LMUL（含m8），标量2×SEW | SEW64→128超出ELEN64；不同EEW的seed/data不能重叠 |
 | 宽化FP算术 | M40：vfwadd/vfwsub vv/vf/wv/wf、vfwmul vv/vf及四类宽化FMA vv/vf，共18编码 | FP32→64、目的EMUL≤8，复用原FP单元 |
 | 基本FP | 加减/反减、乘除/反除、sqrt、FMA系列、min/max、比较、sign注入、分类 | FP32/64，回归对照固定SoftFloat；非完整FP向量集合 |
+| FP估算 | M42：vfrec7.v、vfrsqrt7.v，FP32/64、mask/vstart/合法LMUL | 七位估算；vfrsqrt7忽略frm，倒数溢出使用frm；独立精确整数参考 |
 | FP转换 | 6种同宽；M41新增15种宽化/窄化编码，含ROD、整数16↔FP32的6种合法形式 | FP16数据格式、Zvfhmin/Zvfh未实现 |
 | FP归约 | M28单宽FP32/64求和/min/max；M30新增vfwredosum/vfwredusum，FP32源→FP64累加；unordered用ordered折叠 | FP16及FP64→128未支持；非零vstart非法 |
 | 排列/索引生成 | vid.v、viota.m；M24新增整数slideup/down vx/vi、slide1up/down vx；mask、22种SEW/LMUL、除viota外可vstart恢复；M25新增vrgather vv/vx/vi、vrgatherei16 vv；M27新增vcompress.vm | M39新增vfslide1up/down.vf |
@@ -26,7 +27,7 @@
 | Linux监控 | ABI1.0，UIO用户态工具 | 未作真实内核/上板测试；不是计算作业驱动 |
 | 双发射/乱序 | 独立8项实验窗口 | 不属于当前Spinor执行数据通路 |
 
-完整性计划见[目标与验收清单](rvv-completion-plan.md)。近期优先继续补齐FP宽窄、剩余FP指令和访存模式，每轮核对资源和云端条件时序；Orbital程序闭环另行推进。只有指令、异常、上下文和内存模型都满足目标配置并完成架构测试后，才能宣称完整目标ISA支持。
+完整性计划见[目标与验收清单](rvv-completion-plan.md)。近期优先审计剩余FP语义、扩展访存模式，每轮核对资源和云端条件时序；Orbital程序闭环另行推进。只有指令、异常、上下文和内存模型都满足目标配置并完成架构测试后，才能宣称完整目标ISA支持。
 
 M26已统一执行mask（EEW1）与v0数据源（SEW≥8）的保留编码检查，覆盖普通INT/FP、乘除、归约seed、滑移、gather及masked store/load v0。VL0、全mask关闭和vstart越过VL也先检查。EEW1的vcpop/vfirst、前缀mask、viota源可合法使用v0；FP单目selector0、标量寄存器编号0不是向量数据源。EI16仍独立检查不同EEW的数据/索引物理组重叠。新检查修复已知缺口，回归仍不构成完整架构合规证明。
 
@@ -51,3 +52,5 @@ M39提供四个规模预设；VLEN/ELEN/lane仍128/64/1。整数配置删除FP�
 M40宽化FP的窄源/宽源/目的独立寻址，FMA旧vd按64位读取，标量源按32位检查NaN boxing。[宽化FP说明](m40-wide-floating-point.md)。
 
 M41新增跨宽转换，目的/源EEW独立，RTZ与ROD忽略frm数值。[转换说明](m41-width-conversions.md)。
+
+M42新增FP七位估算，归一化与查表分段；整数转换按字节跳过零高位。[估算与转换提速](m42-estimates-and-efficiency.md)。
