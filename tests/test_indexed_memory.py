@@ -178,7 +178,7 @@ def main():
     hi=1<<((8<<iw)-1);run(iw,write,(BASE+2048-hi)&((1<<64)-1),offsets=[hi,hi+w],ordered=True)
     config(ew<<3,0);run(iw,write,BASE+1,ordered=True)
     config(ew<<3,2);mask(0);run(iw,write,BASE+1,masked=True)
-    for reserved in [1<<28,1<<29]:run(iw,write,BASE,illegal=True,reserved=reserved)
+    for reserved in [1<<28,(1<<29)|(1<<28)]:run(iw,write,BASE,illegal=True,reserved=reserved)
  # Architectural aliases: same width in-place, narrowing low part, widening high part.
  for ew,iw,t,vr,ir in [(0,0,0,8,8),(0,1,0,8,8),(1,0,9,8,9),(2,1,17,8,9),(3,2,25,8,9)]:
   config(t,2);run(iw,False,BASE+1024,vr=vr,ir=ir,ordered=True)

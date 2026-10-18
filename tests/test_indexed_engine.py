@@ -97,7 +97,7 @@ for sew in range(4):
    issue(t,iw,write,False,vl=2,start=7,base=BASE+1)
    issue(t,iw,write,True,vl=2,start=1,offsets=[0,3*w])
    issue(t,iw,write,True,vl=2,bits=1<<28)
-   issue(t,iw,write,True,vl=2,bits=1<<29)
+   issue(t,iw,write,True,vl=2,bits=(1<<29)|(1<<28))
 # Reserved EMUL/LMUL/vill, index-group alignment/end, and restart limit.
 for t,iw,vr,ir in [(3,3,8,24),(31,0,8,24),(4,0,8,24),(1<<63,0,8,24),(3,0,8,25),(3,0,8,30)]:
  for write in [False,True]:issue(t,iw,write,True,vl=0,vr=vr,ir=ir)

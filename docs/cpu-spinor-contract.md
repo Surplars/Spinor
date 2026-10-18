@@ -66,3 +66,7 @@ M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真�
 ## M46分段访存
 
 单位步长分段的VL/vstart以整段为单位；仅当该段全部字段完成才推进vstart。fault/stop允许当前段有字段前缀已写回，宿主须保留原PC和基址，从vstart对应段的字段0重启；已发store不可撤销，不能套用算术取消。当前仍只访问物理普通RAM。上下文保存/恢复和CPU异常处理不能丢弃部分段，见[M46规则](m46-segment-memory.md)。
+
+## M47跨步/索引分段
+
+沿用M46的整段vstart和部分字段重启策略。跨步的scalar2传完整有符号步长位模式，rs2=x0时忽略；索引形式忽略scalar2。索引分段load所有目标字段组都不得与vs2索引组重叠，同宽也保留，且VL0不能绕过检查。store可有同EEW源别名。旧NF0索引load合法重叠不受影响。仍由宿主保证物理普通RAM及不可撤销指令所有权，见[M47说明](m47-addressed-segments.md)。

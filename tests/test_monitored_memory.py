@@ -459,8 +459,30 @@ mem[7963]=8'h99;mem[7970]=8'haa;
 command(32'h00809073,1,0,0,80'hfc0003,0,0,0,0,3,64'h8);
 caseid=-53;memory(32'h4000d427,64'h80001f10,80'hfc0004,0,0,0,0,0,3,0);
 if(mem[7964]!==8'h22 || mem[7965]!==8'h11 || mem[7966]!==8'h44 || mem[7967]!==8'h33 || mem[7968]!==8'h66 || mem[7969]!==8'h55 || mem[7963]!==8'h99 || mem[7970]!==8'haa)$fatal(1,"public segment pack");
+// M47: negative-stride three-field load and positive-stride pack.
+command(32'h0080f1d7,0,0,2,80'hfd0000,0,2,1,0,2,64'h8);
+ctx(16,1,0,0);ctx(17,1,0,0);ctx(18,1,0,0);ctx(19,1,0,0);ctx(20,1,0,0);ctx(21,1,0,0);
+mem[8072]=8'h11;mem[8073]=8'h10;mem[8074]=8'h21;mem[8075]=8'h20;mem[8076]=8'h31;mem[8077]=8'h30;
+mem[8064]=8'h41;mem[8065]=8'h40;mem[8066]=8'h51;mem[8067]=8'h50;mem[8068]=8'h61;mem[8069]=8'h60;
+commandStride=64'hfffffffffffffff8;
+caseid=-54;memory(32'h4a20d407,64'h80001f88,80'hfd0001,0,0,0,0,0,6,0);
+ctx(16,0,0,64'h40411011);ctx(18,0,0,64'h50512021);ctx(20,0,0,64'h60613031);
+commandStride=8;
+caseid=-55;memory(32'h4a20d427,64'h80001fa0,80'hfd0002,0,0,0,0,0,6,0);
+if(mem[8096]!==8'h11 || mem[8097]!==8'h10 || mem[8100]!==8'h31 || mem[8104]!==8'h41 || mem[8108]!==8'h61)$fatal(1,"public strided segment store");
+// High-bit 8-bit indices zero-extend; all three data groups remain separate.
+ctx(48,1,64'h8880,0);ctx(49,1,0,0);
+mem[8016]=8'h22;mem[8017]=8'h11;mem[8018]=8'h44;mem[8019]=8'h33;mem[8020]=8'h66;mem[8021]=8'h55;
+mem[8024]=8'h88;mem[8025]=8'h77;mem[8026]=8'haa;mem[8027]=8'h99;mem[8028]=8'hcc;mem[8029]=8'hbb;
+caseid=-56;memory(32'h4f808407,64'h80001ed0,80'hfd0003,0,0,0,0,0,6,0);
+ctx(16,0,0,64'h77881122);ctx(18,0,0,64'h99aa3344);ctx(20,0,0,64'hbbcc5566);
+mem[8111]=8'h77;mem[8126]=8'h88;
+caseid=-57;memory(32'h47808427,64'h80001f30,80'hfd0004,0,0,0,0,0,6,0);
+if(mem[8112]!==8'h22 || mem[8113]!==8'h11 || mem[8116]!==8'h66 || mem[8120]!==8'h88 || mem[8124]!==8'hcc || mem[8111]!==8'h77 || mem[8126]!==8'h88)$fatal(1,"public indexed segment store");
+command(32'h0080f1d7,0,0,0,80'hfd0005,0,0,1,0,0,64'h8);
+caseid=-58;memory(32'h4ea08407,64'h80001f30,80'hfd0006,1,0,0,0,0,0,0);
 monPolling=0;repeat(4)tick();
-monAccess(64'h10,4,0,64'h4601);monAccess(64'h18,4,0,64'hffffffff);
+monAccess(64'h10,4,0,64'h4701);monAccess(64'h18,4,0,64'hffffffff);
 for(mi=0;mi<13;mi=mi+1)expectedSnap[mi]=refCount[mi];
 monAccess(64'h40,0,1,0);
 for(mi=0;mi<13;mi=mi+1)monAccess(64'h100+8*mi,4,0,{32'h0,expectedSnap[mi]});
@@ -524,4 +546,15 @@ for line in log.splitlines():
 for ident,base,op in [(-52,0x80000000+7932,4),(-53,0x80000000+7964,0)]:
  assert segment_observed[ident]==[(base+2*f,op,3<<((base+2*f)%8)) for f in range(3)],segment_observed
 d['segment_public_bus_sequences']=segment_observed
+result.write_text(json.dumps(d,indent=2)+'\n')
+
+addressed_segment_observed={-54:[],-55:[],-56:[],-57:[]}
+for line in log.splitlines():
+ if line.startswith('BUS '):
+  f=line.split();ident=int(f[1]);assert ident!=-58,'overlapping indexed segment escaped validation'
+  if ident in addressed_segment_observed:addressed_segment_observed[ident].append((int(f[2],16),int(f[3]),int(f[4],16)))
+for ident,base,step,op in [(-54,0x80000000+8072,-8,4),(-55,0x80000000+8096,8,0),(-56,0x80000000+8016,8,4),(-57,0x80000000+8112,8,0)]:
+ want=[(base+e*step+2*f,op,3<<((base+e*step+2*f)%8)) for e in range(2) for f in range(3)]
+ assert addressed_segment_observed[ident]==want,(ident,addressed_segment_observed[ident],want)
+d['addressed_segment_public_bus_sequences']=addressed_segment_observed
 result.write_text(json.dumps(d,indent=2)+'\n')

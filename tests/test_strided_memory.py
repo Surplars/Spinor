@@ -164,7 +164,7 @@ def main():
    setstart(1);run(ew,write,(BASE+(1<<63))&((1<<64)-1),stride=1<<63)
    config(ew<<3,0);run(ew,write,BASE+1,stride=3)
    config(ew<<3,min(2,16>>ew));mask(0);run(ew,write,BASE+1,stride=-1,masked=True)
-   for reserved in [1<<30,1<<28,1<<29]:run(ew,write,BASE,stride=0,illegal=True,reserved=reserved)
+   for reserved in [(1<<30)|(1<<28),1<<28,(1<<29)|(1<<28)]:run(ew,write,BASE,stride=0,illegal=True,reserved=reserved)
  # Real-TL stop/drain checks with independent sparse byte-prefix verification.
  initialRegs=regs.copy()
  for write in [False,True]:

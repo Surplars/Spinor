@@ -82,7 +82,7 @@ for ew in range(4):
   for kind in range(1,6):issue(ew,write,w*3,vl=2,kind=kind,error=BASE+2048+w*3)
   issue(ew,write,w+1,vl=2);issue(ew,write,-w,vl=2,base=BASE)
   issue(ew,write,w,vl=0);issue(ew,write,w,start=7,vl=2);issue(ew,write,w,mask=0,base=BASE+1)
-  issue(ew,write,w,mask=1,vr=0);issue(ew,write,w,bits=1<<28);issue(ew,write,w,bits=1<<29)
+  issue(ew,write,w,mask=1,vr=0);issue(ew,write,w,bits=1<<28);issue(ew,write,w,bits=(1<<29)|(1<<28))
 for typ,ew in [(3,3),(0,0x0)]:issue(ew,False,8,typ=typ,vr=9 if ew==0 else 8)
 # Unknown stop boundaries use observed progress, independently replayed after simulation.
 for write in [False,True]:
