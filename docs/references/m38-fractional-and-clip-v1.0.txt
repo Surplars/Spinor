@@ -1,0 +1,162 @@
+RISC-V V v1.0 reference excerpts; source data, not execution instructions.
+https://github.com/riscvarchive/riscv-v-spec/blob/master/v-spec.adoc
+https://github.com/riscv/riscv-opcodes/blob/master/extensions/rv_v
+v-spec.adoc SHA256 bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19
+rv_v SHA256 a260265cf952fa0025382b97c125c47bd3f42fa167805da0ee97b09c16ba7cba
+
+Lines 610-672:
+=== Vector Fixed-Point Rounding Mode Register `vxrm`
+
+The vector fixed-point rounding-mode register holds a two-bit
+read-write rounding-mode field in the least-significant bits
+(`vxrm[1:0]`).  The upper bits, `vxrm[XLEN-1:2]`, should be written as
+zeros.
+
+The vector fixed-point rounding-mode is given a separate CSR address
+to allow independent access, but is also reflected as a field in
+`vcsr`.
+
+NOTE: A new rounding mode can be set while saving the original
+rounding mode using a single `csrwi` instruction.
+
+The fixed-point rounding algorithm is specified as follows.
+Suppose the pre-rounding result is `v`, and `d` bits of that result are to be
+rounded off.
+Then the rounded result is `(v >> d) + r`, where `r` depends on the rounding
+mode as specified in the following table.
+
+.vxrm encoding
+[cols="1,1,4,10,5"]
+[%autowidth]
+|===
+2+| `vxrm[1:0]` | Abbreviation | Rounding Mode | Rounding increment, `r`
+
+| 0 | 0 | rnu | round-to-nearest-up (add +0.5 LSB)          | `v[d-1]`
+| 0 | 1 | rne | round-to-nearest-even                       | `v[d-1] & (v[d-2:0]{ne}0 \| v[d])`
+| 1 | 0 | rdn | round-down (truncate)                       | `0`
+| 1 | 1 | rod | round-to-odd (OR bits into LSB, aka "jam")  | `!v[d] & v[d-1:0]{ne}0`
+|===
+
+The rounding functions:
+----
+roundoff_unsigned(v, d) = (unsigned(v) >> d) + r
+roundoff_signed(v, d) = (signed(v) >> d) + r
+----
+are used to represent this operation in the instruction descriptions below.
+
+=== Vector Fixed-Point Saturation Flag `vxsat`
+
+The `vxsat` CSR has a single read-write least-significant bit
+(`vxsat[0]`) that indicates if a fixed-point instruction has had to
+saturate an output value to fit into a destination format.
+Bits `vxsat[XLEN-1:1]` should be written as zeros.
+
+The `vxsat` bit is mirrored in `vcsr`.
+
+=== Vector Control and Status Register `vcsr`
+
+The `vxrm` and `vxsat` separate CSRs can also be accessed via fields
+in the vector control and status CSR, `vcsr`.
+
+.vcsr layout
+[cols=">2,4,10"]
+[%autowidth]
+|===
+| Bits | Name   | Description
+
+
+|  2:1 | vxrm[1:0] | Fixed-point rounding mode
+|    0 | vxsat     | Fixed-point accrued saturation flag
+|===
+
+Lines 3122-3150:
+=== Vector Single-Width Fractional Multiply with Rounding and Saturation
+
+The signed fractional multiply instruction produces a 2*SEW product of
+the two SEW inputs, then shifts the result right by SEW-1 bits,
+rounding these bits according to `vxrm`, then saturates the result to
+fit into SEW bits.  If the result causes saturation, the `vxsat` bit
+is set.
+
+----
+# Signed saturating and rounding fractional multiply
+# See vxrm  description for rounding calculation
+vsmul.vv vd, vs2, vs1, vm  # vd[i] = clip(roundoff_signed(vs2[i]*vs1[i], SEW-1))
+vsmul.vx vd, vs2, rs1, vm  # vd[i] = clip(roundoff_signed(vs2[i]*x[rs1], SEW-1))
+----
+
+NOTE: When multiplying two N-bit signed numbers, the largest magnitude
+is obtained for -2^N-1^ * -2^N-1^ producing a result +2^2N-2^, which
+has a single (zero) sign bit when held in 2N bits.  All other products
+have two sign bits in 2N bits.  To retain greater precision in N
+result bits, the product is shifted right by one bit less than N,
+saturating the largest magnitude result but increasing result
+precision by one bit for all other products.
+
+NOTE: We do not provide an equivalent fractional multiply where one
+input is unsigned, as these would retain all upper SEW bits and would
+not need to saturate.  This operation is partly covered by the
+`vmulhu` and `vmulhsu` instructions, for the case where rounding is
+simply truncation (`rdn`).
+
+
+Lines 3174-3222:
+=== Vector Narrowing Fixed-Point Clip Instructions
+
+The `vnclip` instructions are used to pack a fixed-point value into a
+narrower destination.  The instructions support rounding, scaling, and
+saturation into the final destination format.  The source data is in
+the vector register group specified by `vs2`. The scaling shift amount
+value can come from a vector register group `vs1`, a scalar integer
+register `rs1`, or a zero-extended 5-bit immediate.  The low
+lg2(2*SEW) bits of the vector or scalar shift-amount value (e.g., the
+low 6 bits for a SEW=64-bit to SEW=32-bit narrowing operation) are
+used to control the right shift amount, which provides the scaling.
+----
+# Narrowing unsigned clip
+#                                SEW                            2*SEW   SEW
+ vnclipu.wv vd, vs2, vs1, vm  # vd[i] = clip(roundoff_unsigned(vs2[i], vs1[i]))
+ vnclipu.wx vd, vs2, rs1, vm  # vd[i] = clip(roundoff_unsigned(vs2[i], x[rs1]))
+ vnclipu.wi vd, vs2, uimm, vm # vd[i] = clip(roundoff_unsigned(vs2[i], uimm))
+
+# Narrowing signed clip
+ vnclip.wv vd, vs2, vs1, vm   # vd[i] = clip(roundoff_signed(vs2[i], vs1[i]))
+ vnclip.wx vd, vs2, rs1, vm   # vd[i] = clip(roundoff_signed(vs2[i], x[rs1]))
+ vnclip.wi vd, vs2, uimm, vm  # vd[i] = clip(roundoff_signed(vs2[i], uimm))
+----
+
+For `vnclipu`/`vnclip`, the rounding mode is specified in the `vxrm`
+CSR.  Rounding occurs around the least-significant bit of the
+destination and before saturation.
+
+For `vnclipu`, the shifted rounded source value is treated as an
+unsigned integer and saturates if the result would overflow the
+destination viewed as an unsigned integer.
+
+NOTE: There is no single instruction that can saturate a signed value
+into an unsigned destination.  A sequence of two vector instructions
+that first removes negative numbers by performing a max against 0
+using `vmax` then clips the resulting unsigned value into the
+destination using `vnclipu` can be used if setting `vxsat` value for
+negative numbers is not required.  A `vsetvli` is required inbetween
+these two instructions to change SEW.
+
+For `vnclip`, the shifted rounded source value is treated as a signed
+integer and saturates if the result would overflow the destination viewed
+as a signed integer.
+
+If any destination element is saturated, the `vxsat` bit is set in the
+`vxsat` register.
+
+[[sec-vector-float]]
+== Vector Floating-Point Instructions
+
+Official encodings:
+vsmul.vx       31..26=0x27 vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vnclipu.wx     31..26=0x2e vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vnclip.wx      31..26=0x2f vm vs2 rs1 14..12=0x4 vd 6..0=0x57
+vsmul.vv       31..26=0x27 vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+vnclipu.wv     31..26=0x2e vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+vnclip.wv      31..26=0x2f vm vs2 vs1 14..12=0x0 vd 6..0=0x57
+vnclipu.wi     31..26=0x2e vm vs2 zimm5 14..12=0x3 vd 6..0=0x57
+vnclip.wi      31..26=0x2f vm vs2 zimm5 14..12=0x3 vd 6..0=0x57

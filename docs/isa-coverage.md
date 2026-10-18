@@ -1,4 +1,4 @@
-# Spinor 指令覆盖矩阵（M37）
+# Spinor 指令覆盖矩阵（M38）
 
 实现范围以解码器和回归为准；本表不构成RVV/RVA23合规或misa.V发布依据。VLEN128、ELEN64，整数SEW8/16/32/64，浮点SEW32/64，LMUL m1/m2/m4/m8及合法分数LMUL。真实指令容量1，整数元素可流水重叠，归约为串行反馈。实验OoO模块未接入。
 
@@ -19,13 +19,13 @@
 | 标量/整组搬运 | M19新增vmv.x.s和vmv.s.x；M36新增vmv1r/2r/4r/8r.v，直接RAM整组复制 | 整组搬运忽略VL/LMUL/vill，按SEW解释vstart；FP标量搬运未实现 |
 | 宽化整数加减 | M33：vwaddu/vwadd/vwsubu/vwsub 的 vv/vx/wv/wx 共16种编码，SEW8/16/32，目的2×SEW/2×LMUL | 目的EMUL≤8；允许最高部分窄源重叠和同宽源原地写回；mask/vstart与不同EEW源别名检查 |
 | 宽化整数乘法 | M34：vwmulu/vwmulsu/vwmul vv/vx，SEW8/16/32，完整2×SEW积 | 原单DSP分时乘法器；目的EMUL≤8；高位重叠、mask/vstart |
-| 定点/宽窄/进位 | vzext/vsext.vf2/vf4/vf8；M32新增vnsrl/vnsra.wv/wx/wi，支持mask/vstart和宽窄源独立寻址；M37新增饱和加减10种、平均8种、舍入移位6种、carry/borrow15种 | vsmul、vnclip[u]尚缺 |
+| 定点/宽窄/进位 | vzext/vsext.vf2/vf4/vf8；M32新增vnsrl/vnsra.wv/wx/wi，支持mask/vstart和宽窄源独立寻址；M37新增饱和加减10种、平均8种、舍入移位6种、carry/borrow15种 ；M38补vsmul和vnclip[u] | 基础V定点族已覆盖目标ELEN范围，仍需完整架构差分 |
 | 访存 | 单位步长vle/vse，EEW8/16/32/64，独立EMUL、mask、物理故障/停止/vstart前缀 | 无strided/indexed/segments/FOF/whole-register/mask load-store；仅物理普通RAM |
 | CPU/SoC | SpinorVpu顶层、TL物理主端、monitor从端、独立VpuHostBoundary | 尚未接Orbital；需VM/PMP/一致性、精确异常和上下文集成 |
 | Linux监控 | ABI1.0，UIO用户态工具 | 未作真实内核/上板测试；不是计算作业驱动 |
 | 双发射/乱序 | 独立8项实验窗口 | 不属于当前Spinor执行数据通路 |
 
-完整性计划见[目标与验收清单](rvv-completion-plan.md)。近期优先继续补齐vsmul/vnclip、FP宽窄和访存模式，每轮核对资源和云端条件时序；Orbital程序闭环另行推进。只有指令、异常、上下文和内存模型都满足目标配置并完成架构测试后，才能宣称完整目标ISA支持。
+完整性计划见[目标与验收清单](rvv-completion-plan.md)。近期优先继续补齐FP宽窄、剩余FP指令和访存模式，每轮核对资源和云端条件时序；Orbital程序闭环另行推进。只有指令、异常、上下文和内存模型都满足目标配置并完成架构测试后，才能宣称完整目标ISA支持。
 
 M26已统一执行mask（EEW1）与v0数据源（SEW≥8）的保留编码检查，覆盖普通INT/FP、乘除、归约seed、滑移、gather及masked store/load v0。VL0、全mask关闭和vstart越过VL也先检查。EEW1的vcpop/vfirst、前缀mask、viota源可合法使用v0；FP单目selector0、标量寄存器编号0不是向量数据源。EI16仍独立检查不同EEW的数据/索引物理组重叠。新检查修复已知缺口，回归仍不构成完整架构合规证明。
 
@@ -42,3 +42,5 @@ M36宽化乘加以旧vd为2×SEW累加源；即使窄源只位于目的组最高
 M36整组搬运只允许vm=1、NREG=1/2/4/8及相应源/目的对齐；独立于当前VL、LMUL和vill。以evl=NREG×VLEN/SEW判断vstart是否越界，从vstart×SEW/8字节起复制，之前字节保留；vd=vs2为架构NOP。成功完成仍清零vstart。整组寄存器搬运不等于整组访存支持。
 
 M37 carry的vm=0仍执行全部body元素，v0提供进位/借位数据。饱和私有累计只在完成握手时并入vxsat；平均与舍入右移实现全部四种vxrm模式，不设置vxsat。详见[M37说明](m37-fixed-point.md)。
+
+M38 vsmul保留完整2×SEW乘积并按SEW-1舍入饱和；vnclip[u]先对2×SEW源舍入，再检查目标区间。默认IntegerMultiply接口不变，目标VPU使用可选分数配置共享原DSP。详见[M38说明](m38-fractional-and-clip.md)。

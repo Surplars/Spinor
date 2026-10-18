@@ -37,6 +37,7 @@ object Op {
   val move = 18; val merge = 19
   val mul = 20; val divu = 21; val div = 22; val remu = 23; val rem = 24
   val mulh = 25; val mulhu = 26; val mulhsu = 27
+  val fractionalMul = 28
   val width = 5
 }
 

@@ -53,6 +53,8 @@ object Generate extends App {
   val div = ChiselStage.emitSystemVerilog(new IntegerDivide,firtoolOpts=Array(
     "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays"))
   writeBundle("IntegerDivide",div)
+  writeBundle("IntegerMultiplyFractional",ChiselStage.emitSystemVerilog(new IntegerMultiply(enableFractional=true),firtoolOpts=Array(
+    "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays")))
   val mul = ChiselStage.emitSystemVerilog(new IntegerMultiply,firtoolOpts=Array(
     "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays"))
   writeBundle("IntegerMultiply",mul)

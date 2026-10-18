@@ -66,6 +66,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val fpOp=Reg(UInt(5.W)); val fpDestMultiply=Reg(Bool()); val fpReverse=Reg(Bool())
   val fpFlags=if(enableFp)RegInit(0.U(5.W)) else WireDefault(0.U(5.W))
   val c=Reg(UInt(64.W))
+  val fractional=RegInit(false.B)
   val fixed=RegInit(false.B);val fixedMode=Reg(UInt(4.W));val fixedCarry=Reg(Bool());val fixedFlags=RegInit(false.B)
   val integerMac=RegInit(false.B)
   val macDestMultiply=Reg(Bool());val macSubtract=Reg(Bool())
@@ -169,10 +170,13 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val saturatingEncoding=f6(5,2)===8.U && (vv || vx || (vi && !f6(1)))
   val averagingEncoding=f6(5,2)===2.U && (mulVV || mulVX)
   val roundingShiftEncoding=f6(5,1)===0x15.U && (vv || vx || vi)
-  val fixedEncoding=carryEncoding || saturatingEncoding || averagingEncoding || roundingShiftEncoding
+  val clipEncoding=f6(5,1)===0x17.U && (vv || vx || vi)
+  val narrowingGeometry=f6(5,2)===11.U && (vv || vx || vi)
+  val fractionalEncoding=f6===0x27.U && (vv || vx)
+  val fixedEncoding=carryEncoding || saturatingEncoding || averagingEncoding || roundingShiftEncoding || clipEncoding
   val fixedDecoded=Mux(carryEncoding,Cat(0.U(2.W),f6(0),f6(1)),
     Mux(saturatingEncoding,Cat(1.U(2.W),f6(1,0)),
-      Mux(averagingEncoding,Cat(2.U(2.W),f6(1,0)),Cat(6.U(3.W),f6(0)))))
+      Mux(averagingEncoding,Cat(2.U(2.W),f6(1,0)),Mux(clipEncoding,Cat(7.U(3.W),f6(0)),Cat(6.U(3.W),f6(0))))))
   val integerMacEncoding=f6(5,3)===5.U && f6(0) && (mulVV || mulVX)
   val extensionEncoding=mulVV && f6===0x12.U && vs1(4,3)===0.U && vs1(2,1)=/=0.U
   val narrowEncoding=f6(5,1)===0x16.U && (vv || vx || vi) // vnsrl/vnsra.wv/wx/wi
@@ -289,9 +293,10 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(fixedEncoding) {
     supported:= !carryEncoding || f6(0) || !vm
     decodedMask:=carryEncoding && f6(0)
-    decodedOp:=Mux(roundingShiftEncoding,Mux(f6(0),Op.sra.U,Op.srl.U),
+    decodedOp:=Mux(roundingShiftEncoding || clipEncoding,Mux(f6(0),Op.sra.U,Op.srl.U),
       Mux(f6(1),Op.sub.U,Op.add.U))
   }
+  when(fractionalEncoding) {supported:=true.B;decodedOp:=Op.fractionalMul.U}
   val producesMask=Mux(fpSupported,fpMask,decodedMask)
   // Register decode before alignment/overlap/permission checks in the FP top.
   val selectedOp=if(enableFp)Reg(UInt(Op.width.W)) else decodedOp
@@ -350,14 +355,14 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val extensionCount=selectedExtensionGeometry(5,2)
     val extensionAlignment=VectorConfig.countAlignment(extensionCount)
     val narrowAlignment=VectorConfig.narrowAlignment(vtype(2,0))
-    val sourceAlignment=Mux(extensionEncoding,extensionAlignment,Mux(narrowEncoding || wideSource2,narrowAlignment,alignment))
+    val sourceAlignment=Mux(extensionEncoding,extensionAlignment,Mux(narrowingGeometry || wideSource2,narrowAlignment,alignment))
     val extensionOverlap=VectorConfig.alignedGroupsOverlap(vd,alignment,vs2,extensionAlignment)
     val extensionHighPart=(vd^vs2)===(alignment^extensionAlignment)
     val extensionBad=extensionEncoding && (extensionCount===0.U ||
       (extensionOverlap && !(selectedExtensionGeometry(6) && extensionHighPart)))
     // Destination may only occupy the lowest part of its wider source.
     // The two explicit sources cannot share a physical register at different EEW.
-    val narrowBad=narrowEncoding && (vtype(4,3)===3.U || vtype(2,0)===3.U ||
+    val narrowBad=narrowingGeometry && (vtype(4,3)===3.U || vtype(2,0)===3.U ||
       (vd=/=vs2 && VectorConfig.alignedGroupsOverlap(vd,alignment,vs2,narrowAlignment)) ||
       (vv && VectorConfig.alignedGroupsOverlap(vs1,alignment,vs2,narrowAlignment)))
     def badWidenOverlap(source:UInt):Bool =
@@ -406,10 +411,10 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       val destinationSew=Mux(selectedMaskLogic || selectedMaskPrefix,0.U,
         Mux(widenEncoding,Cat(vtype(4)^vtype(3),!vtype(3)),vtype(4,3)))
       sew:=destinationSew;op:=selectedOp;comparison:=selectedMask
-      arithmeticSew:=Mux(anyWidenReduction || narrowEncoding,
+      arithmeticSew:=Mux(anyWidenReduction || narrowingGeometry,
         Cat(destinationSew(1)||destinationSew(0),!destinationSew(0)),destinationSew)
       sourceSew:=Mux(extensionEncoding,selectedExtensionGeometry(1,0),
-        Mux(narrowEncoding || wideSource2,Cat(vtype(4)^vtype(3),!vtype(3)),vtype(4,3)))
+        Mux(narrowingGeometry || wideSource2,Cat(vtype(4)^vtype(3),!vtype(3)),vtype(4,3)))
       reduction:=selectedReduction
       maskLogic:=selectedMaskLogic;scalarMove:=selectedScalarMove
       maskScalar:=selectedMaskScalar
@@ -439,6 +444,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   }
   when(state === decode) {
     // Keep instruction decode out of the multiplier/ALU operand paths.
+    fractional:=fractionalEncoding
     fixed:=fixedEncoding;fixedMode:=fixedDecoded;fixedCarry:=carryEncoding && !vm;fixedFlags:=false.B
     integerMac:=integerMacEncoding || widenMac;macDestMultiply:=integerMacEncoding && !f6(2);macSubtract:=integerMacEncoding && f6(1)
     reverseInteger:=f6===3.U && (vx || vi)
@@ -576,7 +582,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         destination := Mux(comparison,vd,(vd+offset(6,4))(4,0))
         val widthMask = VecInit(Seq(1,3,15,255).map(_.U(16.W)))(sew)
         byteMask := (widthMask<<offset(3,0))(15,0)
-        when(extensionEncoding || narrowEncoding || widenEncoding) {
+        when(extensionEncoding || narrowingGeometry || widenEncoding) {
           val source=(index<<sourceSew)(6,0)
           sourceOffset:=source(6,4);bitOffset:=Cat(source(3,0),0.U(3.W))
         }
@@ -721,7 +727,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       1.U->Cat(Fill(48,value(15)),value(15,0)),
       2.U->Cat(Fill(32,value(31)),value(31,0))))
     a := Mux(wideningReductionEncoding && f6(0),signExtended,value&elementMask)
-    when(narrowEncoding) {a:=value&accumulatorMask}
+    when(narrowingGeometry) {a:=value&accumulatorMask}
     when(widenEncoding) {a:=Mux(wideSource2,value&elementMask,Mux(widenSignedA,signExtended,value&configuredMask))}
     val immediate = Cat(Fill(59,vs1(4)),vs1)
     val isShift = op === Op.sll.U || op === Op.srl.U || op === Op.sra.U
@@ -745,12 +751,12 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
       val sourceMask=VecInit(Seq(8,16,32,64).map(w=>((BigInt(1)<<w)-1).U(64.W)))(sourceSew)
       b:=Mux(vs1(0),signExtended,value&sourceMask)
     }
-    when((narrowEncoding && vv) || (widenEncoding && mulVV)) {
+    when((narrowingGeometry && vv) || (widenEncoding && mulVV)) {
       // The second vector uses configured SEW, independently of the vs2 EEW.
       val offset=(index<<Mux(widenEncoding,vtype(4,3),sew))(6,0)
       sourceOffset:=offset(6,4);bitOffset:=Cat(offset(3,0),0.U(3.W))
     }
-    when((widenMultiply || widenMac) && mulVX) {
+    when(((widenMultiply || widenMac) && mulVX) || (clipEncoding && !vv)) {
       // Serialized multiply retires using bitOffset, unlike tag-based ALU writes.
       bitOffset:=Cat((index<<sew)(3,0),0.U(3.W))
     }
@@ -779,7 +785,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(state===captureC) { c:=ramElement&elementMask; state:=launch }
   val lane = Module(new IntegerLane(true,chunkBits))
   lane.io.flush := io.flush
-  val isMul=op===Op.mul.U || op===Op.mulh.U || op===Op.mulhu.U || op===Op.mulhsu.U
+  val isMul=op===Op.fractionalMul.U || op===Op.mul.U || op===Op.mulh.U || op===Op.mulhu.U || op===Op.mulhsu.U
   val isDiv=op===Op.div.U || op===Op.divu.U || op===Op.rem.U || op===Op.remu.U
   lane.io.in.valid := ((state === launch && !fixed && !fp && !isMul && !isDiv) || state===macLaunch) && !io.flush
   lane.io.in.bits.a := Mux(state===macLaunch && !macDestMultiply,c,a)
@@ -799,12 +805,14 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(streaming && state===awaitResult && outstanding===0.U) { state:=finish }
   when(lane.io.out.fire && streaming) { assert(outstanding=/=0.U,"integer response without owner") }
   when(io.completion.valid) { assert(outstanding===0.U,"completion before element drain") }
-  val multiplier=Module(new IntegerMultiply)
+  val multiplier=Module(new IntegerMultiply(enableFractional=true))
+  multiplier.fractionalRounding.get:=vxrm
   multiplier.io.flush:=io.flush;multiplier.io.in.bits:=lane.io.in.bits
   multiplier.io.in.bits.a:=Mux(integerMac && macDestMultiply,c,a)
   multiplier.io.in.valid:=state===launch && !fp && isMul && !io.flush
   multiplier.io.out.ready:=state===awaitResult && !fp && isMul && !io.flush
   when(multiplier.io.in.fire) { state:=awaitResult }
+  when(multiplier.io.out.fire && fractional) {fixedFlags:=fixedFlags || multiplier.fractionalSaturated.get}
   when(multiplier.io.out.fire && integerMac) {
     // Reuse the reduction scratch for the registered low product. Keep this
     // return mux off the RAM -> shift/extend -> a/b critical read path.
@@ -896,7 +904,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
           }
         }.otherwise {
           when(hasElements) { rf.io.commit := true.B }
-          when(fixed) {vxsat:=vxsat || fixedFlags}
+          when(fixed || fractional) {vxsat:=vxsat || fixedFlags}
           if(enableFp) { when(fp) { fflags:=fflags | fpFlags } }
           vstart := 0.U
         }
