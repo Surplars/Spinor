@@ -1,0 +1,10 @@
+{
+  "status": "CANCELLED_NOT_A_HARDWARE_FAILURE",
+  "reason": "Oversized optional mapped matrix; replace with bounded 26-command acceptance",
+  "method": "Temporarily invalidated only the oversized run golden RF fixtures to trigger fail-fast cancellation; then restored every byte from a private backup",
+  "files": 529,
+  "fixtures_restored": true,
+  "observed_process_exit": 130,
+  "fixtures_restored_and_verified": true,
+  "scope": "Development-only cancellation; excluded from all positive verification evidence"
+}
