@@ -5,11 +5,12 @@
 
 **当前是含整数与部分浮点的向量原型，不是完整 RVV，尚未接入 Orbital CPU。**
 尚未实现完整 V / Zvfhmin / Zvbb / Zvkt；不能向软件发布 `misa.V` 或 RVA23 合规声明。
-命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。当前交付 **M48**：新增32种FOF单位步长/分段加载；元素0错误保留VL并报异常，后续元素错误原子缩短VL；复用原进度提交和RAM数据通路。保留四种规模预设、VLEN128/ELEN64、单lane、容量1。见 [M48说明](docs/m48-fault-only-first.md)、[规模参数](docs/m39-configurations-and-fp-transfers.md)、[完整性计划](docs/rvv-completion-plan.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
+命名为 **Valence SoC / Orbital CPU / Spinor VPU**。公开顶层类为 `SpinorVpu`，保留内部 `Lishi*` / `RamVector*` 兼容类。硬件功能基线 **M48**：新增32种FOF单位步长/分段加载；元素0错误保留VL并报异常，后续元素错误原子缩短VL；复用原进度提交和RAM数据通路。保留四种规模预设、VLEN128/ELEN64、单lane、容量1。见 [M48说明](docs/m48-fault-only-first.md)、[规模参数](docs/m39-configurations-and-fp-transfers.md)、[完整性计划](docs/rvv-completion-plan.md)、[CPU协议](docs/cpu-spinor-contract.md)、[ISA覆盖矩阵](docs/isa-coverage.md)。尚未接入实际Orbital；ARM计算任务队列也未实现。继续使用[云端条件时序预算](docs/m13-timing.md)，不是器件STA。
 仅物理普通 RAM、单事务，访存采用逐元素提交和延迟停止；不支持 MMIO/分页/PMP/一致性，尚未接入 Orbital CPU。
 **访存期间 flush 必须等待 Completion/status，不能按算术指令立即丢弃 token。** 见 [M10 合同](docs/m10-memory.md)。
 已加入 [M8 的 220 组性能对照](archive/m8/reports/performance.md)，并检查输出结果。
-M48保留两个顶层固定100ps/段云端条件预算≤3.333ns的交付门槛，实际结果及输入散列见 [M48报告](reports/m48/evaluation.md)。完整SoC时钟/接口尚未签核。
+**最新交付 M49：** LLVM 19.1.7编译的普通C自动向量化及标准RVV intrinsics程序，实际执行ELF控制流和VL循环；四预设RTL/网表验证，硬件与M48保持一致。见[M49说明](docs/m49-compiled-programs.md)和[M49报告](reports/m49/evaluation.md)。尚不是Orbital整核程序或独立ISA模型差分。
+保留两个顶层固定100ps/段云端条件预算≤3.333ns的交付门槛，当前结果及输入散列见 [M49报告](reports/m49/evaluation.md)。完整SoC时钟/接口尚未签核。
 本轮尚未经过Vivado实现，不能继承M31通过结论。最新已验证的本地结果和输入散列见 [M31 本地报告](reports/local-m31/evaluation.md)，原 [M31 云端报告](reports/m31/evaluation.md) 保留交付时的状态；[M5 实际时序与云端参考](reports/cloud-m5/evaluation.md) 保留为早期物理基线。
 命名与设计方向见 [项目介绍](docs/lishi.md)。
 M4 原始报告保存在 [归档](archive/m4/reports/evaluation.md)。后续本地 Vivado 的 M4 OOC 结果及其时钟限制另记录在 M5 报告中。
@@ -24,8 +25,8 @@ M1/M2 的原始证据保存在 [M1](archive/m1/reports/evaluation.md) / [M2](arc
 git clone https://github.com/Surplars/Spinor.git
 cd Spinor
 make bootstrap
-python3 scripts/verify_m48.py
-python3 scripts/package.py --milestone m48
+python3 scripts/verify_m49.py
+make package-m49
 ```
 
 验证入口会准备固定版本 SoftFloat 和 RapidWright；首次执行需要网络访问工具锁文件中的下载地址。
@@ -116,8 +117,8 @@ M2 的 LMUL1 依赖 vadd 比 M1 慢：当前优先验证 RAM 和提交机制，�
 ## 尚未完成
 
 FP16数据格式/Zvfhmin及其他目标扩展的完整审计；
-完整向量LSU：分段、FOF，以及MMIO、译址/PMP/一致性和核级精确异常；
-OS上下文、Valence整核接入、编译器程序闭环及完整架构验证。
+向量LSU的完整架构验证，以及MMIO、译址/PMP/一致性和核级精确异常；
+OS上下文、Valence整核接入、更广编译器程序及完整架构验证。
 开发清单和边界见 [架构合同](docs/architecture.md)。
 独立原型的 FCSR 仍需与 Valence 标量 FP 状态统一，不能在整核中并存两份架构 FCSR。
 

@@ -1,0 +1,27 @@
+{
+  "clang-19": {
+    "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/clang-19_19.1.7-3~deb12u1_amd64.deb",
+    "sha256": "89ab931a9bbfd567a76df3141af5d5ec67b01d800150e614f2c9bf4671da9b08",
+    "file": "clang-19_19.1.7-3~deb12u1_amd64.deb"
+  },
+  "libclang-cpp19": {
+    "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/libclang-cpp19_19.1.7-3~deb12u1_amd64.deb",
+    "sha256": "5daa784e1d747db320c16604729ffa805e6bfd72d3ac0b7cb0ee5f1a7ebc8aae",
+    "file": "libclang-cpp19_19.1.7-3~deb12u1_amd64.deb"
+  },
+  "libclang-common-19-dev": {
+    "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/libclang-common-19-dev_19.1.7-3~deb12u1_amd64.deb",
+    "sha256": "811c2d398ad772204ec05ffde485cbbc4c210abc5dcf0068ff9ca3e647591ce7",
+    "file": "libclang-common-19-dev_19.1.7-3~deb12u1_amd64.deb"
+  },
+  "libllvm19": {
+    "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/libllvm19_19.1.7-3~deb12u1_amd64.deb",
+    "sha256": "6edf3a8b28495cdba883d9760e0dca1a81983fc497a5f989dc64d0d96d23b4aa",
+    "file": "libllvm19_19.1.7-3~deb12u1_amd64.deb"
+  },
+  "lld-19": {
+    "url": "https://deb.debian.org/debian/pool/main/l/llvm-toolchain-19/lld-19_19.1.7-3~deb12u1_amd64.deb",
+    "sha256": "416e084363a16a7060eaa6343ed641dfe864b8208c39170ee00a5679e4b486a2",
+    "file": "lld-19_19.1.7-3~deb12u1_amd64.deb"
+  }
+}

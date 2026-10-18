@@ -43,7 +43,7 @@ context是独立调试/保存恢复端口，只能在CPU已排空且边界无所
 
 ## 已验证范围
 
-tests/test_host_boundary.py使用模拟CPU/VPU对端，RTL和映射网表各验证256次事务：240次返回、16次算术取消；含128种原始cause/访存方向组合、6类失败关闭检查，以及错误head、标量访存/FP未排空、VPU反压、回复反压、访存stop、fault/illegal原因与80位高位身份。不是实际CPU数值程序或中断软件测试。`test_memory_boundary.py`另将真实LSU和真实宿主边界连接，RTL/网表各验证26例访问前故障、完整tval/身份和回复保持；不含RAM响应或实际Orbital。Spinor实际数值/访存由独立顶层回归覆盖。
+tests/test_host_boundary.py使用模拟CPU/VPU对端，RTL和映射网表各验证256次事务：240次返回、16次算术取消；含128种原始cause/访存方向组合、6类失败关闭检查，以及错误head、标量访存/FP未排空、VPU反压、回复反压、访存stop、fault/illegal原因与80位高位身份。不是实际CPU数值程序或中断软件测试。`test_memory_boundary.py`另将真实LSU和真实宿主边界连接，RTL/网表各验证106例访问前故障、完整tval/身份和回复保持；不含RAM响应或实际Orbital。Spinor实际数值/访存由独立顶层回归覆盖。
 
 M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真；CPU必须根据回显原指令解码FPR/GPR目标，不能直接将所有标量结果送入整数RF。SEW32结果已NaN-box为FLEN64。参数化整数配置移除FP CSR端口并拒绝FP指令；完整配置对外布局不变。
 
@@ -74,3 +74,7 @@ M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真�
 ## M48 FOF与VL
 
 FOF元素0错误按原异常处理，原VL保持；后续元素错误则正常完成并缩短VL、清零vstart。CPU不能仅根据总线错误判断该指令要重试，须使用最终completion/status；FOF后的CSR读取和后续算术必须看到已提交的新VL。即使没有RF写回，VL缩短也改变向量架构状态，宿主仍须正确处理VS dirty。分段被截短的当前段可以保留已加载字段；不应把这些字段算入新的VL。停止保持原VL；同拍同步错误按FOF规则优先处理。调试watchpoint不能当作可截短的普通访问错误交给此接口。见[M48](m48-fault-only-first.md)。
+
+## M49程序适配器
+
+新增ELF测试执行器直接驱动公共VPU命令端，动态取指并使用实际VL/标量返回执行循环；它不经过真实Orbital，也未替代CPU退休边界、VS/FS或异常管理。程序回归通过不能作为本合同的整核集成验收。见[M49验证范围](m49-compiled-programs.md)。

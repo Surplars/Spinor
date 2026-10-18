@@ -11,7 +11,8 @@
 | `scripts/` | 工具准备、综合、条件时序预算、报告与打包 |
 | `software/monitor/` | Linux UIO monitor 用户态工具及寄存器定义 |
 | `docs/` | 指令覆盖、CPU/TileLink 协议和设计记录 |
-| `reports/m48/` | 当前 M48 评估及源码/证据 SHA-256 清单 |
+| `reports/m49/` | 当前编译器程序、固定时序和源码/证据 SHA-256 清单 |
+| `software/programs/` | 无运行库C/intrinsics程序、链接脚本及固定LLVM包散列 |
 | `archive/` | 冻结的历史报告、RTL 与回归输入 |
 | `third_party/` | 固定版本硬件依赖、仿真模型及许可证 |
 
@@ -70,3 +71,7 @@ M48综合包装器复用原始`mapper.run`，按独立顶层并行，默认4任�
 M48冻结`archive/m47/`，新增32种FOF。`MemoryRamVector`在访存专用包装层原子提交VL/vstart；原算术源码/生成RTL与M42一致时才复用124/24项证据。旧单位步长分段拒绝用例将lumop16改用保留lumop4，避免把新FOF当成非法编码。当前FOF独立/集成验证不能替代架构差分或真实SoC验收。
 
 M48证据复用将RamVectorFpMemory/Memory16及其生成验证层归入访存范围，共排除12份访存专用层；纯算术RamVectorFp/16的硬件和断言层仍严格校验，合计1228份依赖/证据。10项策略测试分别检查纯算术断言变更必须失效，以及访存专用断言变更只能复用算术证据；当前所有访存验证层仍按本轮源码重生成并在RTL集成仿真中执行。
+
+当前M49入口为`python3 scripts/verify_m49.py`、`make package-m49`。前置M48矩阵在硬件/执行依赖与全部证据散列一致时复用；允许变化的交付说明文件逐项列在M49 receipt，不能跳过硬件或测试修改。冷环境先执行完整M48前置矩阵；本轮新增的10组程序矩阵、默认及四预设重生成、固定预算重新执行。发布包为`spinor-vpu-m49.zip`，CRC/散列/冷基线审计方式保持。原M48报告保留其当时的交付状态。
+
+M49的测试专用RV64适配器从ELF执行实际控制流和VPU返回值，未使用Orbital、Spike或Sail，也不支持Linux/特权/中断。普通C自动向量化与intrinsics的覆盖边界、工具依赖和单项命令见[M49](m49-compiled-programs.md)。

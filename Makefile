@@ -598,3 +598,10 @@ verify-m48:
 package-m48:
 	$(PYTHON) scripts/package.py --milestone m48
 	$(PYTHON) scripts/audit_package.py --milestone m48
+
+.PHONY: verify-m49 package-m49
+verify-m49:
+	$(PYTHON) scripts/verify_m49.py
+package-m49:
+	$(PYTHON) scripts/package.py --milestone m49
+	$(PYTHON) scripts/audit_package.py --milestone m49
