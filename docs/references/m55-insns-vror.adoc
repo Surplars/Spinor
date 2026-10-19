@@ -1,0 +1,129 @@
+[[insns-vror, Vector Rotate Right]]
+= vror.[vv,vx,vi]
+
+Synopsis::
+Vector rotate right by vector/scalar/immediate.
+
+Mnemonic::
+vror.vv vd, vs2, vs1, vm +
+vror.vx vd, vs2, rs1, vm +
+vror.vi vd, vs2, uimm, vm
+
+Encoding (Vector-Vector)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVV'},
+{bits: 5, name: 'vs1'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 6, name: '010100'},
+]}
+....
+
+Encoding (Vector-Scalar)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVX'},
+{bits: 5, name: 'rs1'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 6, name: '010100'},
+]}
+....
+
+Encoding (Vector-Immediate)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVI'},
+{bits: 5, name: 'uimm[4:0]'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 1, name: 'i5'},
+{bits: 5, name: '01010'},
+]}
+....
+
+Vector-Vector Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2"]
+|===
+|Register
+|Direction
+|Definition
+
+| Vs1 | input  | Rotate amount
+| Vs2 | input  | Data
+| Vd  | output | Rotated data 
+|===
+
+Vector-Scalar/Immediate Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2"]
+|===
+|Register
+|Direction
+|Definition
+
+| Rs1/imm | input  | Rotate amount
+| Vs2     | input  | Data
+| Vd      | output | Rotated data
+|===
+
+
+Description:: 
+A bitwise right rotation is performed on each element of `vs2`.
+
+The elements in `vs2` are rotated right by the rotate amount specified by either 
+the corresponding elements of `vs1` (vector-vector), integer register `rs1`
+(vector-scalar), or an immediate value (vector-immediate).
+Only the low log2(`SEW`) bits of the rotate-amount value are used, all other
+bits are ignored.
+
+// This instruction must always be implemented such that its execution latency does not depend
+// on the data being operated upon.
+
+Operation::
+[source,sail]
+--
+function clause execute (VROR_VV(vs2, vs1, vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=SEW, i,
+      get_velem(vs2, i) >>> (get_velem(vs1, i) & (SEW-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+
+function clause execute (VROR_VX(vs2, rs1, vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=SEW, i, 
+      get_velem(vs2, i) >>> (X(rs1) & (SEW-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+
+function clause execute (VROR_VI(vs2, imm[5:0], vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=SEW, i, 
+      get_velem(vs2, i) >>> (imm[5:0] & (SEW-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+--
+
+Included in::
+<<zvbb>>, <<zvkb>>, <<zvkn>>, <<zvknc>>, <<Zvkng>>, <<zvks>>
+<<Zvksc>>, <<Zvksg>>

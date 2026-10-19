@@ -1,0 +1,110 @@
+[[insns-vrol, Vector Rotate Left]]
+= vrol.[vv,vx]
+
+Synopsis::
+Vector rotate left by vector/scalar.
+
+Mnemonic::
+vrol.vv vd, vs2, vs1, vm +
+vrol.vx vd, vs2, rs1, vm +
+
+Encoding (Vector-Vector)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVV'},
+{bits: 5, name: 'vs1'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 6, name: '010101'},
+]}
+....
+
+Encoding (Vector-Scalar)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVX'},
+{bits: 5, name: 'rs1'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 6, name: '010101'},
+]}
+....
+
+Vector-Vector Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2"]
+|===
+|Register
+|Direction
+|Definition
+
+| Vs1 | input  | Rotate amount
+| Vs2 | input  | Data
+| Vd  | output | Rotated data 
+|===
+
+Vector-Scalar Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2"]
+|===
+|Register
+|Direction
+|Definition
+
+| Rs1     | input  | Rotate amount
+| Vs2     | input  | Data
+| Vd      | output | Rotated data
+|===
+
+Description:: 
+A bitwise left rotation is performed on each element of `vs2`
+
+The elements in `vs2` are rotated left by the rotate amount specified by either 
+the corresponding elements of `vs1` (vector-vector), or integer register `rs1`
+(vector-scalar).
+Only the low log2(`SEW`) bits of the rotate-amount value are used, all other
+bits are ignored.
+
+// This instruction must always be implemented such that its execution latency does not depend
+// on the data being operated upon.
+
+[NOTE]
+====
+There is no immediate form of this instruction (i.e., `vrol.vi`) as the same result can be achieved by negating
+the rotate amount and using the immediate form of rotate right instruction (i.e., vror.vi).
+====
+
+Operation::
+[source,sail]
+--
+function clause execute (VROL_VV(vs2, vs1, vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=SEW, i,
+      get_velem(vs2, i) <<< (get_velem(vs1, i) & (SEW-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+
+function clause execute (VROL_VX(vs2, rs1, vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=SEW, i, 
+      get_velem(vs2, i) <<< (X(rs1) & (SEW-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+
+--
+
+Included in::
+<<zvbb>>, <<zvkb>>, <<zvkn>>, <<zvknc>>, <<Zvkng>>, <<zvks>>
+<<Zvksc>>, <<Zvksg>>

@@ -1,0 +1,11 @@
+SpinorVpu 50 ps/link 2.718 ns vpu._vpu_io_completion_bits_instruction[15] -> vpu.vpu.estimate.casez_tmp[2].D
+SpinorVpu 100 ps/link 3.368 ns vpu._vpu_io_completion_bits_instruction[15] -> vpu.vpu.estimate.casez_tmp[2].D
+SpinorVpu 200 ps/link 4.668 ns vpu._vpu_io_completion_bits_instruction[15] -> vpu.vpu.estimate.casez_tmp[2].D
+LishiVpuMemory 50 ps/link 2.682 ns engine._GEN_0[5] -> engine.addressCarry[0].D
+LishiVpuMemory 100 ps/link 3.232 ns engine._GEN_0[5] -> engine.addressCarry[0].D
+LishiVpuMemory 200 ps/link 4.332 ns engine._GEN_0[5] -> engine.addressCarry[0].D
+Traceback (most recent call last):
+  File "/workspace/Spinor/scripts/check_timing_gate.py", line 33, in <module>
+    ns=scenario['worst']['budget_ns'];assert ns<=1000/300,(top,ns,'exceeds fixed 300 MHz conditional budget')
+                                             ^^^^^^^^^^^^
+AssertionError: ('SpinorVpu', 3.368, 'exceeds fixed 300 MHz conditional budget')

@@ -38,7 +38,9 @@ object Op {
   val mul = 20; val divu = 21; val div = 22; val remu = 23; val rem = 24
   val mulh = 25; val mulhu = 26; val mulhsu = 27
   val fractionalMul = 28
-  val width = 5
+  val andn = 29; val brev8 = 30; val brev = 31; val rev8 = 32
+  val clz = 33; val ctz = 34; val cpop = 35; val rol = 36; val ror = 37
+  val width = 6
 }
 
 class LaneRequest extends Bundle {

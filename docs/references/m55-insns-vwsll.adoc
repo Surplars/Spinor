@@ -1,0 +1,126 @@
+[[insns-vwsll, Vector Widening Shift Left Logical]]
+= vwsll.[vv,vx,vi]
+
+Synopsis::
+Vector widening shift left logical by vector/scalar/immediate.
+
+Mnemonic::
+vwsll.vv vd, vs2, vs1, vm +
+vwsll.vx vd, vs2, rs1, vm +
+vwsll.vi vd, vs2, uimm, vm
+
+Encoding (Vector-Vector)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVV'},
+{bits: 5, name: 'vs1'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 6, name: '110101'},
+]}
+....
+
+Encoding (Vector-Scalar)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVX'},
+{bits: 5, name: 'rs1'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 6, name: '110101'},
+]}
+....
+
+Encoding (Vector-Immediate)::
+[wavedrom, , svg]
+....
+{reg:[
+{bits: 7, name: 'OP-V'},
+{bits: 5, name: 'vd'},
+{bits: 3, name: 'OPIVI'},
+{bits: 5, name: 'uimm[4:0]'},
+{bits: 5, name: 'vs2'},
+{bits: 1, name: 'vm'},
+{bits: 6, name: '110101'},
+]}
+....
+
+Vector-Vector Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2"]
+|===
+|Register
+|Direction
+|Definition
+
+| Vs1 | input  | Shift amount
+| Vs2 | input  | Data
+| Vd  | output | Shifted data 
+|===
+
+Vector-Scalar/Immediate Arguments::
+
+[%autowidth]
+[%header,cols="4,2,2,2"]
+|===
+|Register
+|Direction
+|EEW
+|Definition
+
+| Rs1/imm | input  | SEW   | Shift amount
+| Vs2     | input  | SEW   | Data
+| Vd      | output | 2*SEW | Shifted data
+|===
+
+
+Description:: 
+A widening logical shift left is performed on each element of `vs2`.
+
+The elements in `vs2` are zero-extended to 2*`SEW` bits, then shifted left
+by the shift amount specified by either
+the corresponding elements of `vs1` (vector-vector), integer register `rs1`
+(vector-scalar), or an immediate value (vector-immediate).
+Only the low log2(2*`SEW`) bits of the shift-amount value are used, all other
+bits are ignored.
+
+Operation::
+[source,sail]
+--
+function clause execute (VWSLL_VV(vs2, vs1, vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=2*SEW, i,
+      get_velem(vs2, i) << (get_velem(vs1, i) & ((2*SEW)-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+
+function clause execute (VWSLL_VX(vs2, rs1, vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=2*SEW, i, 
+      get_velem(vs2, i) << (X(rs1) & ((2*SEW)-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+
+function clause execute (VWSLL_VI(vs2, uimm[4:0], vd)) = {
+  foreach (i from vstart to vl - 1) {
+    set_velem(vd, EEW=2*SEW, i, 
+      get_velem(vs2, i) << (uimm[4:0] & ((2*SEW)-1))
+    )
+  }
+  RETIRE_SUCCESS
+}
+--
+
+Included in::
+<<zvbb>>

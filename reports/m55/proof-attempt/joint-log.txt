@@ -1,0 +1,1139 @@
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.70+16 (git sha1 3bb533450, Release, Clang /usr/bin/clang++ 21.1.8)
+
+-- Executing script file `/workspace/Spinor/build/m55/bit-proof/proof.ys' --
+
+1. Executing Verilog-2005 frontend: /workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv
+Parsing SystemVerilog input from `/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv' to AST representation.
+Generating RTLIL representation for module `\ram_8x72'.
+Generating RTLIL representation for module `\Queue8_LaneResponse'.
+Generating RTLIL representation for module `\BitManipPipeline'.
+Generating RTLIL representation for module `\IntegerLaneSplit'.
+Successfully finished Verilog frontend.
+
+2. Executing Verilog-2005 frontend: /workspace/Spinor/tests/m55_bitproof.sv
+Parsing SystemVerilog input from `/workspace/Spinor/tests/m55_bitproof.sv' to AST representation.
+Generating RTLIL representation for module `\BitManipProof'.
+Successfully finished Verilog frontend.
+
+3. Executing PREP pass.
+
+3.1. Executing HIERARCHY pass (managing design hierarchy).
+
+3.1.1. Analyzing design hierarchy..
+Top module:  \BitManipProof
+Used module:     \BitManipPipeline
+
+3.1.2. Analyzing design hierarchy..
+Top module:  \BitManipProof
+Used module:     \BitManipPipeline
+Removing unused module `\IntegerLaneSplit'.
+Removing unused module `\Queue8_LaneResponse'.
+Removing unused module `\ram_8x72'.
+Removed 3 unused modules.
+
+3.2. Executing PROC pass (convert processes to netlists).
+
+3.2.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+3.2.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Removed 1 dead cases from process $proc$/workspace/Spinor/tests/m55_bitproof.sv:35$747 in module BitManipProof.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/tests/m55_bitproof.sv:35$747 in module BitManipProof.
+Marked 129 switch rules as full_case in process $proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676 in module BitManipProof.
+Marked 65 switch rules as full_case in process $proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633 in module BitManipProof.
+Marked 33 switch rules as full_case in process $proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606 in module BitManipProof.
+Marked 17 switch rules as full_case in process $proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587 in module BitManipProof.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/tests/m55_bitproof.sv:4$566 in module BitManipProof.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:265$83 in module BitManipPipeline.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:242$70 in module BitManipPipeline.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:170$35 in module BitManipPipeline.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:156$34 in module BitManipPipeline.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:142$33 in module BitManipPipeline.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:128$32 in module BitManipPipeline.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:112$31 in module BitManipPipeline.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:99$30 in module BitManipPipeline.
+Marked 1 switch rules as full_case in process $proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:84$24 in module BitManipPipeline.
+Removed a total of 1 dead cases.
+
+3.2.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 0 redundant assignments.
+Promoted 434 assignments to connections.
+
+3.2.4. Executing PROC_INIT pass (extract init attributes).
+Found init rule in `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:3$754'.
+  Set init value: \step = 4'0000
+
+3.2.5. Executing PROC_ARST pass (detect async resets in processes).
+
+3.2.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~257 debug messages>
+
+3.2.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:3$754'.
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$753'.
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$752'.
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$751'.
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$750'.
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:35$747'.
+     1/1: $1$mem2reg_rd$\expected$/workspace/Spinor/tests/m55_bitproof.sv:35$565_DATA[63:0]$749
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+     1/129: $1\g[3].ref[63:0]
+     2/129: $64\g[3].trailing[6:0]
+     3/129: $63\g[3].trailing[6:0]
+     4/129: $62\g[3].trailing[6:0]
+     5/129: $61\g[3].trailing[6:0]
+     6/129: $60\g[3].trailing[6:0]
+     7/129: $59\g[3].trailing[6:0]
+     8/129: $58\g[3].trailing[6:0]
+     9/129: $57\g[3].trailing[6:0]
+    10/129: $56\g[3].trailing[6:0]
+    11/129: $55\g[3].trailing[6:0]
+    12/129: $54\g[3].trailing[6:0]
+    13/129: $53\g[3].trailing[6:0]
+    14/129: $52\g[3].trailing[6:0]
+    15/129: $51\g[3].trailing[6:0]
+    16/129: $50\g[3].trailing[6:0]
+    17/129: $49\g[3].trailing[6:0]
+    18/129: $48\g[3].trailing[6:0]
+    19/129: $47\g[3].trailing[6:0]
+    20/129: $46\g[3].trailing[6:0]
+    21/129: $45\g[3].trailing[6:0]
+    22/129: $44\g[3].trailing[6:0]
+    23/129: $43\g[3].trailing[6:0]
+    24/129: $42\g[3].trailing[6:0]
+    25/129: $41\g[3].trailing[6:0]
+    26/129: $40\g[3].trailing[6:0]
+    27/129: $39\g[3].trailing[6:0]
+    28/129: $38\g[3].trailing[6:0]
+    29/129: $37\g[3].trailing[6:0]
+    30/129: $36\g[3].trailing[6:0]
+    31/129: $35\g[3].trailing[6:0]
+    32/129: $34\g[3].trailing[6:0]
+    33/129: $33\g[3].trailing[6:0]
+    34/129: $32\g[3].trailing[6:0]
+    35/129: $31\g[3].trailing[6:0]
+    36/129: $30\g[3].trailing[6:0]
+    37/129: $29\g[3].trailing[6:0]
+    38/129: $28\g[3].trailing[6:0]
+    39/129: $27\g[3].trailing[6:0]
+    40/129: $26\g[3].trailing[6:0]
+    41/129: $25\g[3].trailing[6:0]
+    42/129: $24\g[3].trailing[6:0]
+    43/129: $23\g[3].trailing[6:0]
+    44/129: $22\g[3].trailing[6:0]
+    45/129: $21\g[3].trailing[6:0]
+    46/129: $20\g[3].trailing[6:0]
+    47/129: $19\g[3].trailing[6:0]
+    48/129: $18\g[3].trailing[6:0]
+    49/129: $17\g[3].trailing[6:0]
+    50/129: $16\g[3].trailing[6:0]
+    51/129: $15\g[3].trailing[6:0]
+    52/129: $14\g[3].trailing[6:0]
+    53/129: $13\g[3].trailing[6:0]
+    54/129: $12\g[3].trailing[6:0]
+    55/129: $11\g[3].trailing[6:0]
+    56/129: $10\g[3].trailing[6:0]
+    57/129: $9\g[3].trailing[6:0]
+    58/129: $8\g[3].trailing[6:0]
+    59/129: $7\g[3].trailing[6:0]
+    60/129: $6\g[3].trailing[6:0]
+    61/129: $5\g[3].trailing[6:0]
+    62/129: $4\g[3].trailing[6:0]
+    63/129: $3\g[3].trailing[6:0]
+    64/129: $2\g[3].trailing[6:0]
+    65/129: $1\g[3].trailing[6:0]
+    66/129: $64\g[3].leading[6:0]
+    67/129: $63\g[3].leading[6:0]
+    68/129: $62\g[3].leading[6:0]
+    69/129: $61\g[3].leading[6:0]
+    70/129: $60\g[3].leading[6:0]
+    71/129: $59\g[3].leading[6:0]
+    72/129: $58\g[3].leading[6:0]
+    73/129: $57\g[3].leading[6:0]
+    74/129: $56\g[3].leading[6:0]
+    75/129: $55\g[3].leading[6:0]
+    76/129: $54\g[3].leading[6:0]
+    77/129: $53\g[3].leading[6:0]
+    78/129: $52\g[3].leading[6:0]
+    79/129: $51\g[3].leading[6:0]
+    80/129: $50\g[3].leading[6:0]
+    81/129: $49\g[3].leading[6:0]
+    82/129: $48\g[3].leading[6:0]
+    83/129: $47\g[3].leading[6:0]
+    84/129: $46\g[3].leading[6:0]
+    85/129: $45\g[3].leading[6:0]
+    86/129: $44\g[3].leading[6:0]
+    87/129: $43\g[3].leading[6:0]
+    88/129: $42\g[3].leading[6:0]
+    89/129: $41\g[3].leading[6:0]
+    90/129: $40\g[3].leading[6:0]
+    91/129: $39\g[3].leading[6:0]
+    92/129: $38\g[3].leading[6:0]
+    93/129: $37\g[3].leading[6:0]
+    94/129: $36\g[3].leading[6:0]
+    95/129: $35\g[3].leading[6:0]
+    96/129: $34\g[3].leading[6:0]
+    97/129: $33\g[3].leading[6:0]
+    98/129: $32\g[3].leading[6:0]
+    99/129: $31\g[3].leading[6:0]
+   100/129: $30\g[3].leading[6:0]
+   101/129: $29\g[3].leading[6:0]
+   102/129: $28\g[3].leading[6:0]
+   103/129: $27\g[3].leading[6:0]
+   104/129: $26\g[3].leading[6:0]
+   105/129: $25\g[3].leading[6:0]
+   106/129: $24\g[3].leading[6:0]
+   107/129: $23\g[3].leading[6:0]
+   108/129: $22\g[3].leading[6:0]
+   109/129: $21\g[3].leading[6:0]
+   110/129: $20\g[3].leading[6:0]
+   111/129: $19\g[3].leading[6:0]
+   112/129: $18\g[3].leading[6:0]
+   113/129: $17\g[3].leading[6:0]
+   114/129: $16\g[3].leading[6:0]
+   115/129: $15\g[3].leading[6:0]
+   116/129: $14\g[3].leading[6:0]
+   117/129: $13\g[3].leading[6:0]
+   118/129: $12\g[3].leading[6:0]
+   119/129: $11\g[3].leading[6:0]
+   120/129: $10\g[3].leading[6:0]
+   121/129: $9\g[3].leading[6:0]
+   122/129: $8\g[3].leading[6:0]
+   123/129: $7\g[3].leading[6:0]
+   124/129: $6\g[3].leading[6:0]
+   125/129: $5\g[3].leading[6:0]
+   126/129: $4\g[3].leading[6:0]
+   127/129: $3\g[3].leading[6:0]
+   128/129: $2\g[3].leading[6:0]
+   129/129: $1\g[3].leading[6:0]
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+     1/65: $1\g[2].ref[31:0]
+     2/65: $32\g[2].trailing[6:0]
+     3/65: $31\g[2].trailing[6:0]
+     4/65: $30\g[2].trailing[6:0]
+     5/65: $29\g[2].trailing[6:0]
+     6/65: $28\g[2].trailing[6:0]
+     7/65: $27\g[2].trailing[6:0]
+     8/65: $26\g[2].trailing[6:0]
+     9/65: $25\g[2].trailing[6:0]
+    10/65: $24\g[2].trailing[6:0]
+    11/65: $23\g[2].trailing[6:0]
+    12/65: $22\g[2].trailing[6:0]
+    13/65: $21\g[2].trailing[6:0]
+    14/65: $20\g[2].trailing[6:0]
+    15/65: $19\g[2].trailing[6:0]
+    16/65: $18\g[2].trailing[6:0]
+    17/65: $17\g[2].trailing[6:0]
+    18/65: $16\g[2].trailing[6:0]
+    19/65: $15\g[2].trailing[6:0]
+    20/65: $14\g[2].trailing[6:0]
+    21/65: $13\g[2].trailing[6:0]
+    22/65: $12\g[2].trailing[6:0]
+    23/65: $11\g[2].trailing[6:0]
+    24/65: $10\g[2].trailing[6:0]
+    25/65: $9\g[2].trailing[6:0]
+    26/65: $8\g[2].trailing[6:0]
+    27/65: $7\g[2].trailing[6:0]
+    28/65: $6\g[2].trailing[6:0]
+    29/65: $5\g[2].trailing[6:0]
+    30/65: $4\g[2].trailing[6:0]
+    31/65: $3\g[2].trailing[6:0]
+    32/65: $2\g[2].trailing[6:0]
+    33/65: $1\g[2].trailing[6:0]
+    34/65: $32\g[2].leading[6:0]
+    35/65: $31\g[2].leading[6:0]
+    36/65: $30\g[2].leading[6:0]
+    37/65: $29\g[2].leading[6:0]
+    38/65: $28\g[2].leading[6:0]
+    39/65: $27\g[2].leading[6:0]
+    40/65: $26\g[2].leading[6:0]
+    41/65: $25\g[2].leading[6:0]
+    42/65: $24\g[2].leading[6:0]
+    43/65: $23\g[2].leading[6:0]
+    44/65: $22\g[2].leading[6:0]
+    45/65: $21\g[2].leading[6:0]
+    46/65: $20\g[2].leading[6:0]
+    47/65: $19\g[2].leading[6:0]
+    48/65: $18\g[2].leading[6:0]
+    49/65: $17\g[2].leading[6:0]
+    50/65: $16\g[2].leading[6:0]
+    51/65: $15\g[2].leading[6:0]
+    52/65: $14\g[2].leading[6:0]
+    53/65: $13\g[2].leading[6:0]
+    54/65: $12\g[2].leading[6:0]
+    55/65: $11\g[2].leading[6:0]
+    56/65: $10\g[2].leading[6:0]
+    57/65: $9\g[2].leading[6:0]
+    58/65: $8\g[2].leading[6:0]
+    59/65: $7\g[2].leading[6:0]
+    60/65: $6\g[2].leading[6:0]
+    61/65: $5\g[2].leading[6:0]
+    62/65: $4\g[2].leading[6:0]
+    63/65: $3\g[2].leading[6:0]
+    64/65: $2\g[2].leading[6:0]
+    65/65: $1\g[2].leading[6:0]
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+     1/33: $1\g[1].ref[15:0]
+     2/33: $16\g[1].trailing[6:0]
+     3/33: $15\g[1].trailing[6:0]
+     4/33: $14\g[1].trailing[6:0]
+     5/33: $13\g[1].trailing[6:0]
+     6/33: $12\g[1].trailing[6:0]
+     7/33: $11\g[1].trailing[6:0]
+     8/33: $10\g[1].trailing[6:0]
+     9/33: $9\g[1].trailing[6:0]
+    10/33: $8\g[1].trailing[6:0]
+    11/33: $7\g[1].trailing[6:0]
+    12/33: $6\g[1].trailing[6:0]
+    13/33: $5\g[1].trailing[6:0]
+    14/33: $4\g[1].trailing[6:0]
+    15/33: $3\g[1].trailing[6:0]
+    16/33: $2\g[1].trailing[6:0]
+    17/33: $1\g[1].trailing[6:0]
+    18/33: $16\g[1].leading[6:0]
+    19/33: $15\g[1].leading[6:0]
+    20/33: $14\g[1].leading[6:0]
+    21/33: $13\g[1].leading[6:0]
+    22/33: $12\g[1].leading[6:0]
+    23/33: $11\g[1].leading[6:0]
+    24/33: $10\g[1].leading[6:0]
+    25/33: $9\g[1].leading[6:0]
+    26/33: $8\g[1].leading[6:0]
+    27/33: $7\g[1].leading[6:0]
+    28/33: $6\g[1].leading[6:0]
+    29/33: $5\g[1].leading[6:0]
+    30/33: $4\g[1].leading[6:0]
+    31/33: $3\g[1].leading[6:0]
+    32/33: $2\g[1].leading[6:0]
+    33/33: $1\g[1].leading[6:0]
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+     1/17: $1\g[0].ref[7:0]
+     2/17: $8\g[0].trailing[6:0]
+     3/17: $7\g[0].trailing[6:0]
+     4/17: $6\g[0].trailing[6:0]
+     5/17: $5\g[0].trailing[6:0]
+     6/17: $4\g[0].trailing[6:0]
+     7/17: $3\g[0].trailing[6:0]
+     8/17: $2\g[0].trailing[6:0]
+     9/17: $1\g[0].trailing[6:0]
+    10/17: $8\g[0].leading[6:0]
+    11/17: $7\g[0].leading[6:0]
+    12/17: $6\g[0].leading[6:0]
+    13/17: $5\g[0].leading[6:0]
+    14/17: $4\g[0].leading[6:0]
+    15/17: $3\g[0].leading[6:0]
+    16/17: $2\g[0].leading[6:0]
+    17/17: $1\g[0].leading[6:0]
+Creating decoders for process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:4$566'.
+     1/5: $0\heldOp[5:0]
+     2/5: $0\heldSew[1:0]
+     3/5: $0\heldB[63:0]
+     4/5: $0\heldA[63:0]
+     5/5: $0\step[3:0]
+Creating decoders for process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+Creating decoders for process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:265$83'.
+     1/1: $1\casez_tmp_7[63:0]
+Creating decoders for process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:242$70'.
+     1/1: $1\casez_tmp_6[63:0]
+Creating decoders for process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:170$35'.
+     1/1: $1\casez_tmp_5[63:0]
+Creating decoders for process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:156$34'.
+     1/1: $1\casez_tmp_4[63:0]
+Creating decoders for process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:142$33'.
+     1/1: $1\casez_tmp_3[63:0]
+Creating decoders for process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:128$32'.
+     1/1: $1\casez_tmp_2[63:0]
+Creating decoders for process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:112$31'.
+     1/1: $1\casez_tmp_1[63:0]
+Creating decoders for process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:99$30'.
+     1/1: $1\casez_tmp_0[63:0]
+Creating decoders for process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:84$24'.
+     1/1: $1\casez_tmp[5:0]
+
+3.2.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `\BitManipProof.\expected[3]' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$753'.
+No latch inferred for signal `\BitManipProof.\expected[2]' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$752'.
+No latch inferred for signal `\BitManipProof.\expected[1]' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$751'.
+No latch inferred for signal `\BitManipProof.\expected[0]' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$750'.
+No latch inferred for signal `\BitManipProof.$mem2reg_rd$\expected$/workspace/Spinor/tests/m55_bitproof.sv:35$565_DATA' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:35$747'.
+No latch inferred for signal `\BitManipProof.\g[3].reverse' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+No latch inferred for signal `\BitManipProof.\g[3].bytes' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+No latch inferred for signal `\BitManipProof.\g[3].brev8' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+No latch inferred for signal `\BitManipProof.\g[3].ref' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+No latch inferred for signal `\BitManipProof.\g[3].leading' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+No latch inferred for signal `\BitManipProof.\g[3].trailing' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+No latch inferred for signal `\BitManipProof.\g[3].pop' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+No latch inferred for signal `\BitManipProof.\g[3].i' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+No latch inferred for signal `\BitManipProof.\g[2].reverse' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+No latch inferred for signal `\BitManipProof.\g[2].bytes' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+No latch inferred for signal `\BitManipProof.\g[2].brev8' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+No latch inferred for signal `\BitManipProof.\g[2].ref' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+No latch inferred for signal `\BitManipProof.\g[2].leading' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+No latch inferred for signal `\BitManipProof.\g[2].trailing' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+No latch inferred for signal `\BitManipProof.\g[2].pop' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+No latch inferred for signal `\BitManipProof.\g[2].i' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+No latch inferred for signal `\BitManipProof.\g[1].reverse' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+No latch inferred for signal `\BitManipProof.\g[1].bytes' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+No latch inferred for signal `\BitManipProof.\g[1].brev8' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+No latch inferred for signal `\BitManipProof.\g[1].ref' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+No latch inferred for signal `\BitManipProof.\g[1].leading' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+No latch inferred for signal `\BitManipProof.\g[1].trailing' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+No latch inferred for signal `\BitManipProof.\g[1].pop' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+No latch inferred for signal `\BitManipProof.\g[1].i' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+No latch inferred for signal `\BitManipProof.\g[0].reverse' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+No latch inferred for signal `\BitManipProof.\g[0].bytes' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+No latch inferred for signal `\BitManipProof.\g[0].brev8' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+No latch inferred for signal `\BitManipProof.\g[0].ref' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+No latch inferred for signal `\BitManipProof.\g[0].leading' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+No latch inferred for signal `\BitManipProof.\g[0].trailing' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+No latch inferred for signal `\BitManipProof.\g[0].pop' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+No latch inferred for signal `\BitManipProof.\g[0].i' from process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+No latch inferred for signal `\BitManipPipeline.\casez_tmp_7' from process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:265$83'.
+No latch inferred for signal `\BitManipPipeline.\casez_tmp_6' from process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:242$70'.
+No latch inferred for signal `\BitManipPipeline.\casez_tmp_5' from process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:170$35'.
+No latch inferred for signal `\BitManipPipeline.\casez_tmp_4' from process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:156$34'.
+No latch inferred for signal `\BitManipPipeline.\casez_tmp_3' from process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:142$33'.
+No latch inferred for signal `\BitManipPipeline.\casez_tmp_2' from process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:128$32'.
+No latch inferred for signal `\BitManipPipeline.\casez_tmp_1' from process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:112$31'.
+No latch inferred for signal `\BitManipPipeline.\casez_tmp_0' from process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:99$30'.
+No latch inferred for signal `\BitManipPipeline.\casez_tmp' from process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:84$24'.
+
+3.2.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\BitManipProof.\step' using process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:4$566'.
+  created $dff cell `$procdff$1590' with positive edge clock.
+Creating register for signal `\BitManipProof.\heldA' using process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:4$566'.
+  created $dff cell `$procdff$1591' with positive edge clock.
+Creating register for signal `\BitManipProof.\heldB' using process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:4$566'.
+  created $dff cell `$procdff$1592' with positive edge clock.
+Creating register for signal `\BitManipProof.\heldSew' using process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:4$566'.
+  created $dff cell `$procdff$1593' with positive edge clock.
+Creating register for signal `\BitManipProof.\heldOp' using process `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:4$566'.
+  created $dff cell `$procdff$1594' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\r1' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1595' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\amount1' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1596' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\amount2' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1597' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\r2' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1598' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\r3' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1599' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts_0' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1600' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts_1' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1601' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts_2' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1602' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts_3' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1603' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts_4' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1604' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts_5' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1605' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts_6' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1606' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts_7' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1607' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts2_0' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1608' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts2_1' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1609' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts2_2' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1610' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts2_3' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1611' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts3_0' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1612' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\counts3_1' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1613' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops_0' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1614' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops_1' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1615' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops_2' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1616' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops_3' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1617' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops_4' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1618' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops_5' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1619' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops_6' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1620' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops_7' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1621' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops2_0' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1622' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops2_1' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1623' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops2_2' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1624' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops2_3' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1625' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops3_0' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1626' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\pops3_1' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1627' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\bits3_r' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1628' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\bits3_r_1' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1629' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\bits3' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1630' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\op3_r' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1631' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\op3_r_1' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1632' with positive edge clock.
+Creating register for signal `\BitManipPipeline.\op3' using process `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+  created $dff cell `$procdff$1633' with positive edge clock.
+
+3.2.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+3.2.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:3$754'.
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$753'.
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$752'.
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$751'.
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:32$750'.
+Found and cleaned up 1 empty switch in `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:35$747'.
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:35$747'.
+Found and cleaned up 129 empty switches in `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$676'.
+Found and cleaned up 65 empty switches in `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$633'.
+Found and cleaned up 33 empty switches in `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$606'.
+Found and cleaned up 17 empty switches in `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:20$587'.
+Found and cleaned up 3 empty switches in `\BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:4$566'.
+Removing empty process `BitManipProof.$proc$/workspace/Spinor/tests/m55_bitproof.sv:4$566'.
+Removing empty process `BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:374$191'.
+Found and cleaned up 1 empty switch in `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:265$83'.
+Removing empty process `BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:265$83'.
+Found and cleaned up 1 empty switch in `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:242$70'.
+Removing empty process `BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:242$70'.
+Found and cleaned up 1 empty switch in `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:170$35'.
+Removing empty process `BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:170$35'.
+Found and cleaned up 1 empty switch in `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:156$34'.
+Removing empty process `BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:156$34'.
+Found and cleaned up 1 empty switch in `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:142$33'.
+Removing empty process `BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:142$33'.
+Found and cleaned up 1 empty switch in `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:128$32'.
+Removing empty process `BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:128$32'.
+Found and cleaned up 1 empty switch in `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:112$31'.
+Removing empty process `BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:112$31'.
+Found and cleaned up 1 empty switch in `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:99$30'.
+Removing empty process `BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:99$30'.
+Found and cleaned up 1 empty switch in `\BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:84$24'.
+Removing empty process `BitManipPipeline.$proc$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:84$24'.
+Cleaned up 257 empty switches.
+
+3.2.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module BitManipProof.
+<suppressed ~10 debug messages>
+Optimizing module BitManipPipeline.
+<suppressed ~111 debug messages>
+
+3.3. Executing CHECK pass (checking for obvious problems).
+Checking module BitManipProof...
+Checking module BitManipPipeline...
+Found and reported 0 problems.
+
+3.4. Executing FLATTEN pass (flatten design).
+Deleting now unused module BitManipPipeline.
+<suppressed ~1 debug messages>
+
+3.5. Executing FUTURE pass.
+
+3.6. Executing OPT_EXPR pass (perform const folding).
+Optimizing module BitManipProof.
+
+3.7. Executing CHECK pass (checking for obvious problems).
+Checking module BitManipProof...
+Found and reported 0 problems.
+
+3.8. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \BitManipProof..
+Removed 0 unused cells and 804 unused wires.
+<suppressed ~5 debug messages>
+
+3.9. Executing OPT pass (performing simple optimizations).
+
+3.9.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module BitManipProof.
+
+3.9.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\BitManipProof'.
+Computing hashes of 786 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 735 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 730 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 725 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 721 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 717 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 713 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 710 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 707 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 705 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 703 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 701 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 699 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 697 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 695 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 693 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 691 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 690 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 689 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 688 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 687 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 686 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 685 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 684 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 683 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 682 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 681 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 680 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 679 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 678 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 677 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 676 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Computing hashes of 675 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+<suppressed ~333 debug messages>
+Removed a total of 111 cells.
+
+3.9.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \BitManipProof..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~368 debug messages>
+
+3.9.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \BitManipProof.
+    New ctrl vector for $pmux cell $procmux$1463: { $procmux$1464_CMP $procmux$1465_CMP $procmux$1466_CMP $flatten\dut.$eq$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:306$97_Y $procmux$1468_CMP $procmux$1469_CMP $auto$opt_reduce.cc:137:opt_pmux$1636 }
+  Optimizing cells in module \BitManipProof.
+Performed a total of 1 changes.
+
+3.9.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\BitManipProof'.
+Computing hashes of 676 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Removed a total of 0 cells.
+
+3.9.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \BitManipProof..
+Removed 0 unused cells and 104 unused wires.
+<suppressed ~1 debug messages>
+
+3.9.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module BitManipProof.
+
+3.9.8. Rerunning OPT passes. (Maybe there is more to do..)
+
+3.9.9. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \BitManipProof..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~368 debug messages>
+
+3.9.10. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \BitManipProof.
+Performed a total of 0 changes.
+
+3.9.11. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\BitManipProof'.
+Computing hashes of 676 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Removed a total of 0 cells.
+
+3.9.12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \BitManipProof..
+
+3.9.13. Executing OPT_EXPR pass (perform const folding).
+Optimizing module BitManipProof.
+
+3.9.14. Finished fast OPT passes. (There is nothing left to do.)
+
+3.10. Executing WREDUCE pass (reducing word size of cells).
+Removed top 28 bits (of 32) from port B of cell BitManipProof.$lt$/workspace/Spinor/tests/m55_bitproof.sv:7$567 ($lt).
+Removed top 31 bits (of 32) from port B of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:7$568 ($add).
+Removed top 28 bits (of 32) from port Y of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:7$568 ($add).
+Removed top 27 bits (of 32) from port A of cell BitManipProof.$shl$/workspace/Spinor/tests/m55_bitproof.sv:11$570 ($shl).
+Removed top 24 bits (of 32) from port A of cell BitManipProof.$sub$/workspace/Spinor/tests/m55_bitproof.sv:11$571 ($sub).
+Removed top 58 bits (of 64) from port Y of cell BitManipProof.$and$/workspace/Spinor/tests/m55_bitproof.sv:12$574 ($and).
+Removed top 58 bits (of 64) from port A of cell BitManipProof.$and$/workspace/Spinor/tests/m55_bitproof.sv:12$574 ($and).
+Removed top 58 bits (of 64) from port B of cell BitManipProof.$and$/workspace/Spinor/tests/m55_bitproof.sv:12$574 ($and).
+Removed top 29 bits (of 32) from port B of cell BitManipProof.$ge$/workspace/Spinor/tests/m55_bitproof.sv:34$575 ($ge).
+Removed top 27 bits (of 32) from port B of cell BitManipProof.$ge$/workspace/Spinor/tests/m55_bitproof.sv:35$576 ($ge).
+Removed top 26 bits (of 32) from port B of cell BitManipProof.$le$/workspace/Spinor/tests/m55_bitproof.sv:35$578 ($le).
+Removed top 29 bits (of 32) from port A of cell BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$585 ($neg).
+Removed top 29 bits (of 32) from port Y of cell BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$585 ($neg).
+Removed top 3 bits (of 6) from port B of cell BitManipProof.$shl$/workspace/Spinor/tests/m55_bitproof.sv:29$596 ($shl).
+Removed top 3 bits (of 6) from port B of cell BitManipProof.$shr$/workspace/Spinor/tests/m55_bitproof.sv:29$597 ($shr).
+Removed top 3 bits (of 6) from port B of cell BitManipProof.$shr$/workspace/Spinor/tests/m55_bitproof.sv:29$599 ($shr).
+Removed top 3 bits (of 6) from port B of cell BitManipProof.$shl$/workspace/Spinor/tests/m55_bitproof.sv:29$600 ($shl).
+Removed top 28 bits (of 32) from port A of cell BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$604 ($neg).
+Removed top 28 bits (of 32) from port Y of cell BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$604 ($neg).
+Removed top 2 bits (of 6) from port B of cell BitManipProof.$shl$/workspace/Spinor/tests/m55_bitproof.sv:29$623 ($shl).
+Removed top 2 bits (of 6) from port B of cell BitManipProof.$shr$/workspace/Spinor/tests/m55_bitproof.sv:29$624 ($shr).
+Removed top 2 bits (of 6) from port B of cell BitManipProof.$shr$/workspace/Spinor/tests/m55_bitproof.sv:29$626 ($shr).
+Removed top 2 bits (of 6) from port B of cell BitManipProof.$shl$/workspace/Spinor/tests/m55_bitproof.sv:29$627 ($shl).
+Removed top 27 bits (of 32) from port A of cell BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$631 ($neg).
+Removed top 27 bits (of 32) from port Y of cell BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$631 ($neg).
+Removed top 1 bits (of 6) from port B of cell BitManipProof.$shl$/workspace/Spinor/tests/m55_bitproof.sv:29$666 ($shl).
+Removed top 1 bits (of 6) from port B of cell BitManipProof.$shr$/workspace/Spinor/tests/m55_bitproof.sv:29$667 ($shr).
+Removed top 1 bits (of 6) from port B of cell BitManipProof.$shr$/workspace/Spinor/tests/m55_bitproof.sv:29$669 ($shr).
+Removed top 1 bits (of 6) from port B of cell BitManipProof.$shl$/workspace/Spinor/tests/m55_bitproof.sv:29$670 ($shl).
+Removed top 26 bits (of 32) from port A of cell BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$674 ($neg).
+Removed top 26 bits (of 32) from port Y of cell BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$674 ($neg).
+Removed top 6 bits (of 7) from port A of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$677 ($add).
+Removed top 5 bits (of 7) from port Y of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$677 ($add).
+Removed top 5 bits (of 7) from port A of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$678 ($add).
+Removed top 4 bits (of 7) from port Y of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$678 ($add).
+Removed top 4 bits (of 7) from port A of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$679 ($add).
+Removed top 3 bits (of 7) from port Y of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$679 ($add).
+Removed top 3 bits (of 7) from port A of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$680 ($add).
+Removed top 2 bits (of 7) from port Y of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$680 ($add).
+Removed top 2 bits (of 7) from port A of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$681 ($add).
+Removed top 1 bits (of 7) from port Y of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$681 ($add).
+Removed top 1 bits (of 7) from port A of cell BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$682 ($add).
+Removed top 1 bits (of 7) from mux cell BitManipProof.$procmux$1258 ($mux).
+Removed top 1 bits (of 7) from mux cell BitManipProof.$procmux$1354 ($mux).
+Removed top 2 bits (of 7) from mux cell BitManipProof.$procmux$1412 ($mux).
+Removed top 2 bits (of 7) from mux cell BitManipProof.$procmux$1460 ($mux).
+Removed top 3 bits (of 7) from mux cell BitManipProof.$procmux$1494 ($mux).
+Removed top 3 bits (of 7) from mux cell BitManipProof.$procmux$1518 ($mux).
+Removed top 1 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:571$365 ($or).
+Removed top 1 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:572$362 ($or).
+Removed top 1 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:574$356 ($or).
+Removed top 1 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:573$359 ($or).
+Removed top 1 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:570$368 ($or).
+Removed top 1 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:575$353 ($or).
+Removed top 1 bits (of 6) from port B of cell BitManipProof.$flatten\dut.$eq$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:578$369 ($eq).
+Removed top 1 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:576$350 ($or).
+Removed top 1 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:577$347 ($or).
+Removed top 1 bits (of 7) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:587$373 ($add).
+Removed top 1 bits (of 7) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:587$373 ($add).
+Removed top 1 bits (of 6) from port B of cell BitManipProof.$flatten\dut.$eq$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:569$344 ($eq).
+Removed top 1 bits (of 6) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:567$343 ($add).
+Removed top 1 bits (of 6) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:567$343 ($add).
+Removed top 1 bits (of 6) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:566$342 ($add).
+Removed top 1 bits (of 6) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:566$342 ($add).
+Removed top 1 bits (of 5) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:565$341 ($add).
+Removed top 1 bits (of 5) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:565$341 ($add).
+Removed top 1 bits (of 5) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:564$340 ($add).
+Removed top 1 bits (of 5) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:564$340 ($add).
+Removed top 1 bits (of 5) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:563$339 ($add).
+Removed top 1 bits (of 5) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:563$339 ($add).
+Removed top 1 bits (of 5) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:562$338 ($add).
+Removed top 1 bits (of 5) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:562$338 ($add).
+Removed top 1 bits (of 4) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:556$337 ($add).
+Removed top 1 bits (of 4) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:556$337 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:560$336 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:560$336 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:561$335 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:561$335 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:560$334 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:560$334 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:557$333 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:557$333 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:558$332 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:558$332 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:557$331 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:557$331 ($add).
+Removed top 1 bits (of 4) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:549$330 ($add).
+Removed top 1 bits (of 4) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:549$330 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:553$329 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:553$329 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:554$328 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:554$328 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:553$327 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:553$327 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:550$326 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:550$326 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:551$325 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:551$325 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:550$324 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:550$324 ($add).
+Removed top 1 bits (of 4) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:542$323 ($add).
+Removed top 1 bits (of 4) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:542$323 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:546$322 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:546$322 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:547$321 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:547$321 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:546$320 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:546$320 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:543$319 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:543$319 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:544$318 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:544$318 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:543$317 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:543$317 ($add).
+Removed top 1 bits (of 4) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:535$316 ($add).
+Removed top 1 bits (of 4) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:535$316 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:539$315 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:539$315 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:540$314 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:540$314 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:539$313 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:539$313 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:536$312 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:536$312 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:537$311 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:537$311 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:536$310 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:536$310 ($add).
+Removed top 1 bits (of 4) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:528$309 ($add).
+Removed top 1 bits (of 4) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:528$309 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:532$308 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:532$308 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:533$307 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:533$307 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:532$306 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:532$306 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:529$305 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:529$305 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:530$304 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:530$304 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:529$303 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:529$303 ($add).
+Removed top 1 bits (of 4) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:521$302 ($add).
+Removed top 1 bits (of 4) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:521$302 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:525$301 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:525$301 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:526$300 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:526$300 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:525$299 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:525$299 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:522$298 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:522$298 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:523$297 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:523$297 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:522$296 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:522$296 ($add).
+Removed top 1 bits (of 4) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:514$295 ($add).
+Removed top 1 bits (of 4) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:514$295 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:518$294 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:518$294 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:519$293 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:519$293 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:518$292 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:518$292 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:515$291 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:515$291 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:516$290 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:516$290 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:515$289 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:515$289 ($add).
+Removed top 1 bits (of 4) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:507$288 ($add).
+Removed top 1 bits (of 4) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:507$288 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:511$287 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:511$287 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:512$286 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:512$286 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:511$285 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:511$285 ($add).
+Removed top 1 bits (of 3) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:508$284 ($add).
+Removed top 1 bits (of 3) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:508$284 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:509$283 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:509$283 ($add).
+Removed top 1 bits (of 2) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:508$282 ($add).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:508$282 ($add).
+Removed top 1 bits (of 6) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:505$280 ($add).
+Removed top 1 bits (of 6) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:505$280 ($add).
+Removed top 1 bits (of 6) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:504$277 ($add).
+Removed top 1 bits (of 6) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:504$277 ($add).
+Removed top 1 bits (of 5) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:503$274 ($add).
+Removed top 1 bits (of 5) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:503$274 ($add).
+Removed top 1 bits (of 5) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:502$271 ($add).
+Removed top 1 bits (of 5) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:502$271 ($add).
+Removed top 1 bits (of 5) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:501$268 ($add).
+Removed top 1 bits (of 5) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:501$268 ($add).
+Removed top 1 bits (of 5) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:500$265 ($add).
+Removed top 1 bits (of 5) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:500$265 ($add).
+Removed top 1 bits (of 3) from mux cell BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:498$257 ($mux).
+Removed top 1 bits (of 3) from mux cell BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:483$248 ($mux).
+Removed top 1 bits (of 3) from mux cell BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:468$239 ($mux).
+Removed top 1 bits (of 3) from mux cell BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:453$230 ($mux).
+Removed top 1 bits (of 3) from mux cell BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:438$221 ($mux).
+Removed top 1 bits (of 3) from mux cell BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:423$212 ($mux).
+Removed top 1 bits (of 3) from mux cell BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:408$203 ($mux).
+Removed top 1 bits (of 3) from mux cell BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:393$194 ($mux).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:370$186 ($or).
+Removed top 1 bits (of 7) from port A of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:589$378 ($add).
+Removed top 1 bits (of 7) from port B of cell BitManipProof.$flatten\dut.$add$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:589$378 ($add).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:368$183 ($or).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:367$182 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:365$179 ($or).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:364$178 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:362$175 ($or).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:361$174 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:359$171 ($or).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:358$170 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:356$167 ($or).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:355$166 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:353$163 ($or).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:352$162 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:350$159 ($or).
+Removed top 1 bits (of 7) from port B of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:349$158 ($or).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:347$155 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:345$152 ($or).
+Removed top 1 bits (of 7) from port B of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:344$151 ($or).
+Removed top 8 bits (of 64) from mux cell BitManipProof.$flatten\dut.$procmux$1556 ($pmux).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:342$148 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:340$145 ($or).
+Removed top 1 bits (of 7) from port B of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:339$144 ($or).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:337$141 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:335$138 ($or).
+Removed top 1 bits (of 7) from port B of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:334$137 ($or).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$procmux$1568_CMP0 ($eq).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:332$134 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:330$131 ($or).
+Removed top 1 bits (of 7) from port B of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:329$130 ($or).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$procmux$1573_CMP0 ($eq).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:327$127 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:325$124 ($or).
+Removed top 1 bits (of 7) from port B of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:324$123 ($or).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$procmux$1578_CMP0 ($eq).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:322$120 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:320$117 ($or).
+Removed top 1 bits (of 7) from port B of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:319$116 ($or).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:317$113 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:315$110 ($or).
+Removed top 1 bits (of 7) from port B of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:314$109 ($or).
+Removed top 1 bits (of 2) from port B of cell BitManipProof.$flatten\dut.$procmux$1588_CMP0 ($eq).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:312$106 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:310$103 ($or).
+Removed top 8 bits (of 64) from port B of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:306$102 ($or).
+Removed top 1 bits (of 64) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:260$82 ($or).
+Removed top 1 bits (of 32) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:256$79 ($or).
+Removed top 1 bits (of 16) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:251$76 ($or).
+Removed top 2 bits (of 64) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:240$69 ($or).
+Removed top 4 bits (of 64) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:237$66 ($or).
+Removed top 8 bits (of 64) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:234$63 ($or).
+Removed top 16 bits (of 64) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:231$60 ($or).
+Removed top 32 bits (of 64) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:229$57 ($or).
+Removed top 2 bits (of 32) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:227$56 ($or).
+Removed top 4 bits (of 32) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:224$53 ($or).
+Removed top 8 bits (of 32) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:221$50 ($or).
+Removed top 16 bits (of 32) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:219$47 ($or).
+Removed top 2 bits (of 16) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:218$46 ($or).
+Removed top 4 bits (of 16) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:216$43 ($or).
+Removed top 8 bits (of 16) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:214$40 ($or).
+Removed top 2 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:213$39 ($or).
+Removed top 4 bits (of 8) from port A of cell BitManipProof.$flatten\dut.$or$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:211$36 ($or).
+Removed top 5 bits (of 6) from port A of cell BitManipProof.$flatten\dut.$sub$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:97$27 ($sub).
+Removed top 1 bits (of 3) from wire BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:498$257_Y.
+Removed top 1 bits (of 3) from wire BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:483$248_Y.
+Removed top 1 bits (of 3) from wire BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:468$239_Y.
+Removed top 1 bits (of 3) from wire BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:453$230_Y.
+Removed top 1 bits (of 3) from wire BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:438$221_Y.
+Removed top 1 bits (of 3) from wire BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:423$212_Y.
+Removed top 1 bits (of 7) from wire BitManipProof.$1\g[2].trailing[6:0].
+Removed top 1 bits (of 3) from wire BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:393$194_Y.
+Removed top 1 bits (of 3) from wire BitManipProof.$flatten\dut.$ternary$/workspace/Spinor/build/m55/rtl/IntegerLaneSplit.sv:408$203_Y.
+Removed top 1 bits (of 7) from wire BitManipProof.$1\g[2].leading[6:0].
+Removed top 27 bits (of 32) from wire BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$631_Y.
+Removed top 2 bits (of 7) from wire BitManipProof.$1\g[1].trailing[6:0].
+Removed top 2 bits (of 7) from wire BitManipProof.$1\g[1].leading[6:0].
+Removed top 28 bits (of 32) from wire BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$604_Y.
+Removed top 3 bits (of 7) from wire BitManipProof.$1\g[0].trailing[6:0].
+Removed top 1 bits (of 7) from wire BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$592_Y.
+Removed top 2 bits (of 7) from wire BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$591_Y.
+Removed top 3 bits (of 7) from wire BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$590_Y.
+Removed top 4 bits (of 7) from wire BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$589_Y.
+Removed top 5 bits (of 7) from wire BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:24$588_Y.
+Removed top 3 bits (of 7) from wire BitManipProof.$1\g[0].leading[6:0].
+Removed top 29 bits (of 32) from wire BitManipProof.$neg$/workspace/Spinor/tests/m55_bitproof.sv:18$585_Y.
+Removed top 28 bits (of 32) from wire BitManipProof.$add$/workspace/Spinor/tests/m55_bitproof.sv:7$568_Y.
+Removed top 1 bits (of 6) from wire BitManipProof.g[2].negative.
+Removed top 1 bits (of 6) from wire BitManipProof.g[2].n.
+Removed top 2 bits (of 6) from wire BitManipProof.g[1].negative.
+Removed top 2 bits (of 6) from wire BitManipProof.g[1].n.
+Removed top 3 bits (of 6) from wire BitManipProof.g[0].negative.
+Removed top 3 bits (of 6) from wire BitManipProof.g[0].n.
+Removed top 58 bits (of 64) from wire BitManipProof.normB.
+
+3.11. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \BitManipProof..
+Removed 0 unused cells and 34 unused wires.
+<suppressed ~1 debug messages>
+
+3.12. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+3.13. Executing OPT pass (performing simple optimizations).
+
+3.13.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module BitManipProof.
+
+3.13.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\BitManipProof'.
+Computing hashes of 676 cells of `\BitManipProof'.
+Finding duplicate cells in `\BitManipProof'.
+Removed a total of 0 cells.
+
+3.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \BitManipProof..
+
+3.13.4. Finished fast OPT passes.
+
+3.14. Executing SORT pass.
+
+3.15. Printing statistics.
+
+=== BitManipProof ===
+
+        +----------Local Count, excluding submodules.
+        | 
+      723 wires
+     8344 wire bits
+      182 public wires
+     4127 public wire bits
+        8 ports
+      140 port bits
+      676 cells
+      135   $add
+        5   $and
+       44   $dff
+       29   $eq
+        2   $ge
+        1   $le
+        3   $logic_and
+        5   $logic_not
+        1   $lt
+      320   $mux
+        1   $ne
+        4   $neg
+        8   $not
+       74   $or
+       14   $pmux
+        9   $reduce_or
+        1   $scopeinfo
+        9   $shl
+        9   $shr
+        2   $sub
+
+3.16. Executing CHECK pass (checking for obvious problems).
+Checking module BitManipProof...
+Found and reported 0 problems.
+
+4. Executing SAT pass (solving SAT problems in the circuit).
+Using SAT solver `minisat`.
+
+Setting up time step 1:
+Import set-constraint: \reset = 1'0
+Import set-constraint for this timestep: \reset = 1'1
+Final constraint equation: \reset = 1'1
+Imported 676 cells to SAT database.
+Import set-constraint from init attribute: \step = 4'0000
+Final init constraint equation: { \heldOp \heldSew \heldB \heldA \dut.op3 \dut.op3_r_1 \dut.op3_r \dut.bits3 \dut.bits3_r_1 \dut.bits3_r \dut.pops3_1 \dut.pops3_0 \dut.pops2_3 \dut.pops2_2 \dut.pops2_1 \dut.pops2_0 \dut.pops_7 \dut.pops_6 \dut.pops_5 \dut.pops_4 \dut.pops_3 \dut.pops_2 \dut.pops_1 \dut.pops_0 \dut.counts3_1 \dut.counts3_0 \dut.counts2_3 \dut.counts2_2 \dut.counts2_1 \dut.counts2_0 \dut.counts_7 \dut.counts_6 \dut.counts_5 \dut.counts_4 \dut.counts_3 \dut.counts_2 \dut.counts_1 \dut.counts_0 \dut.r3 \dut.r2 \dut.amount2 \dut.amount1 \dut.r1 \step } = 682'0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+Import proof-constraint: \mismatch = 1'0
+Final proof equation: \mismatch = 1'0
+
+Setting up time step 2:
+Import set-constraint: \reset = 1'0
+Final constraint equation: \reset = 1'0
+Imported 676 cells to SAT database.
+Import proof-constraint: \mismatch = 1'0
+Final proof equation: \mismatch = 1'0
+
+Setting up time step 3:
+Import set-constraint: \reset = 1'0
+Final constraint equation: \reset = 1'0
+Imported 676 cells to SAT database.
+Import proof-constraint: \mismatch = 1'0
+Final proof equation: \mismatch = 1'0
+
+Setting up time step 4:
+Import set-constraint: \reset = 1'0
+Final constraint equation: \reset = 1'0
+Imported 676 cells to SAT database.
+Import proof-constraint: \mismatch = 1'0
+Final proof equation: \mismatch = 1'0
+
+Setting up time step 5:
+Import set-constraint: \reset = 1'0
+Final constraint equation: \reset = 1'0
+Imported 676 cells to SAT database.
+Import proof-constraint: \mismatch = 1'0
+Final proof equation: \mismatch = 1'0
+
+Setting up time step 6:
+Import set-constraint: \reset = 1'0
+Final constraint equation: \reset = 1'0
+Imported 676 cells to SAT database.
+Import proof-constraint: \mismatch = 1'0
+Final proof equation: \mismatch = 1'0
+
+Setting up time step 7:
+Import set-constraint: \reset = 1'0
+Final constraint equation: \reset = 1'0
+Imported 676 cells to SAT database.
+Import proof-constraint: \mismatch = 1'0
+Final proof equation: \mismatch = 1'0
+
+Setting up time step 8:
+Import set-constraint: \reset = 1'0
+Final constraint equation: \reset = 1'0
+Imported 676 cells to SAT database.
+Import proof-constraint: \mismatch = 1'0
+Final proof equation: \mismatch = 1'0
+
+Setting up time step 9:
+Import set-constraint: \reset = 1'0
+Final constraint equation: \reset = 1'0
+Imported 676 cells to SAT database.
+Import proof-constraint: \mismatch = 1'0
+Final proof equation: \mismatch = 1'0
+
+Setting up time step 10:
+Import set-constraint: \reset = 1'0
+Final constraint equation: \reset = 1'0
+Imported 676 cells to SAT database.
+Import proof-constraint: \mismatch = 1'0
+Final proof equation: \mismatch = 1'0
+
+Solving problem with 497154 variables and 1355287 clauses..

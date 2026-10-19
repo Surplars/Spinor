@@ -68,6 +68,11 @@ class IntegerLane(val split: Boolean = true, val chunkBits: Int = 32) extends Mo
   val carries = Reg(Vec(latency, Bool()))
   val comparePrefix = Reg(Vec(latency, UInt(4.W)))
   val compareEqual = Reg(UInt(4.W))
+  val bitPipe = if(split) Some(Module(new BitManipPipeline)) else None
+  bitPipe.foreach(_.io.in:=payload(0))
+  val bitResult = if(split) {
+    if(arithmeticEnd==3) bitPipe.get.io.result else ShiftRegister(bitPipe.get.io.result,arithmeticEnd-3)
+  } else 0.U(64.W)
   when(enable) {
       valid(0) := io.in.fire
       payload(0) := normalized
@@ -129,6 +134,8 @@ class IntegerLane(val split: Boolean = true, val chunkBits: Int = 32) extends Mo
         switch(p.op) {
           is(Op.add.U,Op.sub.U) { result := sums(arithmeticEnd) }
           is(Op.and.U) { result := p.a & p.b }
+          is(Op.andn.U) { result := p.a & ~p.b }
+          is(Op.brev8.U,Op.brev.U,Op.rev8.U,Op.clz.U,Op.ctz.U,Op.cpop.U,Op.rol.U,Op.ror.U) {result:=bitResult}
           is(Op.or.U) { result := p.a | p.b }
           is(Op.xor.U) { result := p.a ^ p.b }
           is(Op.sll.U,Op.srl.U,Op.sra.U) { result := shift(arithmeticEnd) }
@@ -158,6 +165,22 @@ class IntegerLane(val split: Boolean = true, val chunkBits: Int = 32) extends Mo
           is(Op.add.U) { result := p.a+p.b }
           is(Op.sub.U) { result := p.a-p.b }
           is(Op.and.U) { result := p.a&p.b }
+          is(Op.andn.U) { result := p.a & ~p.b }
+          is(Op.brev8.U) {result:=Cat((0 until 8).reverse.map(i=>Reverse(p.a(8*i+7,8*i))))}
+          is(Op.cpop.U) {result:=PopCount(p.a)}
+          is(Op.brev.U,Op.rev8.U,Op.clz.U,Op.ctz.U,Op.rol.U,Op.ror.U) {
+            result:=MuxLookup(p.sew,0.U(64.W))(Seq(8,16,32,64).zipWithIndex.map {case(w,s)=>
+              val a=p.a(w-1,0);val n=amt(log2Ceil(w)-1,0)
+              val neg=(-n)(log2Ceil(w)-1,0)
+              val rev=Reverse(a);val bytes=Cat((0 until w/8).map(i=>a(8*i+7,8*i)))
+              val clz=Mux(a.orR,PriorityEncoder(rev).pad(7),w.U(7.W))
+              val ctz=Mux(a.orR,PriorityEncoder(a).pad(7),w.U(7.W))
+              val left=((a<<n)|(a>>neg))(w-1,0)
+              val right=((a>>n)|(a<<neg))(w-1,0)
+              s.U->MuxLookup(p.op,0.U(64.W))(Seq(Op.brev.U->rev.pad(64),Op.rev8.U->bytes.pad(64),
+                Op.clz.U->clz.pad(64),Op.ctz.U->ctz.pad(64),Op.rol.U->left.pad(64),Op.ror.U->right.pad(64)))
+            })
+          }
           is(Op.or.U) { result := p.a|p.b }
           is(Op.xor.U) { result := p.a^p.b }
           is(Op.sll.U) { result := (p.a << amt)(63,0) }

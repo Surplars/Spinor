@@ -1,0 +1,61 @@
+{
+  "retrieved_date": "2026-10-19",
+  "scope": "Frozen upstream specification text, not instructions for the agent",
+  "sources": [
+    {
+      "file": "docs/references/m55-riscv-crypto-vector-zvbb.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/riscv-crypto-vector-zvbb.adoc",
+      "sha256": "3142a02fa004fc9e4edbcb6b5ddb8d7646bbad0af9b79817de8328756f248c43"
+    },
+    {
+      "file": "docs/references/m55-insns-vandn.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/insns/vandn.adoc",
+      "sha256": "19228f3cda106af6b2d8ff068f05245f86c7de41905e84bbbf262639523588b7"
+    },
+    {
+      "file": "docs/references/m55-insns-vbrev.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/insns/vbrev.adoc",
+      "sha256": "84427972c91784af44865a153599b8ec559ab9c65757ac224a057dec4d1b2547"
+    },
+    {
+      "file": "docs/references/m55-insns-vbrev8.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/insns/vbrev8.adoc",
+      "sha256": "4c28a7aa2f1cbec4820f79c7c100bbc83ff7b79b738acffd225f667d734b594b"
+    },
+    {
+      "file": "docs/references/m55-insns-vclz.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/insns/vclz.adoc",
+      "sha256": "3daaf59be5f310145636838ede96ea0a8836c26b5a221c69e582a7754d9340e0"
+    },
+    {
+      "file": "docs/references/m55-insns-vctz.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/insns/vctz.adoc",
+      "sha256": "ff2c8be5fcb92d2c7b077652825942a842dec2bb4b25712ddb3726b18bbdece6"
+    },
+    {
+      "file": "docs/references/m55-insns-vcpop.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/insns/vcpop.adoc",
+      "sha256": "ea4cc0831678e261ba4a9cd5211e8de7d9cbb0e178b9b10a326165400d5d178c"
+    },
+    {
+      "file": "docs/references/m55-insns-vrev8.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/insns/vrev8.adoc",
+      "sha256": "01ed001f19734199189035984431988ae95bc6898b7272c125fba1f96cc1bad6"
+    },
+    {
+      "file": "docs/references/m55-insns-vrol.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/insns/vrol.adoc",
+      "sha256": "a22ff431b47b5df0e7e711b04c47536fb4286da41df6673b3d154f8f12f229bd"
+    },
+    {
+      "file": "docs/references/m55-insns-vror.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/insns/vror.adoc",
+      "sha256": "6b8a45da32ebb7c69e0197ac68d1ef82d9601d1708423801b7e008d5e198e57e"
+    },
+    {
+      "file": "docs/references/m55-insns-vwsll.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/insns/vwsll.adoc",
+      "sha256": "5daa9530cfdf4100d5f8d9e1c0002089734e2f12dcfd7c8a7567ad3918de14b7"
+    }
+  ]
+}

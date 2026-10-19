@@ -1,0 +1,2 @@
+# Historical source snapshots retain original bytes, verified by SHA256.
+archive/m53/source/** whitespace=-blank-at-eol,-blank-at-eof
