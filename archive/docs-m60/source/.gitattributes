@@ -1,0 +1,14 @@
+# Historical source snapshots retain original bytes, verified by SHA256.
+archive/m53/source/** whitespace=-blank-at-eol,-blank-at-eof
+archive/m54/source/** whitespace=-blank-at-eol,-blank-at-eof
+# Frozen upstream specifications and diagnostic logs preserve exact bytes.
+docs/references/m55-*.adoc whitespace=-blank-at-eol,-blank-at-eof
+reports/m55/proof-attempt/joint-log.txt whitespace=-blank-at-eol
+archive/m55/source/** whitespace=-blank-at-eol,-blank-at-eof
+docs/references/m56-*.adoc whitespace=-blank-at-eol,-blank-at-eof
+archive/m56/source/** whitespace=-blank-at-eol,-blank-at-eof
+docs/references/m57-*.adoc whitespace=-blank-at-eol,-blank-at-eof
+archive/m57/source/** whitespace=-blank-at-eol,-blank-at-eof
+archive/m58/source/** whitespace=-blank-at-eol,-blank-at-eof
+archive/m59/source/** whitespace=-blank-at-eol,-blank-at-eof
+docs/references/m60-act-README.md whitespace=-blank-at-eol,-blank-at-eof

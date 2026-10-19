@@ -1,0 +1,41 @@
+{
+  "baseline_commit": "0790a6e12b2102978a3c821055aed14336b30929",
+  "m60_check_only_passed_before_edit": true,
+  "hardware_changed": false,
+  "baseline_receipt": "reports/m60/receipt.json",
+  "baseline_receipt_sha256": "a17220c5f7c6c02281ff1511100ea36ea4dd5cafa8e4f7e9fca47520ca079334",
+  "documents": {
+    "README.md": {
+      "archived": "archive/docs-m60/source/README.md",
+      "sha256": "985898de840feb106dc15b2647a2468dc0a63711968bf756c5186db60131b9f3"
+    },
+    "CURRENT.md": {
+      "archived": "archive/docs-m60/source/CURRENT.md",
+      "sha256": "4d4eede32fe76bd17cd1764d60f30c06f69e1b0e2ef231d3fcab87b9e3cd9762"
+    },
+    ".gitattributes": {
+      "archived": "archive/docs-m60/source/.gitattributes",
+      "sha256": "6068036a6a1c8492bd2be74ec74e5096f27af6781627a8e45636047bb33bfd15"
+    },
+    "docs/repository.md": {
+      "archived": "archive/docs-m60/source/docs/repository.md",
+      "sha256": "87e57df0b50db780f55f07671912b70c3f42d95e16233d2d20ff99e9533999b5"
+    },
+    "docs/tilelink.md": {
+      "archived": "archive/docs-m60/source/docs/tilelink.md",
+      "sha256": "6a37257bfa62d583dd463e475d9ce459fb995406a0036120c9c9833cab338969"
+    },
+    "docs/monitor-soc.md": {
+      "archived": "archive/docs-m60/source/docs/monitor-soc.md",
+      "sha256": "64bc8bc64e0c64a290c35eac417c37df594aa7076e4c9a46fb6f3259e02d80ef"
+    },
+    "docs/architecture.md": {
+      "archived": "archive/docs-m60/source/docs/architecture.md",
+      "sha256": "be82d6dafcd93c537a4ab110ebc0eae9cab43678e877fff70d3ac81d83dad3f7"
+    },
+    "docs/cpu-spinor-contract.md": {
+      "archived": "archive/docs-m60/source/docs/cpu-spinor-contract.md",
+      "sha256": "78712850baca9dfdb2cd64891952801fe14ead365dfcb352612f866c1b5a982f"
+    }
+  }
+}

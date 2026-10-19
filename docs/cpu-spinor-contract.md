@@ -1,97 +1,73 @@
-# Orbital—Spinor 单指令提交协议 v1
+# CPU—Spinor 提交协议
 
-本协议针对同一时钟域，先让部分RVV原型安全接入；不是完整Orbital集成或Linux支持声明。新VpuHostBoundary与公开顶层SpinorVpu配合使用，均为可综合Chisel模块。旧ValenceBoundary是早期算术边界，flush会直接丢弃所有者，不适用于当前LSU的延迟停止，不应当作访存SoC适配器。
+本协议适用于同一时钟域的 `SpinorVpu` 与 `VpuHostBoundary`。首次集成步骤和连接示例见[接入指南](integration.md)。边界容量为一条不可撤销指令，CPU 的取指、ROB、权限和全局退休由宿主实现。
 
-## 连接
+## 指令与所有权
 
-```scala
-val spinor = Module(new SpinorVpu(monitorBase))
-val boundary = Module(new VpuHostBoundary)
-spinor.io.core.command <> boundary.io.command
-boundary.io.completion <> spinor.io.core.completion
-boundary.io.memoryStatus := spinor.io.memoryStatus
-spinor.io.core.flush := boundary.io.vpuFlush
-// Orbital/宿主驱动 boundary.io.offer/reply/head*/older*Drained/stop。
-// SoC另接context/contextResult、物理RAM tl及monitor从端。
-```
+`Command` 含 32 位 instruction、64 位 scalar/scalar2/avl 和 **80 位 token**。token 的索引、tag、epoch 由宿主打包，边界原样保存和比较；不能截断为早期接口的位宽。
 
-io.core的配置输出提供已提交CSR状态和访存前缀vstart，不能代替CPU的VS/FS/异常管理。跨时钟域必须另加完整异步事务桥。
+边界仅在以下条件同时成立时接受 offer：空闲、无 stop/协议错误、headValid、headToken 与 offer token 完整匹配、olderMemoryDrained 和 olderFpDrained。CPU 在此之前还须完成 VS/FS、权限、数据依赖与写回端口检查；边界无法推断这些条件。
 
-## 接收与退休
+`command.fire` 后保留 token、instruction、访存类别和所有者，直至 `reply.fire` 或明确的算术取消。即使前端恢复，CPU 也必须保留 PC 和错误归属，不能复用该身份对应的退休槽。
 
-1. offer携带原始32位instruction、64位scalar/scalar2/avl及80位token。CPU自己定义ROB索引、分配tag、epoch的打包，所有80位原样比较与返回，不能截断为旧Valence默认的69位。
-2. 只有headValid、headToken完整匹配、旧标量访存与FP工作排空、边界空闲且无stop/协议错误时才转发command。CPU还必须先完成指令权限/VS/FS、源操作数和标量结果端口检查；这些由CPU负责，适配器无法推断。
-3. command.fire后容量1，边界持有token/instruction/访存类别，直到reply.fire或算术取消。CPU即使进行前端恢复，也必须保留这个不可撤销所有者和PC/异常信息，不得把ROB槽复用于另一条指令。
-4. reply.ready是最后提交授权，直接控制VPU completion.ready。普通算术/VSET/CSR的向量版本、CSR及标量结果必须与CPU同一握手边沿发布。completion.valid被阻塞时保持结果，不能先更新CPU寄存器再丢弃VPU结果。
-5. reply带原Completion、memory、stopped、exception、cause、tval、原始LSU cause和element。它不是CPU独立退休器：最终异常优先级、PC、中断cause和全局退休由Orbital决定。host.head输入用于接收许可；接受后身份由内部owner保存。
+## 完成与发布
 
-## stop、访存和异常
+`reply.ready` 是最终授权，控制底层 `completion.ready`。普通算术、VSET 和 CSR 的候选向量版本、CSR 更新与 CPU 标量结果应在同一完成握手边沿发布。完成被反压时保持 payload，不能先写 CPU 寄存器后再丢弃 VPU 完成。
 
-stop直接传到Spinor flush。算术所有者被取消时，canceled.valid提供原80位token；该指令不产生reply，不提交候选结果。取消通知仅对本时钟域立即冲刷的当前算术流水有效；不能据此清尚在外部总线的store。
+`VpuHostReply` 包含原 Completion、memory、stopped、exception、cause、tval、rawMemoryCause 和 element。CPU 根据回显原指令选择 GPR/FPR 目的；`vfmv.f.s` 对 f0 也返回有效写回，SEW32 返回值已按 FLEN64 NaN-box。
 
-访存stop必须保留active，等待已发布的A/D排空以及memoryStatus/completion。当前LSU逐元素提交前缀和vstart，发出的store不可撤销。边界不会在stop时释放访存token，也不把stopped自动当作成功退休。stopped回复要求CPU保存原PC、前缀状态并决定中断/恢复；只有同意处理该返回时才能拉高reply.ready。stop恰逢已完全完成的指令可以得到普通完成，不能凭stop电平伪造interrupted状态。
+访存允许逐元素提交前缀，其副作用不受普通算术的候选版本回滚保证覆盖。异常/停止回复禁止标量写回；最终异常优先级、中断 cause 和全局退休仍由 CPU 决定。
 
-非法指令映射exception cause=2、tval为零扩展原instruction；load原始LSU cause=4、store原始cause=6分别映射地址不对齐cause=4/6，其余当前LSU fault映射物理访问错误5/7（旧cause=1不再识别为不对齐）、tval为LSU地址。stopped没有伪造的中断cause，由CPU根据实际中断源决定。当前没有页故障/虚拟tval映射。异常/停止时禁止标量结果写回。vstart非零的归约非法，vstart保持原值。
+## stop、取消与总线排空
 
-completion必须与拥有的完整token和instruction匹配，访存必须同时提供memoryStatus，算术必须没有memoryStatus。无所有者、身份错误或元数据错位会置粘滞protocolError，阻止消费completion及接收新命令；不能通过“丢弃不匹配完成”来意外触发VPU版本提交。此错误属于集成协议错误，不是可向应用报告的正常非法指令。恢复需协调CPU/VPU/总线的停止、排空和联合复位，不能只重置适配器并重用token。
+- 算术 stop：向 VPU 发 flush，经 `canceled.valid` 返回原 token；候选状态丢弃，该指令不产生 reply。
+- 访存 stop：保留 active 和 token，等待已发布 A/D 排空及最终 completion/status。已发 store 不可撤销，不能按算术取消处理。
+- stopped 回复：CPU 保存原 PC、前缀状态和操作数，决定中断/恢复后再授权 reply；stopped 不能直接当作成功退休。
+- 若 stop 到达时指令已完全完成，可以返回普通完成，不能根据 stop 电平自行伪造中断状态。
 
-## context与Linux
+reset 须在接口静止时进行，或与 VPU、宿主和互连协调联合复位；只复位边界无法排空旧 D 或恢复 store 的错误归属。
 
-context是独立调试/保存恢复端口，只能在CPU已排空且边界无所有者、VPU完全空闲后使用。不得与正常命令、恢复或monitor clear混为同一授权。monitor清零只清统计，不影响寄存器、CPU owner和总线。
+## 异常映射与协议错误
 
-原生RISC-V Linux还需VS/FS脏状态、向量CSR、512字节向量状态保存恢复、异常与保护/翻译/一致性，以及缺失ISA。ARM Linux若执行作业，需要另外的队列/代理，不能把monitor UIO当作计算驱动。实际Orbital仓库仍未被修改或联编。
+| 条件 | CPU cause | tval |
+|---|---:|---|
+| 非法指令 | 2 | 零扩展原始 instruction |
+| load 不对齐，原始 LSU cause=4 | 4 | LSU address |
+| store 不对齐，原始 LSU cause=6 | 6 | LSU address |
+| 其他当前 load fault | 5 | LSU address |
+| 其他当前 store fault | 7 | LSU address |
 
-## 已验证范围
+当前没有页故障或虚拟地址 tval 映射。stopped 不生成中断 cause；调试 watchpoint 也不能作为可截短的普通 FOF 访问错误传入。
 
-tests/test_host_boundary.py使用模拟CPU/VPU对端，RTL和映射网表各验证256次事务：240次返回、16次算术取消；含128种原始cause/访存方向组合、6类失败关闭检查，以及错误head、标量访存/FP未排空、VPU反压、回复反压、访存stop、fault/illegal原因与80位高位身份。不是实际CPU数值程序或中断软件测试。`test_memory_boundary.py`另将真实LSU和真实宿主边界连接，RTL/网表各验证106例访问前故障、完整tval/身份和回复保持；不含RAM响应或实际Orbital。Spinor实际数值/访存由独立顶层回归覆盖。
+Completion 必须与保存的完整 token 和 instruction 一致；访存完成须同时提供 memoryStatus，算术完成不得带 memoryStatus。无所有者、身份不匹配或元数据错位会触发粘滞 `protocolError`，阻止接收新命令和消费完成。不得靠吞掉错误完成解除状态，因为 completion.fire 本身可能提交 VPU 架构状态。恢复须停机、排空并协调复位。
 
-M39增加vfmv.f.s标量FPR结果。成功Completion.writesScalar对f0也为真；CPU必须根据回显原指令解码FPR/GPR目标，不能直接将所有标量结果送入整数RF。SEW32结果已NaN-box为FLEN64。参数化整数配置移除FP CSR端口并拒绝FP指令；完整配置对外布局不变。
+## 操作数与恢复单位
 
-## M43访存操作数
+| 指令类别 | scalar | scalar2 | vstart 单位/恢复规则 |
+|---|---|---|---|
+| 算术 `.vx` / `.vf` | GPR / 完整 FPR 位模式 | 不使用 | 按操作定义解释；特殊归约、prefix 等有非零起点限制 |
+| `vsetvl` | 按原指令使用 | vtype 源 | 完成清零 vstart |
+| 单位步长访存 | rs1 原物理基址 | 不使用 | 普通元素；故障/停止保留已提交前缀 |
+| 跨步访存 | rs1 原物理基址 | rs2 有符号字节步长 | 普通元素；编码 rs2=x0 强制零步长 |
+| 索引访存 | rs1 原物理基址 | 不使用 | 索引从 vs2 组读取，为零扩展字节偏移 |
+| 分段访存 | 原基址 | 跨步时为字节步长 | 以整段为单位，当前段可能已有字段前缀；从该段字段0恢复 |
+| 整组访存 | 原基址 | 不使用 | 按编码 EEW 计数；store EEW 固定8；使用 EVL |
+| mask 访存 | 原基址 | 不使用 | 按字节计数，传输 ceil(VL/8) 字节 |
 
-单位步长与跨步指令均用`Command.scalar`传递解析后的rs1物理基址。跨步`vlse/vsse`用既有`scalar2`传递解析后的rs2有符号字节步长，完整64位捕获，元素地址按模2^64计算；指令rs2=x0时VPU强制零步长并忽略scalar2。rs2非零但值为零仍逐有效元素访问；当前x0也选择逐元素访问。标量寄存器依赖须由CPU先解决，不能在command握手后改变操作数。vsetvl原有scalar2传递vtype的用途保持，按原指令分别解释。
+恢复始终传原基址和原指令，不能再次加上 vstart 偏移。地址计算按模 2^64；索引不再乘数据宽度。所有形式当前仅支持物理普通 RAM。
 
-跨步与单位步长适用同一物理普通RAM、单事务和不可撤销所有者规则。vstart恢复仍传原基址而非已偏移地址；CPU需保留原PC/操作数直至故障或停止处理完成。未增加MMIO、VM/PMP或一致性能力。[实现和验证范围](m43-strided-memory.md)。
+FOF 元素0错误按异常处理且保持原 VL；后续元素错误可能正常完成并缩短 VL。消费最终 completion/status 后，后续算术和 CSR 读取必须看到新 VL；即使无 RF 更新，VL 变化也须由宿主管理 VS dirty。分段截短点的部分字段不属于新 VL 的有效体。
 
-## M44索引访存
+## FCSR、上下文与 Linux
 
-`vluxei/vloxei/vsuxei/vsoxei`用`scalar`传rs1基址，从指令vs2指定的向量组读取索引，忽略`scalar2`。vs2=v0是向量源，不是标量x0；无掩码时可以合法使用。索引EEW取指令编码，数据EEW=SEW；索引为零扩展字节偏移，不乘数据宽度，完整64位加法回绕。ordered和unordered在当前实现均按元素序发出/排空，保留单事务和前缀停止合同。仍不支持MMIO、VM/PMP或一致性。[范围和重叠规则](m44-indexed-memory.md)。
+共享标量/向量 FCSR 时选择 `SpinorParams(hostFcsr=true)` 或 `--fcsr-owner host`。CPU 提供已提交 frm/fflags；VPU 接收命令时锁存 frm，只返回本条成功 FP 指令产生的 flags。CPU 在 completion.fire 且 flags.valid 时 OR 合并，同一身份、同一退休边沿。FCSR 的 0x001/0x002/0x003 CSR 留在 CPU；误转发到宿主模式 VPU 会报非法。见[宿主 FCSR 细节](m56-host-fcsr.md)。
 
-## M45整组与mask访存
+context 仅在 CPU/边界/VPU/总线共同空闲后独占使用，不能与普通命令或恢复竞争。monitor clear 只清统计，不授予上下文所有权。[上下文 helper](../software/context/README.md)保存 576 字节镜像；host 模式的 execute 回调将 FCSR 访问路由到 CPU。
 
-整组`vl<n>re<eew>/vs<n>r`忽略当前VL和全部vtype（包括vill），按NREG×VLEN/EEW作为EVL；vstart按编码EEW的元素数解释，store编码EEW固定8。mask`vlm/vsm`仍尊重vill，传ceil(VL/8)个字节，vstart按字节解释。两者均vm1，允许v0作为普通数据，使用原始`scalar`基址并忽略scalar2，完成仅清零vstart而不改变VL/vtype/flags。错误/停止返回的element和vstart须按当前指令单位解释，不能一律当当前SEW元素。
+原生 RISC-V Linux 仍需真实 CPU 侧的 VS/FS、上下文切换、异常/中断、保护/翻译和一致性接入及对应验收。其他处理器执行向量作业还需队列/代理与驱动；monitor UIO 只提供观测。
 
-保存完整上下文仍需CPU/驱动先排空并处理VS/FS、VL/vtype/vstart、FCSR和vcsr。保存或恢复VRF前须先在标量侧保存原vstart并清零，避免跳过头部；可用4组vs8r保存512字节VRF，再用4组vl8re64恢复；恢复原vstart应放在恢复指令完成之后。访存期间必须保留owner和PC直到completion，仍仅物理普通RAM，无VM/PMP/一致性。[M45规则](m45-context-memory.md)。
+## 证据与兼容接口
 
-## M46分段访存
+当前数字运算和访存验证见[M60 报告](../reports/m60/evaluation.md)，宿主边界与 FCSR 的验证范围见[M56 报告](../reports/m56/evaluation.md)。这些使用独立宿主模型，不能替代实际 CPU 或 Linux 验收。
 
-单位步长分段的VL/vstart以整段为单位；仅当该段全部字段完成才推进vstart。fault/stop允许当前段有字段前缀已写回，宿主须保留原PC和基址，从vstart对应段的字段0重启；已发store不可撤销，不能套用算术取消。当前仍只访问物理普通RAM。上下文保存/恢复和CPU异常处理不能丢弃部分段，见[M46规则](m46-segment-memory.md)。
-
-## M47跨步/索引分段
-
-沿用M46的整段vstart和部分字段重启策略。跨步的scalar2传完整有符号步长位模式，rs2=x0时忽略；索引形式忽略scalar2。索引分段load所有目标字段组都不得与vs2索引组重叠，同宽也保留，且VL0不能绕过检查。store可有同EEW源别名。旧NF0索引load合法重叠不受影响。仍由宿主保证物理普通RAM及不可撤销指令所有权，见[M47说明](m47-addressed-segments.md)。
-
-## M48 FOF与VL
-
-FOF元素0错误按原异常处理，原VL保持；后续元素错误则正常完成并缩短VL、清零vstart。CPU不能仅根据总线错误判断该指令要重试，须使用最终completion/status；FOF后的CSR读取和后续算术必须看到已提交的新VL。即使没有RF写回，VL缩短也改变向量架构状态，宿主仍须正确处理VS dirty。分段被截短的当前段可以保留已加载字段；不应把这些字段算入新的VL。停止保持原VL；同拍同步错误按FOF规则优先处理。调试watchpoint不能当作可截短的普通访问错误交给此接口。见[M48](m48-fault-only-first.md)。
-
-## M49程序适配器
-
-新增ELF测试执行器直接驱动公共VPU命令端，动态取指并使用实际VL/标量返回执行循环；它不经过真实Orbital，也未替代CPU退休边界、VS/FS或异常管理。程序回归通过不能作为本合同的整核集成验收。见[M49验证范围](m49-compiled-programs.md)。
-
-## M50浮点广播与合并
-
-`vfmv.v.f`及`vfmerge.vfm`使用`Command.scalar`接收FPR的完整FLEN64位模式，f0是有效源，不能套用x0取零。SEW32检查NaN boxing：高32位非全1时使用规范NaN；合法sNaN位模式按数据复制，不quiet、不增加fflags。合并的v0是选择数据，vm=0时全部body元素执行，非普通写掩码。仍在completion握手时发布候选RF版本，flush撤销；CPU负责FP权限/FS与向量脏状态。monitor实现ID更新为0x5001，ABI1和能力布局不变。
-
-## M56 宿主管理 FCSR
-
-原默认 standalone 接口保持；接入原生 Orbital 标量/向量共享 FCSR 时，选择
-`SpinorParams(hostFcsr=true)` 或生成参数 `--fcsr-owner host`。此模式增加
-`io.core.fcsrHost`，由 CPU 提供已提交 frm/fflags；VPU 锁存执行用 frm，返回当前
-成功 FP 完成的逐指令 flags。CPU 只在 completion.fire 同边沿合并，不能在 valid
-出现时提前合并。flags 更新与原 completion 使用同一 token/拥有者，不另发射或退休。
-
-0x001/0x002/0x003 CSR 在宿主模式必须留在 CPU，转发到 VPU 会报非法，包括零源读。
-上下文 helper 的 execute 回调也须相应路由；向量 CSR 与 VRF 仍由 VPU 负责。
-权限、VS/FS dirty、全局退休和共享 FCSR 的顺序管理仍属于 CPU。monitor ID0x5602
-标识宿主版，默认独立版保持0x5501。详细端口及验证限制见 [M56](m56-host-fcsr.md)。
+旧 `ValenceBoundary` 是早期算术实验适配器，flush 会直接丢弃所有者，不适用于当前 LSU；新接入使用本页的 `VpuHostBoundary`。整理前的协议原文保留在[文档快照](../archive/docs-m60/source/docs/cpu-spinor-contract.md)。

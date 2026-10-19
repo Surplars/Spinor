@@ -1,36 +1,25 @@
-# 砺矢 · Spinor VPU
+# Spinor VPU
 
-Valence SoC / Orbital CPU / Spinor VPU。目标器件 `xczu15eg-ffvb1156-2-i`，
-采用 **Mill 1.1.7 / Scala 2.13.18 / Chisel 7.16.0**，按 300 MHz 设计。
+Spinor（砺矢）是使用 Chisel 和 Mill 开发的 RISC-V 向量协处理器，面向 FPGA，优先使用 RAM 保存向量寄存器和候选结果。当前按 `xczu15eg-ffvb1156-2-i`、300 MHz 目标设计。
 
-**当前 M60：全部330种算术编码的重启分类验证。** 两预设新增726,000条参考命令，
-307种编码有合法非零起点可见结果，23种按限制拒绝。M59类型重叠与M58策略/恢复证据保持。
-目录375基础V+16Zvbb、310种访存形式的样本结论保持，完整ISA语义验收仍未关闭。
-硬件保持M56：VLEN128/ELEN64、单lane、单指令在途、版本化RAM。
-CPU持有宿主FCSR，VPU锁存frm并返回逐指令flags；宿主/独立monitor ID保持0x5602/0x5501。
+提供原始指令命令接口、TileLink A/D 数据访存端口、上下文访问端口和独立的 MMIO monitor。可作为原生 RISC-V 向量执行单元接入，也可用于构建由其他处理器管理的加速器。
 
-- [当前进度](CURRENT.md)、[M60 重启分类](docs/m60-classified-restart.md)
-- [M60 验证](reports/m60/evaluation.md)、[ISA目录及验收清单](docs/m57-isa-audit.md)
-- [M59 类型重叠](docs/m59-overlap-restart.md)、[ACT4 接入条件](docs/act4-intake.md)
-- [M58 四策略与字段恢复](reports/m58/evaluation.md)
-- [M56 接口与边界](docs/m56-host-fcsr.md)
-- [M56 验证/资源/时序](reports/m56/evaluation.md)、[M55 Zvbb 集合](docs/m55-zvbb.md)
-- [规模参数](docs/m39-configurations-and-fp-transfers.md)、[CPU 接入契约](docs/cpu-spinor-contract.md)
-- [独立上下文镜像](software/context/spinor_context.h)、[FP16 最小转换](docs/m54-half-conversions.md)
+## 当前能力
 
-基础整数、定点、掩码、置换、归约、FP32/64、两种最小 FP16 转换和向量访存已有
-实现及独立验证。**尚未声明完整 V/RVA23/Zvkt，尚未接入实际 Orbital/Linux。**
-完整 Zvfh、BF16、向量 crypto、多 lane/更大 VLEN 不在当前范围。规模预设调节
-FP 开关和整数分段宽度，不能任意修改尚未改造的 VLEN/ELEN/lane。
+| 项目 | 当前配置 |
+|---|---|
+| 向量规模 | VLEN 128、ELEN 64，32 个架构向量寄存器，共 512 字节 |
+| 执行结构 | 单 lane、单指令在途；部分整数操作支持元素间流水重叠 |
+| 运算 | 整数、定点、掩码、置换、归约、FP32/FP64、Zvfhmin 最小转换、Zvbb |
+| 访存 | 单位步长、跨步、索引、分段、整组、mask 和 fault-only-first；物理普通 RAM |
+| 接口 | 80 位命令身份、完成握手、64 位 TileLink A/D、4 KiB monitor |
+| 工具链 | Mill 1.1.7、Scala 2.13.18、Chisel 7.16.0 |
 
-访存接口预留 TileLink，当前仅物理普通 RAM、单事务、逐元素提交；地址保护/
-翻译、MMIO 语义和缓存一致性待宿主接入。**访存期间 flush 必须等待 Completion/
-status，不能按算术指令立即丢弃 token。** 见 [访存契约](docs/m10-memory.md)。
-监控 MMIO 提供容量、忙闲/计数等状态；ARM 作业队列和 Linux 驱动仍待实现。
+当前功能与验证状态见[进度说明](CURRENT.md)和[ISA 覆盖表](docs/isa-coverage.md)。尚未声明完整 V/RVA23/Zvkt 合规，也尚未完成实际 CPU/Linux 集成。地址翻译、PMP 和缓存一致性需要系统侧接入；monitor 提供观测功能，计算作业队列和专用 Linux 驱动仍待实现。
 
-## 生成硬件
+## 快速生成
 
-Linux x86-64、Java21、Python3.12+：
+开发环境：Linux x86-64、JDK 21、Python 3.12+、GCC 和 Make。Windows 建议在 WSL2 中进行 Chisel 构建，再将生成文件交给 Windows Vivado。
 
 ```bash
 git clone https://github.com/Surplars/Spinor.git
@@ -39,44 +28,29 @@ make bootstrap
 ./mill Vpu.runMain vpu.GenerateConfigured --out build/configured --name SpinorVpu --preset standard
 ```
 
-预设为 `standard`、`deep`、`integer`、`integer-deep`。输出 SV 和配置 JSON，
-原生 Orbital 共享 FCSR 时加 `--fcsr-owner host`，FCSR CSR 留在 CPU；默认
-`standalone` 继续用于独立验证。JSON 明确列出 FCSR 所有者、FP、Zvbb、规模及 `device_timing_verified:false`。
-工具首次下载需要网络，下载地址和版本由仓库锁文件约束。
+输出包含 `SpinorVpu.sv`、配置清单 `SpinorVpu.json` 和生成器拆分出的辅助文件。将输出目录中的相关 SV 文件一并加入工程。首次准备工具需要网络和磁盘空间，版本及下载散列见 [tools.lock.json](tools.lock.json)。
 
-## 当前验证与时序
+| 预设 | 浮点 | 整数分段位宽 |
+|---|---|---:|
+| `standard` | 开启 | 32 |
+| `deep` | 开启 | 16 |
+| `integer` | 关闭 | 32 |
+| `integer-deep` | 关闭 | 16 |
 
-M60标准/Deep新增726,000条分类参考命令，包含初始化/拒绝命令。
-每预设72,600个目标中50,914合法；全部330编码有合法样本，307种有非零起点可见结果。
-Spike始终在vstart=0；普通执行mask变换与carry/merge、whole/scalar例外分开，
-不是直接非零Spike差分。5,720个场景与M59数学/SoftFloat模型再次校准。
-24次运行错误注入、5次条款负控制通过；不是全部布局/数据的穷举。
-ACT4官方来源已固定、接入条件已清点，尚未生成或执行ACT4 ELF。
-硬件不变，整数/宿主预设沿用历史证据。M56延迟抽样仍不构成完整Zvkt合规证明。
+预设不改变 VLEN/ELEN、lane 数或指令在途容量。原生 CPU 与标量 FPU 共享 FCSR 时使用 `--fcsr-owner host`，详见[接入指南](docs/integration.md)。
 
-默认宿主 Yosys xcup：**24,247 逻辑 LUT、13,882 FF、9 DSP**，RAM 数量保持。
-公共/计算顶层固定云端条件预算均 **3.300ns**，≤3.333ns。模型排除 DSP 影响端点
-和主输入/输出，不含器件布局布线/真实时钟，未按 -2 校准，不能作为 STA。
-本轮沿用M56条件预算，实际300/500MHz仍未知，宿主侧带还需SoC时序约束。
+## 接入与使用
 
-最新本地证据是 [M53 Vivado 报告](reports/local-m53-resume/evaluation.md)：旧 RTL
-300MHz OOC setup +0.090ns、hold +0.042ns，不自动适用当前RTL。宿主 IO 和实际时钟源
-还需 SoC 约束。[实际 DSP 表及配置限制](reports/dsp-m53/evaluation.md) 单独保留。
+- [接入指南](docs/integration.md)：选择配置、连接端口、提交/取消、浮点状态、上下文及首次联调。
+- [CPU 提交协议](docs/cpu-spinor-contract.md)：指令所有权、完成授权和异常映射。
+- [TileLink 与访存](docs/tilelink.md)：总线参数、物理窗口、错误和停止规则。
+- [MMIO monitor](docs/monitor-soc.md)：寄存器、快照、Linux UIO 工具和多宿主访问。
+- [构建与仓库](docs/repository.md)、[验证与时序](docs/validation.md)、[全部文档](docs/README.md)。
 
-在**已有 M55至M59 固定工具及参考产物的云端工作区**，当前验收入口：
+## 验证与时序
 
-```bash
-python3 scripts/verify_m60.py
-python3 scripts/verify_m60.py --check-only
-```
+最新功能验证为 M60：标准/Deep 合计 726,000 条命令通过，覆盖全部 330 种算术编码的重启分类。[报告](reports/m60/evaluation.md)保留参考方法、错误注入和覆盖边界；[ACT4 接入清单](docs/act4-intake.md)记录官方架构测试的后续工作。
 
-`--check-only` 对验收时的精确源码/产物散列进行审计。Git 保存源码、报告、冻结
-历史源码；`build/`、`tools/` 和发布 ZIP 不入库，单独 clone 不具备工作区内全部
-历史验收产物，不能直接核对这些现成散列。新机器可先生成硬件，工具/历史产物准备
-和完整验收步骤见各里程碑报告及 [仓库说明](docs/repository.md)。
+云端宿主配置沿用 **3.300 ns 条件估计**。该模型不含器件布局布线和真实时钟，排除 DSP 影响端点，不能作为实际 300 MHz 时序签核。当前 RTL 仍需 Vivado 综合、实现和完整约束验证；旧版本的本地通过结果仅作历史参考。
 
-[位特征/扩宽移位汇编示例](software/programs/bit-features.S) 已通过 Clang19 汇编
-及真实机器字检查；[C 接口](software/programs/bit-features.h)。这是编译检查，
-没有声称已在真实 Orbital/Linux 运行。
-
-历史里程碑报告与本地原始证据保留原版本，不将历史通过计为新硬件通过。
+构建工具和完整测试产物不随 Git 保存，复现条件、文档检查和证据核对方式见[验证说明](docs/validation.md)。

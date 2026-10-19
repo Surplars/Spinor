@@ -1,42 +1,52 @@
-# 砺矢 TileLink 预留边界
+# TileLink 与向量访存
 
-M9 增加 `TileLinkReservation` 单事务 A/D 主端，以及 `LishiVpuTileLinkReserved` 顶层封装。算术顶层 `RamVectorFp` 的接口保持原样；封装的 `io.core.*` 转接原算术端口，另暴露 `memoryRequest`、`memoryResponse`、`memoryBusy` 和 `tl.a/d`。
+当前公开顶层 `SpinorVpu` 已将向量 LSU 接到 `io.tl` 数据主端。另一个 `io.monitor` 是独立 MMIO 从端，方向和用途不同，见[monitor 指南](monitor-soc.md)。整体连接步骤见[接入指南](integration.md)。
 
-**目前 memoryRequest 由接入侧驱动，尚未连接向量 LSU。没有实现向量 load/store、地址翻译、PMP、精确访存故障、分段/索引访问或缓存一致性。** 这些接口是已实现并测试的协议预留，不是完整访存能力。
+## 数据主端参数
 
-## 总线参数
+采用工程内的 `VpuTileLinkMaster` / `VpuTLA` / `VpuTLD` 类型，定义于 [TileLinkReservation.scala](../src/main/scala/vpu/TileLinkReservation.scala)。这些是显式 Bundle，不提供 Diplomacy 节点或参数协商；接入其他总线库时需字段转换，接 AXI 等协议需另设桥。
 
-默认：地址 64 位、数据 64 位、source 4 位、sink 1 位、size 3 位。地址/source/sink/size 位数可配置，数据宽度当前限定 64 位。仅 A/D；不发 Acquire，不持有一致性权限，不提供 B/C/E。
-
-已核对本地 Valence 的 `soc.bus.tilelink.TLBundleA/TLBundleD` 字段和 opcode 编码。参考源码提交 `6c8977f684830137fae088d4679f9d84e5ce4a11`，文件 `src/main/scala/bus/tilelink/TileLink.scala` SHA256 为 `22d024123aae4bbbfe42142a653f73e23335211d2535f0041880388b3ab93a18`。本项目不直接依赖该 Scala 包，也未修改或接入 Valence；连接时需要字段转接及系统级参数/协议检查。
-
-| A/D 字段 | 位数 / 行为 |
+| 项目 | 当前公开顶层 |
 |---|---|
-| A opcode | Get=4，PutFullData=0，PutPartialData=1 |
-| A param / corrupt | 0 / false |
-| A size | log2(字节数)，只接受 0..3，即 1/2/4/8 字节 |
-| A source | 固定 0；一个事务在途，收到 D 前不复用 |
-| A address | 自然对齐的物理字节地址 |
-| A mask / data | 请求内低位字节掩码/数据按 address[2:0] 放入总线字节 lane |
-| D | 接受 AccessAck / AccessAckData，核对 opcode、param、size、source；报告 denied/corrupt |
+| 通道 | A/D，非一致性单 beat；无 B/C/E、Acquire 或原子操作 |
+| 地址 / 数据 | 64 / 64 位 |
+| source / sink / size | 4 / 1 / 3 位；主端 source 固定0 |
+| 在途请求 | 1；收到 D 并处理结果后才复用 source |
+| A opcode | Get=4、PutFullData=0、PutPartialData=1 |
+| D opcode | 读返回 AccessAckData=1，写返回 AccessAck=0 |
+| param / corrupt | A 输出 0 / false；D 检查 param、opcode、size、source、denied 和 corrupt |
+| size | log2(字节数)，0..3，对应1/2/4/8字节，自然对齐 |
 
-内部请求数据与 mask **右对齐**。例如地址 `0x...06`、size=1（2 字节）、mask=3、data=0x1234，A mask=0xc0、A data=0x1234000000000000。读返回从对应 lane 提取并零扩展，符号扩展留给未来 LSU。写返回 data=0。非法 size、未对齐、零/越界写 mask、未授权写在本地返回 localError，不发送 A。
+内部请求的 data/mask 右对齐，A 端按 address[2:0] 移到总线字节 lane。例：地址 `0x...06`、2 字节写入 `0x1234`，A.mask=`0xc0`，A.data=`0x1234000000000000`。D.data 按相同 lane 返回，桥提取数据后交给 LSU。
 
-不支持跨 beat、burst、多 source、原子操作或 coherent TL-C。未来 LSU 必须拆分/排序访问，并解决翻译、权限、一致性和故障恢复。首选与宿主 LSU/共享缓存路径协调，不能把独立物理 A/D 接口视为与 CPU 缓存天然一致。
+A.valid 被阻塞时保持所有 payload；互连须完整返回对应 D。支持 A 接受同拍返回 D。非法请求和总线错误会转成当前 LSU/完成协议中的结果，不应自行吞掉返回来解除忙状态。
 
-## flush、背压与不可撤销写
+## 物理窗口与缓存
 
-- 接受内部请求后，A payload 寄存；A.valid 在背压下保持，flush 也不撤回已发布的 A。
-- flush 将该事务标记为 killed；A/D 继续完成协议，D 被排空，旧 token 的内部响应被丢弃，之后才允许复用 source。支持 A 接受同拍收到 D。
-- response 在背压下保留数据和 token；flush 可丢弃尚未接受的内部响应。
-- store 必须携带 irrevocable=true，否则本地拒绝。该标志由宿主在确认架构上允许产生副作用后提供；桥无法回滚已发送的 store。
-- 协议层的排空不等于精确异常/架构撤销：宿主不得在已授权 store 未完成时丢失其副作用或错误归属。最终 LSU 必须为 store 完成、错误及中断制定退休规则。
-- reset 要求与 fabric 联合复位或接口已静止；单独复位本模块不会替旧事务排空 D。
+`SpinorParams.regionBase/regionBytes` 指定允许的普通 RAM 窗口。默认 `0x80000000` 起 256 MiB；大小至少8字节、为2的幂，基址按大小对齐。窗口检查不等同于 MMU/PMP，也不使 CPU 缓存与 VPU 自动一致。
 
-## 验证
+接入侧须提供可见的物理 RAM、地址翻译/保护方案和正确的缓存维护或一致性路径。当前不能直接访问用户虚拟地址或任意设备 MMIO；不是通用 DMA/设备寄存器执行器。多个 VPU 接入同一 fabric 时，应由互连完成 source ID 扩展/重映射和路由。
 
-`tests/test_tilelink.py`：600 组事务，含 36 个本地拒绝、112 个同拍 A/D、459 个实际 flush 场景、41 个畸形 D 返回检查；564 个已发布 A 均排空了 D。RTL、Yosys 映射网表以及预留封装的总线接口均执行相同用例。封装用例保持算术命令端静止，算术功能另由整机回归验证，不声称已验证 LSU/总线联合执行或完整 TileLink 合规。
+## 当前访存形式
 
-## M10 后续实现
+已实现单位步长、跨步、索引、分段、整组、mask 和 fault-only-first；[ISA 覆盖表](isa-coverage.md)列出范围和验证边界。
 
-`LishiVpuMemory` 已把最小连续地址 LSU 接到 A/D 桥；它不使用本页预留封装的外部 memoryRequest 口。访存期间桥不接 flush，采用排空请求、保留错误、在元素边界完成停止的新合同，见 `docs/m10-memory.md`。旧预留封装及其原始协议测试仍保留。
+- 普通单位步长/跨步/索引：按元素推进 vstart，恢复传原基址。
+- 分段：vstart 以整段为单位；故障段可能留下字段前缀，恢复从该段字段0开始。
+- 整组：忽略当前 VL/vtype，按编码 EEW 和 NREG 的 EVL 访问；store 的 EEW 固定8。
+- mask：传 ceil(VL/8) 字节，vstart 按字节解释，仍尊重 vill。
+- FOF：元素0错误正常报异常；后续元素错误可正常完成并缩短 VL。以最终 completion/status 为准。
+
+原始 LSU 状态含 fault、interrupted、cause、address 和 element；它与访存 Completion 配套。CPU cause/tval 映射见[提交协议](cpu-spinor-contract.md)。
+
+## 停止、提交和复位
+
+当前 LSU 按元素/字段提交前缀，已发 store 不可撤销。公共顶层访存期间收到 flush 时请求延迟停止，**不向底层桥传播丢弃响应的 flush**：先排空已发布 A/D，再返回完成与 memoryStatus。宿主在此之前保留 token、PC 和错误归属。
+
+普通算术的取消规则不能用于访存。协议排空不等于回滚内存；stopped 和 fault 的后续处理由宿主授权。复位须在总线静止时进行，或由系统协调 VPU/宿主/fabric 联合复位。
+
+## 历史预留封装
+
+`LishiVpuTileLinkReserved` 是早期保留的算术加外部 memoryRequest 封装，并非当前完整 LSU 顶层。它的桥级 flush 可以将请求标记为 killed、排空 D 后丢弃内部响应；不能把这一行为照搬到 `SpinorVpu` 的精确访存所有权处理。
+
+早期协议测试及原始说明保留在[文档快照](../archive/docs-m60/source/docs/tilelink.md)。当前新接入选择 `SpinorVpu`，历史实现记录见[单位步长](m10-memory.md)、[分段](m46-segment-memory.md)和[FOF](m48-fault-only-first.md)。

@@ -1,79 +1,62 @@
-# SoC monitor ABI v1 与接入边界
+# MMIO monitor 接入与 ABI
 
-当前公开顶层为SpinorVpu（兼容类LishiVpuMonitored），将M18数值/访存数据通路与VpuMonitor连接起来。它保留core命令、context、completion及memoryStatus，另有两个方向不同的TL接口：tl是访问物理RAM的主端；monitor是Linux可读写的4KiB监控从端。两者不共享背压。实验乱序窗口不在此顶层内，真实指令容量仍为1。
+`SpinorVpu.io.monitor` 是独立的4 KiB TileLink A/D 从端，用来读取能力、忙闲状态、计数器和错误记录；`io.tl` 则是 RAM 访问主端。monitor 轮询不计入向量数据流量，两个端口各自处理反压。
 
-## Linux能做什么
+monitor 与 VPU 共用时钟/复位，无中断。跨时钟或其他总线协议需要系统桥接。它不包含计算提交入口、向量寄存器读写接口或作业驱动。
 
-通过MMIO读取能力、忙闲状态、运行计数、错误记录和原子快照。software/monitor提供寄存器头文件、设备树示例和Linux UIO用户态工具。这里使用Linux现有通用UIO驱动，不是已完成的专用内核驱动，也不提供submit ioctl、进程隔离、向量上下文切换或Linux用户态RVV执行支持。宿主可以是能访问该MMIO区域的ARM PS或RISC-V Linux，前提是SoC总线桥已正确连接。
+## 地址和标识
 
-容量指架构向量寄存器文件：32×128bit=512字节，ELEN64，最大LMUL8；不是DMA缓冲区/显存，也不是所有物理候选副本的RAM资源总量。caps明确标记部分ISA，禁止据此发布misa.V/RVA23合规。busy并不等于实际算术利用率，completed是VPU完成握手，不是CPU架构退休；不能据此直接推算GFLOPS。
+生成时通过 `--monitor-base` 指定4 KiB对齐地址。若互连保留完整物理地址，使用实际基址；若互连减去窗口基址，生成基址用0。设备树和软件映射必须匹配。
 
-## 寄存器
-
-小端，每项8字节；只读项支持自然对齐的8/16/32/64位Get。控制寄存器仅支持对齐到低半部的32/64位PutFull/PutPartial，mask必须覆盖该访问全部字节。32位写的未选中高32位被忽略。所有请求必须param=0、corrupt=0。非法地址/大小/mask/写只读/原子操作返回denied，不产生副作用。一次一个响应，D背压时全部响应字段保持稳定。
-
-| 偏移 | 内容 |
+| 偏移 | 当前内容 |
 |---|---|
-| 0x00 | Magic 0x4c495348 |
-| 0x08 | ABI 0x00010000，major=1 |
-| 0x10 | 实现ID 0x4801：M48 fault-only-first加载加monitor ABI1 |
-| 0x18 | caps=0xffffffff：bit0 monitor、1物理LSU、2 FP32、3 FP64、4 context端口、5部分ISA、6单宽整数归约、7掩码逻辑、8整数标量搬运、9掩码计数/首置位、10前缀掩码、11 viota/vid索引生成、12整数滑移、13 gather（含EI16）、14 compress、15单宽FP归约、16宽化整数归约、17宽化FP归约、18整数零/符号扩展、19窄化整数移位、20宽化整数加减、21宽化整数乘法、22单宽整数乘加、23宽化整数乘加、24反减/大于比较、25整组搬运；没有完整RVV/乱序/一致性声明 |
-| 0x20 | [15:0] VLEN128、[31:16] ELEN64、[47:32]寄存器32、[63:48]真实指令容量1 |
-| 0x28 | [31:0]架构VRF字节512、[39:32]最大LMUL8；其余保留 |
-| 0x30 | 计数宽度32；Tiny验证模块为8，非生产接口 |
-| 0x38 | 实时状态：bit0 busy、1拥有访存指令、2已接受TL A尚未收到D、3拥有指令、4快照有效、5计数器存在、6任一计数回绕粘滞、7错误粘滞 |
-| 0x40 | 写1原子快照，写2仅清monitor，写0无操作；其他值denied；读0 |
-| 0x48 | 32位快照序号，每次快照加1；monitor清零不改序号 |
-| 0x50/58/60/68 | 实时最后错误：[15:0]cause、[23:16]element；地址；token低64/高16。非法指令cause=0x100，访存cause沿用LSU |
-| 0x70/78 | 实时vtype/config |
-| 0x100+8*i | 第i个计数器的快照，32位零扩展为64 |
-| 0x180/188/190 | 同一次快照的status/vtype/config |
-| 0x198/1a0/1a8/1b0 | 同一次快照的错误cause+element/address/token低64/高16 |
+| `0x00` | Magic `0x4c495348`，保留兼容的 LISH 标识 |
+| `0x08` | ABI `0x00010000`，major 1、minor 0 |
+| `0x10` | standalone ID `0x5501`；host FCSR ID `0x5602` |
+| `0x18` | 完整浮点配置 caps=`0xffffffff`；整数配置=`0xfffd7ff3` |
+| `0x20` | [15:0] VLEN128、[31:16] ELEN64、[47:32]32个寄存器、[63:48]指令容量1 |
+| `0x28` | [31:0]架构 VRF 字节数512、[39:32]最大 LMUL8 |
+| `0x30` | 生产计数器宽度32位 |
+| `0x38` | 实时 status |
+| `0x40` | control：写1快照、写2清统计、写0无操作；读0 |
+| `0x48` | 快照序号；每次快照加1，clear不改变序号 |
+| `0x50/58/60/68` | 实时错误 cause+element、address、token低64/高16 |
+| `0x70/78` | 实时 vtype/config |
+| `0x100+8*i` | i=0..12 的计数器快照 |
+| `0x180/188/190` | 同次快照 status/vtype/config |
+| `0x198/1a0/1a8/1b0` | 同次快照错误 cause+element/address/token低64/高16 |
 
-config位布局：[7:0]vl、[14:8]vstart、[16:15]vxrm、bit17 vxsat、[20:18]frm、[25:21]fflags。错误记录仅在消费completion时更新；完成端口被阻塞期间不会重复累计错误。
+以生成 JSON 和当前 [VpuMonitor.scala](../src/main/scala/vpu/VpuMonitor.scala) 为准。caps bit5保留“部分ISA”标记；能力位不等同于完整 V/RVA23/Zvkt 合规。整数配置清除 FP32、FP64、单宽FP归约及宽化FP归约位。最小FP16转换/Zvbb等细分范围另见[ISA表](isa-coverage.md)，不能只由32个旧能力位推断。
 
-计数器i=0..12依次为：cycles、busy_cycles、memory_owned_cycles、accepted、completed、canceled、illegal、memory_fault、memory_stop、tl_a、tl_d、command_stall、completion_stall。A/D计数只统计向量数据访存端口，不把monitor轮询算作向量流量。memory_owned_cycles含访存completion等待软件接收的时间；busy含context访问等核心占用，并非只计执行单元活跃。
+caps位0..31依次为：monitor、物理LSU、FP32、FP64、context、部分ISA、整数归约、mask逻辑、整数标量搬运、mask计数/首置位、prefix、iota/vid、整数slide、gather/EI16、compress、FP归约、宽化整数归约、宽化FP归约、整数扩展、窄化移位、宽化加减、宽化乘法、单宽乘加、宽化乘加、反减/大于比较、整组搬运、carry/borrow、饱和加减、平均加减、舍入右移、vsmul、vnclip。
 
-算术flush取消拥有的指令且只计一次；访存flush是延迟停止，要排空已发布的请求并返回completion，计作memory_stop而不是canceled。completed包含非法、fault和停止返回，不直接等于成功指令数。
+## 访问与快照
 
-快照在控制A握手边沿捕获该边沿之前的所有计数、状态与错误，之后计数继续。对应边沿新发生的事件进入下一快照；snapshot status中的bit4反映采样前有效位，因此首个快照可能为0，软件应检查实时0x38的有效位及序号。读不清零。写2同时清实时/快照计数和错误，置快照无效，但不会停止VPU、撤销store或清向量状态；清零优先于同一边沿的计数/错误事件。这是有意的统计区间边界。
+寄存器小端、每项8字节。Get支持自然对齐的8/16/32/64位读取；control仅支持从低半部开始、覆盖全部访问字节的32/64位PutFull/PutPartial。param必须0、corrupt必须false；非法地址、mask、原子操作或只读项写入返回denied且无副作用。一次一个D响应，反压时保持全部字段。
 
-32位计数按模2^32回绕，软件差值用uint32_t减法，并在驱动中累计成64位。300MHz下cycles约14.3秒回绕；建议每秒采样，实际允许间隔取决于真实时钟，不能跨过一整圈。monitor和VPU时钟关闭时不计数，睡眠/时钟门控期间不能简单用墙钟作忙闲百分比分母。利用率用相邻快照delta_busy/delta_cycles，分母为0时报告不可用。硬件不报告未经测量的“300MHz实际运行频率”。
+快照在control A握手边沿捕获该边沿前的状态；之后实时计数继续。软件读取序号和snapshot-valid，读取快照数据后再次核对，避免被其他写者覆盖。clear只清monitor统计/错误，不清VRF、CPU owner、总线事务或快照序号。
 
-## 接线与软件
+status bit0..7依次为busy、访存指令拥有者、已发A尚未收到D、指令拥有者、快照有效、计数器存在、计数回绕粘滞、错误粘滞。
 
-monitor与VPU共用时钟/复位。跨时钟必须经过正规的TL异步桥，不能直接接引脚。仅实现TL-UL A/D单拍，source宽4位；SoC互连需适配source ID和总线宽度。默认monitor基址为0，要求互连提供相对地址；若互连保留完整物理地址，请按实际基址重新生成，例如：
+config位：[7:0]VL、[14:8]vstart、[16:15]vxrm、bit17 vxsat、[20:18]frm、[25:21]fflags。错误字：[15:0]cause、[23:16]element；非法指令cause=`0x100`，访存错误沿用LSU cause。错误仅在消费Completion时记录。
 
-```bash
-./mill Vpu.runMain vpu.GenerateMonitor build/monitor/rtl 0xa0010000
-```
+计数器顺序：cycles、busy_cycles、memory_owned_cycles、accepted、completed、canceled、illegal、memory_fault、memory_stop、tl_a、tl_d、command_stall、completion_stall。completed表示VPU完成握手，包含非法/fault/stopped，不等于CPU成功退休数；busy也不是算术利用率。512字节指架构VRF，不是DMA缓冲容量或所有物理候选副本总量。
 
-设备树示例的地址不是最终分配，必须与TL解码和生成参数一致。该MMIO区域必须映射为设备/非缓存内存。需要CONFIG_UIO、CONFIG_UIO_PDRV_GENIRQ，某些内核需要uio_pdrv_genirq.of_id=generic-uio启动参数。首版没有中断，使用轮询。确认/sys/class/uio/uioN/name为lishi-vpu-monitor，而不是假定固定uio0。
+32位cycles在300MHz约14.3秒回绕，建议每秒或更快采样，以模2^32计算差值。详细定义见[软件头文件](../software/monitor/lishi_monitor.h)。
+
+## Linux UIO 观测
+
+设备树例见 [lishi-monitor.dtsi](../software/monitor/lishi-monitor.dtsi)，地址需要按系统修改。配置通用UIO及 `UIO_PDRV_GENIRQ`；有些内核还需 `uio_pdrv_genirq.of_id=generic-uio`。MMIO映射为设备/非缓存内存，首版轮询，无中断。
+
+在目标Linux或匹配的交叉编译环境中构建，确认 `/sys/class/uio/uioN/name`，再运行：
 
 ```bash
 gcc -std=gnu11 -O2 -Wall -Wextra -Werror software/monitor/lishi_monitor.c -o lishi-monitor
 sudo ./lishi-monitor /dev/uioN
 ```
 
-工具以volatile 32位设备访问和内存屏障触发快照、验证有效位/序号、读取JSON；--read-snapshot读取已有快照，用于离线夹具或独占的已冻结快照。flock仅约束合作访问者；同一硬件必须只由一个驱动/监控服务拥有，不能同时用/dev/mem或另一内核驱动更改快照。重置、热拔出、时钟门控由SoC平台负责，UIO工具不提供运行时电源管理。对Linux用户授权前应限制设备节点权限；当前错误token与地址属于调试信息。
+工具触发快照并输出JSON；`--read-snapshot`只读取已有快照。它使用Linux通用UIO，尚不是专用计算驱动，没有submit ioctl、进程隔离或上下文调度。宿主可以是能访问此MMIO窗口的任一处理器。
 
-PS ARM与PL RISC-V可以复用同一ABI及工具。若两个Linux同时运行，能力和实时只读状态可并行读取，但快照/clear应只有一个写入所有者；flock不能跨两个内核互斥。v1没有硬件锁，需要SoC mailbox/所有权协议或单一监控服务来协调；另一侧可用--read-snapshot并核对序号，快照被覆盖时重试。两边的计算提交入口不同：PL RISC-V未来接原生向量指令；ARM未来需要命令队列或PL RISC-V代理。当前monitor不包含这些计算入口。
+同一硬件只应有一个快照/clear写入所有者。flock只协调同一内核下的合作进程，不能跨两个Linux内核互斥；多宿主须另设mailbox或所有权协议。只读观察者可核对序号后读取已有快照。平台负责时钟门控、复位与设备移除期间的访问协调。
 
-## 离“完整、可跑Linux向量程序”还差什么
-
-1. ISA仍缺完整整数分组、归约/排列/宽窄运算及完整访存模式等，须按指令矩阵补齐并做架构差分；monitor不改变这个范围。
-2. 当前core命令只能由CPU的不可撤销ROB队头提交，旧标量访存已排空；80位token必须原样保留，访存stop期间不能丢失所有权。现有Valence仓库尚未接入。
-3. 访存只支持固定物理普通RAM窗口，默认0x80000000起256MiB，没有地址翻译/PMP/缓存一致性。不能把Linux用户虚拟地址直接送入该LSU。CPU和SoC必须补齐保护、翻译、栅栏与精确异常，或者明确采用受限的物理缓冲区加速器协议；后者当前也没有作业提交驱动。
-4. CPU需实现向量CSR和VS/FS状态处理、上下文保存恢复、异常/中断、指令退休授权。monitor不是向量寄存器访问端口，不解决这些事项。
-
-近期优先单指令SoC接入闭环和ISA功能，OoO/双发射继续留在独立实验中。物理时序仍需要后续Vivado确认，云端预算仅作参考。
-
-M37新增caps bit26进位/借位、27饱和加减、28平均加减、29舍入右移。ABI版本仍为1.0。
-
-M38新增caps bit30分数乘法vsmul、bit31窄化裁剪vnclip[u]；实现ID=0x3801，ABI仍1.0。
-
-M39 ID=0x3901，ABI1.0。完整配置caps仍0xffffffff；整数预设清bit2/3/15/17，caps=0xfffd7ff3。VLEN、VRF容量和指令容量仍128、512字节、1。[预设说明](m39-configurations-and-fp-transfers.md)。
-
-M40 ID=0x4001，ABI1.0；新增宽化FP仍使用已有部分FP能力位，四个配置的caps和几何不变。[M40说明](m40-wide-floating-point.md)。
-
-M48实现ID为0x4801，新增FOF加载和原子VL提交，保持RAM共享通路；ABI和能力位布局保留，能力位不代表完整FP/RVV支持。
+历史ID和能力演进保存在[整理前说明](../archive/docs-m60/source/docs/monitor-soc.md)，不作为当前配置检测依据。
