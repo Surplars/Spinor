@@ -47,9 +47,13 @@ completion, negative hold slack, missing timing paths, optional DSP failure,
 partial-error report packing, repeat/full packing, invalid destinations and
 modified-input rejection. Fix1 adds report-only resume tests, checkpoint part/
 public-port mismatch rejection and strict rejection of unmodelled Tcl commands,
-including the original `redirect` bug. **Fix1 has not been executed in actual
-Windows/Vivado.** These mock tests verify flow control and ZIP integrity only;
-the original Windows run supplied the independent physical timing evidence.
+including the original `redirect` bug. The subsequently received
+[actual Windows/Vivado resume](../reports/local-m53-resume/evaluation.md) completed
+successfully with unchanged setup/hold timing and all 7 DSP exports locally
+nonempty. The subsequently received [raw DSP tables](../reports/dsp-m53/evaluation.md)
+have been audited and normalized into a reference database. They describe the
+observed Vivado pipeline configurations; they are incompatible with the current
+Yosys DSP register configuration and do not replace its full timing budget.
 
 Cloud rebuild (requires established M53 artifacts):
 

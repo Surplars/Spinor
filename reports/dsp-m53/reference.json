@@ -1,0 +1,1670 @@
+{
+  "scope": "OBSERVED_REGISTERED_VIVADO_DSP_EXPORTS_NOT_COMPLETE_CELL_STA",
+  "part": "xczu15eg-ffvb1156-2-i",
+  "tool": "Vivado 2025.1 build 6140274",
+  "units": "ns",
+  "printed_precision_ns": 0.01,
+  "reported_checkpoint_sha256": "330b78b511f338e4cfab3bd4840379f1a078cfc3c21c1fe6384ba15dd991a138",
+  "rtl_sha256": "e01014731b31a242a778f66a999de789a90b2e7b1a606ae9770da9f0a0da169d",
+  "exporter_sha256": "bdad085df1e466acde46faf1775a1dcdb0a86ca349a216aed406a16dc1bba02c",
+  "raw_files": {
+    "vpu-vpu-multiplier-product_reg.txt": {
+      "instance": "vpu/vpu/multiplier/product_reg",
+      "sha256": "8a803e627e7ec1a506036765fc01ef1c1c65a1c8b15996a05908ed89257df1f9",
+      "configuration_id": "ccc14cc8abb2c91e93c60d87d8478816956e1532f6ccc4902e77af59cefcda8f",
+      "properties": {
+        "ACASCREG": "0",
+        "ADREG": "1",
+        "ALUMODEREG": "0",
+        "AMULTSEL": "A",
+        "AREG": "0",
+        "AUTORESET_PATDET": "NO_RESET",
+        "AUTORESET_PRIORITY": "RESET",
+        "A_INPUT": "DIRECT",
+        "BCASCREG": "0",
+        "BMULTSEL": "B",
+        "BREG": "0",
+        "B_INPUT": "DIRECT",
+        "CARRYINREG": "0",
+        "CARRYINSELREG": "0",
+        "CREG": "0",
+        "DREG": "1",
+        "INMODEREG": "0",
+        "IS_ALUMODE_INVERTED": "",
+        "IS_CARRYIN_INVERTED": "",
+        "IS_CLK_INVERTED": "",
+        "IS_INMODE_INVERTED": "",
+        "IS_MATCHED": "1",
+        "IS_OPMODE_INVERTED": "",
+        "IS_RSTALLCARRYIN_INVERTED": "",
+        "IS_RSTALUMODE_INVERTED": "",
+        "IS_RSTA_INVERTED": "",
+        "IS_RSTB_INVERTED": "",
+        "IS_RSTCTRL_INVERTED": "",
+        "IS_RSTC_INVERTED": "",
+        "IS_RSTD_INVERTED": "",
+        "IS_RSTINMODE_INVERTED": "",
+        "IS_RSTM_INVERTED": "",
+        "IS_RSTP_INVERTED": "",
+        "MASK": "48'h3FFFFFFFFFFF",
+        "MREG": "0",
+        "OPMODEREG": "0",
+        "OPT_MODIFIED": "",
+        "PATTERN": "48'h000000000000",
+        "PREADDINSEL": "A",
+        "PREG": "1",
+        "RND": "48'h000000000000",
+        "SEL_MASK": "MASK",
+        "SEL_PATTERN": "PATTERN",
+        "USE_MULT": "MULTIPLY",
+        "USE_PATTERN_DETECT": "NO_PATDET",
+        "USE_SIMD": "ONE48",
+        "USE_WIDEXOR": "FALSE",
+        "XORSIMD": "XOR24_48_96"
+      }
+    },
+    "vpu-vpu-unit-partials_p_1_reg.txt": {
+      "instance": "vpu/vpu/unit/partials_p_1_reg",
+      "sha256": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+      "configuration_id": "25d014955524248a726c019563c89ba98970e6ac78b3402fc3085ce9384af788",
+      "properties": {
+        "ACASCREG": "2",
+        "ADREG": "1",
+        "ALUMODEREG": "0",
+        "AMULTSEL": "A",
+        "AREG": "2",
+        "AUTORESET_PATDET": "NO_RESET",
+        "AUTORESET_PRIORITY": "RESET",
+        "A_INPUT": "DIRECT",
+        "BCASCREG": "2",
+        "BMULTSEL": "B",
+        "BREG": "2",
+        "B_INPUT": "DIRECT",
+        "CARRYINREG": "0",
+        "CARRYINSELREG": "0",
+        "CREG": "0",
+        "DREG": "1",
+        "INMODEREG": "0",
+        "IS_ALUMODE_INVERTED": "",
+        "IS_CARRYIN_INVERTED": "",
+        "IS_CLK_INVERTED": "",
+        "IS_INMODE_INVERTED": "",
+        "IS_MATCHED": "1",
+        "IS_OPMODE_INVERTED": "",
+        "IS_RSTALLCARRYIN_INVERTED": "",
+        "IS_RSTALUMODE_INVERTED": "",
+        "IS_RSTA_INVERTED": "",
+        "IS_RSTB_INVERTED": "",
+        "IS_RSTCTRL_INVERTED": "",
+        "IS_RSTC_INVERTED": "",
+        "IS_RSTD_INVERTED": "",
+        "IS_RSTINMODE_INVERTED": "",
+        "IS_RSTM_INVERTED": "",
+        "IS_RSTP_INVERTED": "",
+        "MASK": "48'h3FFFFFFFFFFF",
+        "MREG": "0",
+        "OPMODEREG": "0",
+        "OPT_MODIFIED": "",
+        "PATTERN": "48'h000000000000",
+        "PREADDINSEL": "A",
+        "PREG": "1",
+        "RND": "48'h000000000000",
+        "SEL_MASK": "MASK",
+        "SEL_PATTERN": "PATTERN",
+        "USE_MULT": "MULTIPLY",
+        "USE_PATTERN_DETECT": "NO_PATDET",
+        "USE_SIMD": "ONE48",
+        "USE_WIDEXOR": "FALSE",
+        "XORSIMD": "XOR24_48_96"
+      }
+    },
+    "vpu-vpu-unit-partials_p_2_reg.txt": {
+      "instance": "vpu/vpu/unit/partials_p_2_reg",
+      "sha256": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+      "configuration_id": "25d014955524248a726c019563c89ba98970e6ac78b3402fc3085ce9384af788",
+      "properties": {
+        "ACASCREG": "2",
+        "ADREG": "1",
+        "ALUMODEREG": "0",
+        "AMULTSEL": "A",
+        "AREG": "2",
+        "AUTORESET_PATDET": "NO_RESET",
+        "AUTORESET_PRIORITY": "RESET",
+        "A_INPUT": "DIRECT",
+        "BCASCREG": "2",
+        "BMULTSEL": "B",
+        "BREG": "2",
+        "B_INPUT": "DIRECT",
+        "CARRYINREG": "0",
+        "CARRYINSELREG": "0",
+        "CREG": "0",
+        "DREG": "1",
+        "INMODEREG": "0",
+        "IS_ALUMODE_INVERTED": "",
+        "IS_CARRYIN_INVERTED": "",
+        "IS_CLK_INVERTED": "",
+        "IS_INMODE_INVERTED": "",
+        "IS_MATCHED": "1",
+        "IS_OPMODE_INVERTED": "",
+        "IS_RSTALLCARRYIN_INVERTED": "",
+        "IS_RSTALUMODE_INVERTED": "",
+        "IS_RSTA_INVERTED": "",
+        "IS_RSTB_INVERTED": "",
+        "IS_RSTCTRL_INVERTED": "",
+        "IS_RSTC_INVERTED": "",
+        "IS_RSTD_INVERTED": "",
+        "IS_RSTINMODE_INVERTED": "",
+        "IS_RSTM_INVERTED": "",
+        "IS_RSTP_INVERTED": "",
+        "MASK": "48'h3FFFFFFFFFFF",
+        "MREG": "0",
+        "OPMODEREG": "0",
+        "OPT_MODIFIED": "",
+        "PATTERN": "48'h000000000000",
+        "PREADDINSEL": "A",
+        "PREG": "1",
+        "RND": "48'h000000000000",
+        "SEL_MASK": "MASK",
+        "SEL_PATTERN": "PATTERN",
+        "USE_MULT": "MULTIPLY",
+        "USE_PATTERN_DETECT": "NO_PATDET",
+        "USE_SIMD": "ONE48",
+        "USE_WIDEXOR": "FALSE",
+        "XORSIMD": "XOR24_48_96"
+      }
+    },
+    "vpu-vpu-unit-partials_p_4_reg.txt": {
+      "instance": "vpu/vpu/unit/partials_p_4_reg",
+      "sha256": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+      "configuration_id": "25d014955524248a726c019563c89ba98970e6ac78b3402fc3085ce9384af788",
+      "properties": {
+        "ACASCREG": "2",
+        "ADREG": "1",
+        "ALUMODEREG": "0",
+        "AMULTSEL": "A",
+        "AREG": "2",
+        "AUTORESET_PATDET": "NO_RESET",
+        "AUTORESET_PRIORITY": "RESET",
+        "A_INPUT": "DIRECT",
+        "BCASCREG": "2",
+        "BMULTSEL": "B",
+        "BREG": "2",
+        "B_INPUT": "DIRECT",
+        "CARRYINREG": "0",
+        "CARRYINSELREG": "0",
+        "CREG": "0",
+        "DREG": "1",
+        "INMODEREG": "0",
+        "IS_ALUMODE_INVERTED": "",
+        "IS_CARRYIN_INVERTED": "",
+        "IS_CLK_INVERTED": "",
+        "IS_INMODE_INVERTED": "",
+        "IS_MATCHED": "1",
+        "IS_OPMODE_INVERTED": "",
+        "IS_RSTALLCARRYIN_INVERTED": "",
+        "IS_RSTALUMODE_INVERTED": "",
+        "IS_RSTA_INVERTED": "",
+        "IS_RSTB_INVERTED": "",
+        "IS_RSTCTRL_INVERTED": "",
+        "IS_RSTC_INVERTED": "",
+        "IS_RSTD_INVERTED": "",
+        "IS_RSTINMODE_INVERTED": "",
+        "IS_RSTM_INVERTED": "",
+        "IS_RSTP_INVERTED": "",
+        "MASK": "48'h3FFFFFFFFFFF",
+        "MREG": "0",
+        "OPMODEREG": "0",
+        "OPT_MODIFIED": "",
+        "PATTERN": "48'h000000000000",
+        "PREADDINSEL": "A",
+        "PREG": "1",
+        "RND": "48'h000000000000",
+        "SEL_MASK": "MASK",
+        "SEL_PATTERN": "PATTERN",
+        "USE_MULT": "MULTIPLY",
+        "USE_PATTERN_DETECT": "NO_PATDET",
+        "USE_SIMD": "ONE48",
+        "USE_WIDEXOR": "FALSE",
+        "XORSIMD": "XOR24_48_96"
+      }
+    },
+    "vpu-vpu-unit-partials_p_5_reg.txt": {
+      "instance": "vpu/vpu/unit/partials_p_5_reg",
+      "sha256": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+      "configuration_id": "25d014955524248a726c019563c89ba98970e6ac78b3402fc3085ce9384af788",
+      "properties": {
+        "ACASCREG": "2",
+        "ADREG": "1",
+        "ALUMODEREG": "0",
+        "AMULTSEL": "A",
+        "AREG": "2",
+        "AUTORESET_PATDET": "NO_RESET",
+        "AUTORESET_PRIORITY": "RESET",
+        "A_INPUT": "DIRECT",
+        "BCASCREG": "2",
+        "BMULTSEL": "B",
+        "BREG": "2",
+        "B_INPUT": "DIRECT",
+        "CARRYINREG": "0",
+        "CARRYINSELREG": "0",
+        "CREG": "0",
+        "DREG": "1",
+        "INMODEREG": "0",
+        "IS_ALUMODE_INVERTED": "",
+        "IS_CARRYIN_INVERTED": "",
+        "IS_CLK_INVERTED": "",
+        "IS_INMODE_INVERTED": "",
+        "IS_MATCHED": "1",
+        "IS_OPMODE_INVERTED": "",
+        "IS_RSTALLCARRYIN_INVERTED": "",
+        "IS_RSTALUMODE_INVERTED": "",
+        "IS_RSTA_INVERTED": "",
+        "IS_RSTB_INVERTED": "",
+        "IS_RSTCTRL_INVERTED": "",
+        "IS_RSTC_INVERTED": "",
+        "IS_RSTD_INVERTED": "",
+        "IS_RSTINMODE_INVERTED": "",
+        "IS_RSTM_INVERTED": "",
+        "IS_RSTP_INVERTED": "",
+        "MASK": "48'h3FFFFFFFFFFF",
+        "MREG": "0",
+        "OPMODEREG": "0",
+        "OPT_MODIFIED": "",
+        "PATTERN": "48'h000000000000",
+        "PREADDINSEL": "A",
+        "PREG": "1",
+        "RND": "48'h000000000000",
+        "SEL_MASK": "MASK",
+        "SEL_PATTERN": "PATTERN",
+        "USE_MULT": "MULTIPLY",
+        "USE_PATTERN_DETECT": "NO_PATDET",
+        "USE_SIMD": "ONE48",
+        "USE_WIDEXOR": "FALSE",
+        "XORSIMD": "XOR24_48_96"
+      }
+    },
+    "vpu-vpu-unit-partials_p_6_reg.txt": {
+      "instance": "vpu/vpu/unit/partials_p_6_reg",
+      "sha256": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+      "configuration_id": "25d014955524248a726c019563c89ba98970e6ac78b3402fc3085ce9384af788",
+      "properties": {
+        "ACASCREG": "2",
+        "ADREG": "1",
+        "ALUMODEREG": "0",
+        "AMULTSEL": "A",
+        "AREG": "2",
+        "AUTORESET_PATDET": "NO_RESET",
+        "AUTORESET_PRIORITY": "RESET",
+        "A_INPUT": "DIRECT",
+        "BCASCREG": "2",
+        "BMULTSEL": "B",
+        "BREG": "2",
+        "B_INPUT": "DIRECT",
+        "CARRYINREG": "0",
+        "CARRYINSELREG": "0",
+        "CREG": "0",
+        "DREG": "1",
+        "INMODEREG": "0",
+        "IS_ALUMODE_INVERTED": "",
+        "IS_CARRYIN_INVERTED": "",
+        "IS_CLK_INVERTED": "",
+        "IS_INMODE_INVERTED": "",
+        "IS_MATCHED": "1",
+        "IS_OPMODE_INVERTED": "",
+        "IS_RSTALLCARRYIN_INVERTED": "",
+        "IS_RSTALUMODE_INVERTED": "",
+        "IS_RSTA_INVERTED": "",
+        "IS_RSTB_INVERTED": "",
+        "IS_RSTCTRL_INVERTED": "",
+        "IS_RSTC_INVERTED": "",
+        "IS_RSTD_INVERTED": "",
+        "IS_RSTINMODE_INVERTED": "",
+        "IS_RSTM_INVERTED": "",
+        "IS_RSTP_INVERTED": "",
+        "MASK": "48'h3FFFFFFFFFFF",
+        "MREG": "0",
+        "OPMODEREG": "0",
+        "OPT_MODIFIED": "",
+        "PATTERN": "48'h000000000000",
+        "PREADDINSEL": "A",
+        "PREG": "1",
+        "RND": "48'h000000000000",
+        "SEL_MASK": "MASK",
+        "SEL_PATTERN": "PATTERN",
+        "USE_MULT": "MULTIPLY",
+        "USE_PATTERN_DETECT": "NO_PATDET",
+        "USE_SIMD": "ONE48",
+        "USE_WIDEXOR": "FALSE",
+        "XORSIMD": "XOR24_48_96"
+      }
+    },
+    "vpu-vpu-unit-partials_p_reg.txt": {
+      "instance": "vpu/vpu/unit/partials_p_reg",
+      "sha256": "4ec733b4dafee6c5d9ccae98aa31fb1382a1c360a8ea825f8ae8f3729eaa60c6",
+      "configuration_id": "25d014955524248a726c019563c89ba98970e6ac78b3402fc3085ce9384af788",
+      "properties": {
+        "ACASCREG": "2",
+        "ADREG": "1",
+        "ALUMODEREG": "0",
+        "AMULTSEL": "A",
+        "AREG": "2",
+        "AUTORESET_PATDET": "NO_RESET",
+        "AUTORESET_PRIORITY": "RESET",
+        "A_INPUT": "DIRECT",
+        "BCASCREG": "2",
+        "BMULTSEL": "B",
+        "BREG": "2",
+        "B_INPUT": "DIRECT",
+        "CARRYINREG": "0",
+        "CARRYINSELREG": "0",
+        "CREG": "0",
+        "DREG": "1",
+        "INMODEREG": "0",
+        "IS_ALUMODE_INVERTED": "",
+        "IS_CARRYIN_INVERTED": "",
+        "IS_CLK_INVERTED": "",
+        "IS_INMODE_INVERTED": "",
+        "IS_MATCHED": "1",
+        "IS_OPMODE_INVERTED": "",
+        "IS_RSTALLCARRYIN_INVERTED": "",
+        "IS_RSTALUMODE_INVERTED": "",
+        "IS_RSTA_INVERTED": "",
+        "IS_RSTB_INVERTED": "",
+        "IS_RSTCTRL_INVERTED": "",
+        "IS_RSTC_INVERTED": "",
+        "IS_RSTD_INVERTED": "",
+        "IS_RSTINMODE_INVERTED": "",
+        "IS_RSTM_INVERTED": "",
+        "IS_RSTP_INVERTED": "",
+        "MASK": "48'h3FFFFFFFFFFF",
+        "MREG": "0",
+        "OPMODEREG": "0",
+        "OPT_MODIFIED": "",
+        "PATTERN": "48'h000000000000",
+        "PREADDINSEL": "A",
+        "PREG": "1",
+        "RND": "48'h000000000000",
+        "SEL_MASK": "MASK",
+        "SEL_PATTERN": "PATTERN",
+        "USE_MULT": "MULTIPLY",
+        "USE_PATTERN_DETECT": "NO_PATDET",
+        "USE_SIMD": "ONE48",
+        "USE_WIDEXOR": "FALSE",
+        "XORSIMD": "XOR24_48_96"
+      }
+    }
+  },
+  "configurations": {
+    "ccc14cc8abb2c91e93c60d87d8478816956e1532f6ccc4902e77af59cefcda8f": {
+      "properties": {
+        "ACASCREG": "0",
+        "ADREG": "1",
+        "ALUMODEREG": "0",
+        "AMULTSEL": "A",
+        "AREG": "0",
+        "AUTORESET_PATDET": "NO_RESET",
+        "AUTORESET_PRIORITY": "RESET",
+        "A_INPUT": "DIRECT",
+        "BCASCREG": "0",
+        "BMULTSEL": "B",
+        "BREG": "0",
+        "B_INPUT": "DIRECT",
+        "CARRYINREG": "0",
+        "CARRYINSELREG": "0",
+        "CREG": "0",
+        "DREG": "1",
+        "INMODEREG": "0",
+        "IS_ALUMODE_INVERTED": "",
+        "IS_CARRYIN_INVERTED": "",
+        "IS_CLK_INVERTED": "",
+        "IS_INMODE_INVERTED": "",
+        "IS_MATCHED": "1",
+        "IS_OPMODE_INVERTED": "",
+        "IS_RSTALLCARRYIN_INVERTED": "",
+        "IS_RSTALUMODE_INVERTED": "",
+        "IS_RSTA_INVERTED": "",
+        "IS_RSTB_INVERTED": "",
+        "IS_RSTCTRL_INVERTED": "",
+        "IS_RSTC_INVERTED": "",
+        "IS_RSTD_INVERTED": "",
+        "IS_RSTINMODE_INVERTED": "",
+        "IS_RSTM_INVERTED": "",
+        "IS_RSTP_INVERTED": "",
+        "MASK": "48'h3FFFFFFFFFFF",
+        "MREG": "0",
+        "OPMODEREG": "0",
+        "OPT_MODIFIED": "",
+        "PATTERN": "48'h000000000000",
+        "PREADDINSEL": "A",
+        "PREG": "1",
+        "RND": "48'h000000000000",
+        "SEL_MASK": "MASK",
+        "SEL_PATTERN": "PATTERN",
+        "USE_MULT": "MULTIPLY",
+        "USE_PATTERN_DETECT": "NO_PATDET",
+        "USE_SIMD": "ONE48",
+        "USE_WIDEXOR": "FALSE",
+        "XORSIMD": "XOR24_48_96"
+      },
+      "instances": [
+        "vpu/vpu/multiplier/product_reg"
+      ],
+      "filenames": [
+        "vpu-vpu-multiplier-product_reg.txt"
+      ],
+      "arcs": [
+        {
+          "source": "clk",
+          "destination": "P[31]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[30]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[29]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[28]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[27]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[26]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.32,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[25]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[24]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.34,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[23]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[22]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[21]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[20]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[19]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[18]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[17]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[16]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[15]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.25,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[14]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[13]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.25,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[12]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[11]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[10]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.25,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[9]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[8]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[7]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[6]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[5]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[4]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[3]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[2]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[1]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[0]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "A[15]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.41,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[14]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.41,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[13]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.4,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[12]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.41,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[11]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.4,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[10]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.41,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[9]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.4,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[8]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.4,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[7]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.4,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[6]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.41,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[5]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.4,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[4]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.4,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[3]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.41,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[2]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.4,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[1]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.41,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "A[0]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.4,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[15]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[14]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[13]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[12]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[11]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[10]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[9]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[8]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[7]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[6]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[5]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[4]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[3]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[2]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[1]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "B[0]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 1.45,
+          "setup_ns": -0.01
+        },
+        {
+          "source": "CEP",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.22
+        }
+      ],
+      "ranges": {
+        "clock_to_output_exported_arrival": {
+          "count": 32,
+          "delay_ns_range": [
+            0.25,
+            0.34
+          ]
+        },
+        "input_to_sequential_endpoint": {
+          "count": 33,
+          "delay_ns_range": [
+            0.0,
+            1.45
+          ],
+          "setup_ns_range": [
+            -0.01,
+            0.22
+          ]
+        }
+      }
+    },
+    "25d014955524248a726c019563c89ba98970e6ac78b3402fc3085ce9384af788": {
+      "properties": {
+        "ACASCREG": "2",
+        "ADREG": "1",
+        "ALUMODEREG": "0",
+        "AMULTSEL": "A",
+        "AREG": "2",
+        "AUTORESET_PATDET": "NO_RESET",
+        "AUTORESET_PRIORITY": "RESET",
+        "A_INPUT": "DIRECT",
+        "BCASCREG": "2",
+        "BMULTSEL": "B",
+        "BREG": "2",
+        "B_INPUT": "DIRECT",
+        "CARRYINREG": "0",
+        "CARRYINSELREG": "0",
+        "CREG": "0",
+        "DREG": "1",
+        "INMODEREG": "0",
+        "IS_ALUMODE_INVERTED": "",
+        "IS_CARRYIN_INVERTED": "",
+        "IS_CLK_INVERTED": "",
+        "IS_INMODE_INVERTED": "",
+        "IS_MATCHED": "1",
+        "IS_OPMODE_INVERTED": "",
+        "IS_RSTALLCARRYIN_INVERTED": "",
+        "IS_RSTALUMODE_INVERTED": "",
+        "IS_RSTA_INVERTED": "",
+        "IS_RSTB_INVERTED": "",
+        "IS_RSTCTRL_INVERTED": "",
+        "IS_RSTC_INVERTED": "",
+        "IS_RSTD_INVERTED": "",
+        "IS_RSTINMODE_INVERTED": "",
+        "IS_RSTM_INVERTED": "",
+        "IS_RSTP_INVERTED": "",
+        "MASK": "48'h3FFFFFFFFFFF",
+        "MREG": "0",
+        "OPMODEREG": "0",
+        "OPT_MODIFIED": "",
+        "PATTERN": "48'h000000000000",
+        "PREADDINSEL": "A",
+        "PREG": "1",
+        "RND": "48'h000000000000",
+        "SEL_MASK": "MASK",
+        "SEL_PATTERN": "PATTERN",
+        "USE_MULT": "MULTIPLY",
+        "USE_PATTERN_DETECT": "NO_PATDET",
+        "USE_SIMD": "ONE48",
+        "USE_WIDEXOR": "FALSE",
+        "XORSIMD": "XOR24_48_96"
+      },
+      "instances": [
+        "vpu/vpu/unit/partials_p_1_reg",
+        "vpu/vpu/unit/partials_p_2_reg",
+        "vpu/vpu/unit/partials_p_4_reg",
+        "vpu/vpu/unit/partials_p_5_reg",
+        "vpu/vpu/unit/partials_p_6_reg",
+        "vpu/vpu/unit/partials_p_reg"
+      ],
+      "filenames": [
+        "vpu-vpu-unit-partials_p_1_reg.txt",
+        "vpu-vpu-unit-partials_p_2_reg.txt",
+        "vpu-vpu-unit-partials_p_4_reg.txt",
+        "vpu-vpu-unit-partials_p_5_reg.txt",
+        "vpu-vpu-unit-partials_p_6_reg.txt",
+        "vpu-vpu-unit-partials_p_reg.txt"
+      ],
+      "arcs": [
+        {
+          "source": "clk",
+          "destination": "P[42]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[41]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[40]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[39]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[38]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.33,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[37]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.32,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[36]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[35]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[34]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[33]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.31,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[32]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.29,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[31]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[30]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[29]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[28]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[27]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[26]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.32,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[25]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[24]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.34,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[23]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[22]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[21]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[20]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[19]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[18]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[17]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[16]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[15]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.25,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[14]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[13]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.25,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[12]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[11]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[10]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.25,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[9]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[8]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[7]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[6]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.26,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[5]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[4]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[3]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[2]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.28,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[1]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "clk",
+          "destination": "P[0]",
+          "kind": "clock_to_output_exported_arrival",
+          "delay_ns": 0.27,
+          "setup_ns": null
+        },
+        {
+          "source": "A[25]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.3
+        },
+        {
+          "source": "A[24]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.28
+        },
+        {
+          "source": "A[23]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.29
+        },
+        {
+          "source": "A[22]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.25
+        },
+        {
+          "source": "A[21]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "A[20]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[19]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[18]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "A[17]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[16]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "A[15]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[14]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "A[13]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[12]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "A[11]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "A[10]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.28
+        },
+        {
+          "source": "A[9]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[8]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[7]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "A[6]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[5]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[4]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[3]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "A[2]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[1]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "A[0]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.3
+        },
+        {
+          "source": "B[16]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.25
+        },
+        {
+          "source": "B[15]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.25
+        },
+        {
+          "source": "B[14]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "B[13]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.25
+        },
+        {
+          "source": "B[12]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "B[11]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "B[10]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.29
+        },
+        {
+          "source": "B[9]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.29
+        },
+        {
+          "source": "B[8]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.28
+        },
+        {
+          "source": "B[7]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.25
+        },
+        {
+          "source": "B[6]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "B[5]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "B[4]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "B[3]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "B[2]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "B[1]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.26
+        },
+        {
+          "source": "B[0]",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.27
+        },
+        {
+          "source": "CEA1",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.16
+        },
+        {
+          "source": "CEA2",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.16
+        },
+        {
+          "source": "CEB1",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.15
+        },
+        {
+          "source": "CEB2",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.14
+        },
+        {
+          "source": "CEP",
+          "destination": "clk",
+          "kind": "input_to_sequential_endpoint",
+          "delay_ns": 0.0,
+          "setup_ns": 0.22
+        }
+      ],
+      "ranges": {
+        "clock_to_output_exported_arrival": {
+          "count": 43,
+          "delay_ns_range": [
+            0.25,
+            0.34
+          ]
+        },
+        "input_to_sequential_endpoint": {
+          "count": 48,
+          "delay_ns_range": [
+            0.0,
+            0.0
+          ],
+          "setup_ns_range": [
+            0.14,
+            0.3
+          ]
+        }
+      }
+    }
+  },
+  "limitations": [
+    "Only active pins and paths found by upstream report_timing -delay_type max.",
+    "No min/hold characterization or complete internal DSP register-to-register coverage.",
+    "clock-to-output exporter returns cumulative arrival at the output pin, not an independently de-embedded cell C-to-Q.",
+    "Input-to-clk fourth column is signed setup, not hold; preserve its sign.",
+    "No input-to-output combinational observations for these PREG=1 instances.",
+    "Clock/configuration/location context and two-decimal export precision limit transferability.",
+    "No separately labelled complete slow/fast corner database."
+  ]
+}

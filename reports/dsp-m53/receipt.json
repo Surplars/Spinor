@@ -1,0 +1,117 @@
+{
+  "status": "PASS",
+  "scope": "RAW_DSP_IMPORT_AND_CONFIGURATION_COMPATIBILITY_AUDIT",
+  "part": "xczu15eg-ffvb1156-2-i",
+  "DSP_instances": 7,
+  "raw_rows": 611,
+  "distinct_full_configurations": 2,
+  "unique_rows_after_configuration_dedup": 156,
+  "arc_kinds": {
+    "clock_to_output_exported_arrival": 290,
+    "input_to_sequential_endpoint": 321
+  },
+  "all_raw_properties_match_resume": true,
+  "Yosys_DSPs": 9,
+  "Yosys_register_configuration_matches": 0,
+  "Yosys_DSP_configurations": {
+    "$flatten\\vpu.\\vpu.\\multiplier.$mul$/workspace/Spinor/build/rtl/SpinorVpu.sv:830$407": {
+      "registers": {
+        "AREG": 0,
+        "BREG": 0,
+        "MREG": 0,
+        "PREG": 0
+      },
+      "observed_register_configuration": false
+    },
+    "$flatten\\vpu.\\vpu.\\unit.$mul$/workspace/Spinor/build/rtl/SpinorVpu.sv:5379$3954": {
+      "registers": {
+        "AREG": 0,
+        "BREG": 0,
+        "MREG": 0,
+        "PREG": 0
+      },
+      "observed_register_configuration": false
+    },
+    "$flatten\\vpu.\\vpu.\\unit.$mul$/workspace/Spinor/build/rtl/SpinorVpu.sv:5380$3955": {
+      "registers": {
+        "AREG": 0,
+        "BREG": 0,
+        "MREG": 0,
+        "PREG": 0
+      },
+      "observed_register_configuration": false
+    },
+    "$flatten\\vpu.\\vpu.\\unit.$mul$/workspace/Spinor/build/rtl/SpinorVpu.sv:5381$3956": {
+      "registers": {
+        "AREG": 0,
+        "BREG": 0,
+        "MREG": 0,
+        "PREG": 0
+      },
+      "observed_register_configuration": false
+    },
+    "$flatten\\vpu.\\vpu.\\unit.$mul$/workspace/Spinor/build/rtl/SpinorVpu.sv:5382$3957": {
+      "registers": {
+        "AREG": 0,
+        "BREG": 0,
+        "MREG": 0,
+        "PREG": 0
+      },
+      "observed_register_configuration": false
+    },
+    "$flatten\\vpu.\\vpu.\\unit.$mul$/workspace/Spinor/build/rtl/SpinorVpu.sv:5383$3958": {
+      "registers": {
+        "AREG": 0,
+        "BREG": 0,
+        "MREG": 0,
+        "PREG": 0
+      },
+      "observed_register_configuration": false
+    },
+    "$flatten\\vpu.\\vpu.\\unit.$mul$/workspace/Spinor/build/rtl/SpinorVpu.sv:5384$3959": {
+      "registers": {
+        "AREG": 0,
+        "BREG": 0,
+        "MREG": 0,
+        "PREG": 0
+      },
+      "observed_register_configuration": false
+    },
+    "$flatten\\vpu.\\vpu.\\unit.$mul$/workspace/Spinor/build/rtl/SpinorVpu.sv:5385$3960": {
+      "registers": {
+        "AREG": 0,
+        "BREG": 0,
+        "MREG": 0,
+        "PREG": 0
+      },
+      "observed_register_configuration": false
+    },
+    "$flatten\\vpu.\\vpu.\\unit.$mul$/workspace/Spinor/build/rtl/SpinorVpu.sv:5386$3961": {
+      "registers": {
+        "AREG": 0,
+        "BREG": 0,
+        "MREG": 0,
+        "PREG": 0
+      },
+      "observed_register_configuration": false
+    }
+  },
+  "cloud_DSP_reference_imported": true,
+  "cloud_fixed_budget_changed": false,
+  "cloud_full_DSP_calibration_complete": false,
+  "DSP_arc_completeness_verified": false,
+  "SoC_300MHz_signoff": null,
+  "passes_500MHz": null,
+  "source_sha256": {
+    "scripts/import_m53_dsp.py": "d1fc8485c8b54e5c03c85080b6f5c0d5866e57f727404bd52b462a75d2b488aa"
+  },
+  "artifact_sha256": {
+    "reports/dsp-m53/input-dsp-delay.zip": "4236e594c2e272d1494ddb490253641cd49638396b52ea5a392aa823703007ff",
+    "reports/local-m53-resume/receipt.json": "2fd8fa753cb9097c2a3827f62fc1733e523f97b33c1ac95489109589508bd5db",
+    "reports/dsp-m53/reference.json": "c8ef6d7ca89a6988b36914f70f97e602cde123af409273c984bb4133a9f7103c",
+    "reports/dsp-m53/arcs.csv": "ed582166f2577d9cebdfdc92577bcd148547621bfa531d46a875c65cda55f56a",
+    "reports/dsp-m53/evaluation.md": "3dfe13f151979819d1bf84866b8ae90e65e49f5ab723a68db7831b2914ae0efb",
+    "build/synth/SpinorVpu/mapped.json": "273b2e528a9b65a80d7186c3d881ae49d452d9ae7c4162db26591eed68a3eabf",
+    "third_party/rapidwright/dump_all_dsp_delay.tcl": "bdad085df1e466acde46faf1775a1dcdb0a86ca349a216aed406a16dc1bba02c"
+  }
+}
