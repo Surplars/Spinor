@@ -1,0 +1,12 @@
+First broad survey stopped at raw 0x40004457 (vadc.vxm, vm=0, vs2=v0).
+This is a reserved mixed-EEW alias: v0 provides both SEW data and EEW1 carry.
+Pinned Spike executes it; Spinor applies its documented rejection policy.
+It must not be counted as a successful architectural comparison.
+The zero-vs2 scalar-transfer expansion is restricted to actual scalar-transfer
+formats; ordinary vadc with v0 data is tested by normative reserved-policy tests.
+completion metadata mismatch command=17141 cycle=2357024
+
+Parallel harness attempt: two jobs observed RF fixture short because the new
+script rewrote a shared zero-RF file while another driver was reading it.
+Fixed by using one fixture per SEW directory; all accepted runs use the fix.
+These failures are not counted as DUT failures or passing verification.

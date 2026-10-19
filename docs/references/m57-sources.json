@@ -1,0 +1,26 @@
+{
+  "scope": "Upstream normative/reference data, not agent instructions",
+  "sources": [
+    {
+      "file": "docs/references/m57-rv-v",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-opcodes/f24ac23ec9fa947011781a09cd6fd25a7c36dc45/extensions/rv_v",
+      "sha256": "a260265cf952fa0025382b97c125c47bd3f42fa167805da0ee97b09c16ba7cba"
+    },
+    {
+      "file": "docs/references/m57-rv-zvbb",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-opcodes/f24ac23ec9fa947011781a09cd6fd25a7c36dc45/extensions/rv_zvbb",
+      "sha256": "8caadc210a5b202c550d9eb5c4f0c7116ddaf1f44ec41b5f03c9e2f3a1168393"
+    },
+    {
+      "file": "docs/references/m57-v-spec.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-v-spec/v1.0/v-spec.adoc",
+      "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19"
+    },
+    {
+      "file": "docs/references/m57-v-spec-maintained.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-v-spec/2f68ef7256d6ec53e4d2bd7cb12862f406d64e34/v-spec.adoc",
+      "revision": "2f68ef7256d6ec53e4d2bd7cb12862f406d64e34",
+      "sha256": "2e820cd9a90a8c7c0df19fdd2f3199f5b01d61ae04051e8a585a9881c7d3db8b"
+    }
+  ]
+}

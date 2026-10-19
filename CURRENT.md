@@ -1,14 +1,19 @@
-# Spinor 当前进度：M56
+# Spinor 当前进度：M57
 
-M56 增加宿主管理 FCSR 模式：CPU 保留唯一架构状态，VPU 锁存 frm 并返回本条
-指令的 flags；宿主版 monitor ID0x5602。原四种独立预设的 SV 与 M55 逐字节一致。
-继续使用 Mill、Chisel7.16.0、VLEN128/ELEN64 和 RAM；Orbital/Valence 未修改。
+ISA目录已独立核对：375条基础V+16条Zvbb，名称及match/mask逐项一致。
+310种访存形式全部有合法成功样本，补齐此前12种跨步分段形式的缺样本。
+没有发现目录漏指令；完整ISA语义与架构测试验收仍未关闭，不能宣布完整V/RVA23/Zvkt。
 
-- [M56 接口、上下文与延迟审计](docs/m56-host-fcsr.md)
-- [M56 验证与时序](reports/m56/evaluation.md)
-- [M55 的 Zvbb 操作集合](docs/m55-zvbb.md)
-- [M53 实际 Vivado 时序](reports/local-m53-resume/evaluation.md)：适用旧 RTL
+- [ISA实现与未关闭验收项](docs/m57-isa-audit.md)
+- [逐编码目录](reports/m57/isa-catalog.csv)、[访存NF展开](reports/m57/memory-forms.csv)
+- [M57验证报告](reports/m57/evaluation.md)
+- [M56宿主FCSR接口](docs/m56-host-fcsr.md)、[CPU接入契约](docs/cpu-spinor-contract.md)
+- [M53实际Vivado时序](reports/local-m53-resume/evaluation.md)：仅适用旧RTL
 
-默认宿主公共/计算顶层的云端条件预算均3.300ns，通过300MHz条件门槛；仍无 M56
-器件布局布线签核。两宿主预设各完成43,560个按规范分组的延迟抽样，不能据此声明
-完整 Zvkt/V/RVA23。当前入口 `python3 scripts/verify_m56.py`。
+本轮54个Scala源文件不变。标准/Deep实际重新执行175,556条Spike差分命令和
+2,024条独立策略命令；原始编码扫描使用VL0，仅验证解码/状态边界。
+整数/宿主预设沿用已有证据；Orbital/Valence未修改或联编。
+
+Mill/Chisel7.16.0、VLEN128/ELEN64、RAM配置保持。沿用M56宿主公共/计算顶层
+3.300ns条件预算，没有新综合或实际300MHz器件签核。
+入口 `python3 scripts/verify_m57.py`；旧文档与旧receipt按版本保留。
