@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "scope": "LINUX_POWERSHELL_7_AND_TCL_MOCK_VIVADO_ONLY",
+  "Windows_5_1_executed": false,
+  "Vivado_executed": false,
+  "bundle_sha256": "04e256efa02c81aa2edd3f3aa0236f0bc11f5750b7c5290368c6c362bd7ce9b5",
+  "cases": [
+    {
+      "case": "positive",
+      "runner_exit": 0,
+      "zip_audited": true
+    },
+    {
+      "case": "negative",
+      "runner_exit": 0,
+      "zip_audited": true
+    },
+    {
+      "case": "empty",
+      "runner_exit": 1,
+      "zip_audited": true
+    },
+    {
+      "case": "dsp-error",
+      "runner_exit": 0,
+      "zip_audited": true
+    }
+  ],
+  "input_sha256": {
+    "tests/test_windows_timing_bundle.py": "7566fd36eefb63e824d366a84c4a974d7941eff5014a47f32bdb40e3f94d25dc",
+    "scripts/package_windows_timing.py": "c45c2226100872b97402dd7f59dd87d395e580015cbf557c0178466e761eb08e",
+    "scripts/windows-timing/RUN_ME_FIRST.txt": "42a7c799a4f869c0bc99a60ea4172f139d0c1b38950ebd280325c24f8b62203a",
+    "scripts/windows-timing/pack_results.ps1": "8438ff39a5ec0a84578e87b389e4684a10eebc862be5a9f6bc0a985515cf53be",
+    "scripts/windows-timing/run.ps1": "a7c12ccb068a2ca6bda10f50ca019c39ee2d42e7d44e7a3a7bd1d998cfb6b6da",
+    "scripts/windows-timing/run_vivado.tcl": "4f60089facbc42dbfeb28567be022d14ab9801da098df13ff8e6d240e6890f30",
+    "build/windows-m53-timing-check/changed-input-refused.log": "3b929561904947fc418442dd6f80866c001150059ce8be5116b4477c2cc6f80b",
+    "build/windows-m53-timing-check/dsp-error.log": "e43a916bc8c1388b8a3ca2a2cb644ac0d714b4d16a48b1e2a9b210e890e220ac",
+    "build/windows-m53-timing-check/empty.log": "fa72a7b1a482b3f8ffe40d49552c6a01705087e06051a70a182e5da30e5e4441",
+    "build/windows-m53-timing-check/existing-refused.log": "9b7f25e1d4b9231b0246f437cf9fd459eb43d0aac4f671cea53c0a6515925922",
+    "build/windows-m53-timing-check/full.log": "e25157579413640ef9691022ce03d37c97728d3967d296c6f9d4ac42f274e8cc",
+    "build/windows-m53-timing-check/inside-refused.log": "21490342c754d8a6110bf7ec17d327bd96db52a5455c7b32885ca0e88779ed8d",
+    "build/windows-m53-timing-check/negative.log": "f8d61e5ba0e5c5564c5e8b370754c753c92c523b3156425d223bfc75d4466001",
+    "build/windows-m53-timing-check/positive.log": "7fb62f3b2bcb11d51a18c5bde5915832622ffca91e6ee6113768060b21b38232",
+    "build/windows-m53-timing-check/repack-0.log": "3a47abe98dff6b7ea16b13c379164bd271668ba084405f00d7b9e418f62258f3",
+    "build/windows-m53-timing-check/repack-1.log": "d979b7f928e6b2ca5e217b99755234826a8e8eb43f7d2719c42a13b0d832552d"
+  }
+}

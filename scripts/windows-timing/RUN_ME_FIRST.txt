@@ -1,0 +1,39 @@
+Spinor M53: fresh Vivado 300MHz timing run (Windows PowerShell 5.1 or PowerShell 7)
+
+1. Extract the entire ZIP to a new folder, for example D:\surplars\Downloads\spinor-m53-timing
+2. Open PowerShell in the extracted folder containing run.ps1.
+3. Run (change only the installed Vivado path as needed):
+
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -VivadoBat "D:\Xilinx\Vivado\2025.1\bin\vivado.bat"
+
+Default: SpinorVpu standard FP configuration, xczu15eg-ffvb1156-2-i,
+3.333333ns, 4 threads, fresh synth/opt/place/phys_opt/route. No old checkpoints.
+Needs only licensed Vivado with Zynq UltraScale+ support; no Mill/Java/Chisel install.
+Vivado 2025.1 is the user's previous working version; this new bundle has not run in Vivado here.
+If the actual complete ordering code differs, pass -Part "xczu15eg-YOURPACKAGE-2-i".
+This is standalone OOC: external IO delays/board clock location remain unspecified.
+Inspect unconstrained paths, clock coverage, DRC and route status before judging the result.
+It is not complete SoC timing signoff, bitstream generation, or SDF simulation.
+
+4. Upload the report ZIP printed as "Upload this ZIP:" even if timing is negative
+   or Vivado reports a failure. The script packs partial reports on tool failure.
+   Important files: run-summary.txt, timing_routed.rpt, setup_paths.rpt,
+   hold_paths.rpt, check_timing.rpt, route_status.rpt, utilization_routed.rpt.
+   Tool exit 0 is NOT a timing pass. Read setup and hold slack and report coverage.
+
+DSP delays are exported after routing. Export errors are recorded separately and
+do not discard completed timing reports. No need to repeat implementation for
+an exporter-only failure: keep routed.dcp and the entire runs folder.
+
+Default ZIP is reports only (small). DCP/EDIF and DSP arc tables remain on disk.
+Do not delete the run directory. To repack reports after a packing failure:
+
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\pack_results.ps1 -RunDirectory ".\runs\M53_Timing_YOUR_STAMP"
+
+If DSP or checkpoint diagnosis is needed later, create a full archive without
+rerunning Vivado (may be larger than the upload limit):
+
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\pack_results.ps1 -RunDirectory ".\runs\M53_Timing_YOUR_STAMP" -Full
+
+input-sha256.json verifies all supplied scripts, RTL and provenance before starting.
+provenance.json binds this RTL to the accepted M50/M51/M52/M53 cloud evidence.
