@@ -32,10 +32,10 @@ class FloatingPointConvertResize extends Module {
     val integerOp=io.in.bits.op>=FpOp.toUInt.U && io.in.bits.op<=FpOp.toIntRtz.U
     val cast=io.in.bits.op===FpOp.convertFloat.U || io.in.bits.op===FpOp.convertOdd.U
     val fixedRm=io.in.bits.op===FpOp.toUIntRtz.U || io.in.bits.op===FpOp.toIntRtz.U || io.in.bits.op===FpOp.convertOdd.U
-    val smallLegal=io.widthMode===5.U && (io.in.bits.op===FpOp.fromUInt.U || io.in.bits.op===FpOp.fromInt.U) ||
-      io.widthMode===6.U && (io.in.bits.op===FpOp.toUInt.U || io.in.bits.op===FpOp.toInt.U || io.in.bits.op===FpOp.toUIntRtz.U || io.in.bits.op===FpOp.toIntRtz.U)
+    val smallLegal=io.widthMode===5.U && (io.in.bits.op===FpOp.fromUInt.U || io.in.bits.op===FpOp.fromInt.U || io.in.bits.op===FpOp.convertFloat.U) ||
+      io.widthMode===6.U && (io.in.bits.op===FpOp.toUInt.U || io.in.bits.op===FpOp.toInt.U || io.in.bits.op===FpOp.toUIntRtz.U || io.in.bits.op===FpOp.toIntRtz.U || io.in.bits.op===FpOp.convertFloat.U)
     val widthLegal=(io.widthMode<=2.U && (io.widthMode===0.U || io.in.bits.double===(io.widthMode===1.U)) || smallLegal && !io.in.bits.double) &&
-      (!cast || io.widthMode===1.U || io.widthMode===2.U) && (io.in.bits.op=/=FpOp.convertOdd.U || io.widthMode===2.U)
+      (!cast || io.widthMode===1.U || io.widthMode===2.U || smallLegal) && (io.in.bits.op=/=FpOp.convertOdd.U || io.widthMode===2.U)
     val legal=(integerOp || cast) && widthLegal && (io.in.bits.rounding<=4.U || fixedRm)
     response.illegal:= !legal
     state:=Mux(!legal,reply,Mux(io.in.bits.op===FpOp.fromUInt.U || io.in.bits.op===FpOp.fromInt.U,absoluteLow,toIntRecode))
@@ -61,26 +61,32 @@ class FloatingPointConvertResize extends Module {
   val raw=Wire(new RawFloat(11,64))
   raw.isNaN:=false.B;raw.isInf:=false.B;raw.isZero:=magnitude===0.U;raw.sign:=negative
   raw.sExp:=(2111.U(13.W)-leading).asSInt;raw.sig:=magnitude
+  val r16=Module(new StagedRound(11,64,5,11,0))
   val r32=Module(new StagedRound(11,64,8,24,0));val r64=Module(new StagedRound(11,64,11,53,0))
-  for(r<-Seq(r32,r64)) {
+  for(r<-Seq(r16,r32,r64)) {
     r.io.start:=(state===roundStart || state===toIntStart && floatCast) && !io.flush;r.io.flush:=io.flush
     r.io.in:=Mux(floatCast,resizeRawFloat(11,64,rawFloatFromRecFN(11,53,rec64)),raw)
     r.io.invalidExc:=floatCast && isSigNaNRawFloat(rawFloatFromRecFN(11,53,rec64));r.io.infiniteExc:=false.B;r.io.roundingMode:=mode;r.io.detectTininess:=true.B
   }
   when(state===roundStart) { state:=roundWait }
-  when(state===roundWait && r32.io.done && r64.io.done) {
-    response.data:=Mux(req.double,fNFromRecFN(11,53,r64.io.out),fNFromRecFN(8,24,r32.io.out).pad(64))
-    response.flags:=Mux(req.double,r64.io.exceptionFlags,r32.io.exceptionFlags);state:=reply
+  when(state===roundWait && r16.io.done && r32.io.done && r64.io.done) {
+    val half=floatCast && widths===6.U
+    response.data:=Mux(half,fNFromRecFN(5,11,r16.io.out).pad(64),
+      Mux(req.double,fNFromRecFN(11,53,r64.io.out),fNFromRecFN(8,24,r32.io.out).pad(64)))
+    response.flags:=Mux(half,r16.io.exceptionFlags,Mux(req.double,r64.io.exceptionFlags,r32.io.exceptionFlags));state:=reply
   }
   val t64=Module(new StagedFloatToInt(11,53,64,flexible=true))
   t64.io.narrow.get:=Mux(widths===6.U,2.U,Mux(req.double,0.U,1.U))
 
-  val raw32=Reg(new RawFloat(8,24));val norm64=Reg(UInt(6.W))
+  val raw16=Reg(new RawFloat(5,11));val raw32=Reg(new RawFloat(8,24));val norm64=Reg(UInt(6.W))
   when(state===toIntRecode) {
+    raw16:=rawFloatFromFN(5,11,req.a(15,0))
     raw32:=FpBits.raw32(req.a);norm64:=countLeadingZeros(req.a(51,0));state:=toIntPack
   }
   when(state===toIntPack) {
-    val exact=FpBits.wideRecRaw(raw32)
+    // Exact recoded widening keeps subnormals, NaN payload and signaling bit.
+    // Final rounding/quieting happens only at the selected output precision.
+    val exact=Mux(floatCast && widths===5.U,FpBits.wideRecRaw(raw16),FpBits.wideRecRaw(raw32))
     rec64:=Mux(sourceDouble,IeeeRecode(11,53,req.a,norm64),exact);state:=toIntStart
   }
   t64.io.in:=rec64

@@ -1,0 +1,7 @@
+{
+  "status": "CANCELLED_NOT_COUNTED_AS_PASS",
+  "scope": "EXHAUSTIVE_GATE_LEVEL_NUMERIC_MATRIX",
+  "reason": "Use exhaustive RTL plus bounded mapped checks instead of duplicating long exhaustive gate simulation",
+  "script_sha256": "d58b403be500b1627b90efd276ca98131b9fba67b6c33284efe0f38d0585762a",
+  "vectors_planned": 86136
+}

@@ -421,8 +421,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val wideningReductionBad=anyWidenReduction && (vtype(4,3)===3.U ||
       VectorConfig.alignedGroupContains(vs1,vs2,alignment))
     val smallFpConvert=fpResizeEncoding && vtype(4,3)===1.U &&
-      (fpWideConvert && (selectedFpOp===FpOp.fromUInt.U || selectedFpOp===FpOp.fromInt.U) ||
-       fpNarrowConvert && (selectedFpOp===FpOp.toUInt.U || selectedFpOp===FpOp.toInt.U || selectedFpOp===FpOp.toUIntRtz.U || selectedFpOp===FpOp.toIntRtz.U))
+      (fpWideConvert && (selectedFpOp===FpOp.fromUInt.U || selectedFpOp===FpOp.fromInt.U || selectedFpOp===FpOp.convertFloat.U) ||
+       fpNarrowConvert && (selectedFpOp===FpOp.toUInt.U || selectedFpOp===FpOp.toInt.U || selectedFpOp===FpOp.toUIntRtz.U || selectedFpOp===FpOp.toIntRtz.U || selectedFpOp===FpOp.convertFloat.U))
     val fpIllegal=selectedFp && (vtype(4,3)<2.U && !smallFpConvert || (!fpTransfer && frm>4.U && selectedFpOp=/=FpOp.toUIntRtz.U && selectedFpOp=/=FpOp.toIntRtz.U && selectedFpOp=/=FpOp.convertOdd.U && selectedFpOp=/=31.U))
     val bad=vtype(63) || !selectedSupported || fpIllegal || extensionBad || narrowBad || widenBad || wideningReductionBad || misaligned || badMaskOverlap || gatherBad || badMaskSourceAlias || compressBad ||
       ((!vm || carryEncoding) && !selectedMask && !selectedReduction && !selectedMaskScalar && vd === 0.U) ||

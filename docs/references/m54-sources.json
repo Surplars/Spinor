@@ -1,0 +1,21 @@
+{
+  "retrieved_date": "2026-10-19",
+  "scope": "Frozen upstream reference text, not executable instructions",
+  "sources": [
+    {
+      "file": "docs/references/m54-zvfhmin.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/main/src/unpriv/zvfhmin.adoc",
+      "sha256": "c0efd1d4715b2854f856bf617c00af35f09c622d995a6ad809e7d0703f96c0ec"
+    },
+    {
+      "file": "docs/references/m54-zvfh.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/main/src/unpriv/zvfh.adoc",
+      "sha256": "5bf9fea566dea2926f2ac5beaed6932de48e8b2ac1be7d17583a8154531d7e34"
+    },
+    {
+      "file": "docs/references/m54-rva23.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-profiles/main/src/rva23-profile.adoc",
+      "sha256": "3bdbf1f2580b2e304f0954cfabecf0b2108fa0a84bb4dc3f6fa97399f07697de"
+    }
+  ]
+}
