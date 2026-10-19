@@ -1,0 +1,169 @@
+#!/usr/bin/env python3
+"""Bind overlap/restart reference provenance, production runs and retained timing."""
+import csv
+import json
+from m59_evidence import ROOT, sha, baseline, check
+
+
+def main():
+    previous = baseline()
+    out = ROOT / 'reports/m59'; out.mkdir(parents=True, exist_ok=True)
+    sources = {}; artifacts = {}
+    def bind(rel, expected):
+        target = sources if rel.startswith(('src/', 'tests/', 'scripts/')) else artifacts
+        if rel in target: assert target[rel] == expected, ('contradictory binding', rel)
+        target[rel] = expected
+    def manifest(rel):
+        d = json.loads((ROOT / rel).read_text())
+        assert d['status'] == 'PASS', rel
+        check(d); artifacts[rel] = sha(ROOT / rel)
+        for group in ('source_sha256', 'artifact_sha256'):
+            for path, expected in d.get(group, {}).items(): bind(path, expected)
+        if 'oracle_binary' in d:
+            assert sha(ROOT / d['oracle_binary']) == d['oracle_binary_sha256']
+            artifacts[d['oracle_binary']] = d['oracle_binary_sha256']
+        return d
+    crosschecks = {}; corpora = {}; runs = {}; commands = negatives = 0
+    for sew in (8, 16, 32, 64):
+        ref = manifest(f'build/m59/reference/sew{sew}/results.json')
+        assert ref['vstart'] == 0 and ref['source_eeW_disagreements_excluded']
+        crosschecks[sew] = {k: ref[k] for k in ('cases', 'legal')}
+        corpus = manifest(f'build/m59/corpus/sew{sew}/results.json')
+        assert corpus['oracle'] == 'INDEPENDENT_TYPED_INTERVAL_PYTHON_SOFTFLOAT_NOT_SPIKE_NONZERO_VSTART'
+        corpora[sew] = corpus['stats']
+        for top in ('SpinorStandard', 'SpinorDeep'):
+            d = manifest(f'build/m59/runs/sew{sew}/{top}/results.json')
+            assert d['commands'] == corpus['commands'] and d['stats'] == corpus['stats']
+            assert not d['trace_replay'] and d['checked_registers_per_command'] == 32
+            assert set(d['negative_controls'].values()) == {'REJECTED'}
+            commands += d['commands']; negatives += len(d['negative_controls'])
+            runs.setdefault(top, {})[sew] = d['summary']
+    for top in runs:
+        build_path = ROOT / f'build/m58/bin/{top}/build.json'
+        build = json.loads(build_path.read_text())
+        for rel, expected in build['inputs'].items():
+            assert sha(ROOT / rel) == expected, rel
+            bind(rel, expected)
+    clauses = manifest('build/m59/clauses/results.json')
+    assert len(clauses['anchors']) == 23 and len(clauses['coverage']) == 26
+    assert commands == 457600 and negatives == 24
+    assert sum(v['cases'] for v in crosschecks.values()) == 16298
+    assert clauses['counts']['cases'] == 45760 and clauses['counts']['legal'] == 16635
+    assert clauses['counts']['nonzero_start_legal'] == 12780 and clauses['counts']['resume_with_work'] == 5878
+    assert clauses['counts']['resume_active_targets'] == 5847 and clauses['counts']['resume_all_masked_targets'] == 31
+    assert len(clauses['negative_controls']) == 2
+    gate_path = ROOT / 'build/m56/timing/gate/results.json'
+    gate = json.loads(gate_path.read_text())
+    assert gate['passes_300MHz'] is None and {v['budget_ns'] for v in gate['results'].values()} == {3.3}
+    artifacts[str(gate_path.relative_to(ROOT))] = sha(gate_path)
+    # Publish small reviewable coverage, keeping compressed complete stimuli in
+    # build/ with exact bindings rather than committing hundreds of MB of RF.
+    table = [dict(name=name, **counts) for name, counts in sorted(clauses['coverage'].items())]
+    with (out / 'operation-coverage.csv').open('w', newline='') as f:
+        w = csv.DictWriter(f, fieldnames=['name', 'legal', 'resume_with_work', 'resume_active_targets'], lineterminator='\n')
+        w.writeheader(); w.writerows(table)
+    published = {k: clauses[k] for k in ('counts', 'anchors', 'clauses', 'negative_controls')}
+    (out / 'semantic-clauses.json').write_text(json.dumps(published, indent=2) + '\n')
+    for p in [*sorted((ROOT / 'src/main/scala').rglob('*.scala')),
+              *sorted((ROOT / 'scripts').glob('*m59*.py')), *sorted((ROOT / 'tests').glob('*m59*.py')),
+              ROOT / '.gitattributes', ROOT / 'README.md', ROOT / 'CURRENT.md',
+              ROOT / 'docs/isa-coverage.md', ROOT / 'docs/rvv-completion-plan.md', ROOT / 'docs/m59-overlap-restart.md']:
+        bind(str(p.relative_to(ROOT)), sha(p))
+    for p in [ROOT / 'archive/m58/baseline.json', *sorted((ROOT / 'archive/m58/source').rglob('*')),
+              ROOT / 'reports/m58/receipt.json', out / 'operation-coverage.csv', out / 'semantic-clauses.json']:
+        if p.is_file(): artifacts[str(p.relative_to(ROOT))] = sha(p)
+    evaluation = '''# M59：寄存器重叠与非零算术vstart
+
+标准/Deep两个实际公共端口DUT分别通过228,800条新命令，合计 **457,600条**。
+每条比较全部32个向量寄存器、已实现CSR、Completion身份，并检查延迟接收期间的状态发布。
+没有重放DUT输出，也没有用DUT结果生成期望。24次身份/RF/CSR比较器错误注入均检出。
+本轮未发现需要修复的RTL问题：54个Scala源文件保持M56/M58精确版本；没有新增指令。
+
+## 参考来源与独立性
+
+Python用带EEW/EMUL的寄存器区间表达规范重叠规则，不导入RTL分组布尔式或操作选择号。
+整数用任意精度运算，浮点/转换用已有独立Berkeley SoftFloat库（含52+8个已知结果锚点）。
+另有23个明确的重叠合法/拒绝锚点，包含扩宽高部、缩窄低部、分数EMUL、MAC旧目标源、
+mask EEW=1、源不同EEW、gather和slide特殊限制、对齐及寄存器越界。
+
+固定未修改Spike会拒绝非零算术vstart，因此 **非零vstart不是Spike差分**。
+先在vstart=0下用16,298个场景交叉核对独立模型与固定Spike（6,830合法），再生成完整矩阵。
+交叉核对包含profile0/1的布局与掩码；维护版规范的混合源EEW保留策略与该Spike有分歧，
+这些场景从交叉核对明确排除，仍在完整矩阵中按独立规范策略验证拒绝，不修改Spike。
+数值比较包括全RF、fflags、vxsat、vstart和非法状态；DUT流另逐命令比较完整CSR/Completion。
+
+## 覆盖与结果
+
+26种操作×22种基础合法vtype×16种寄存器布局×5种profile = **45,760个目标场景/预设**。
+每场景依次设置vtype、vcsr、FCSR、vstart并执行目标，共228,800条命令/预设。
+具体操作不支持的宽度/EMUL和非法布局仍应拒绝，不能把45,760都称为有效计算。
+
+| SEW | 目标场景 | 合法 | 拒绝 | 非零vstart合法 | 非零起点后有计算范围 |
+|---|---:|---:|---:|---:|---:|
+| 8 | 14,560 | 4,136 | 10,424 | 3,172 | 1,548 |
+| 16 | 12,480 | 4,668 | 7,812 | 3,591 | 1,670 |
+| 32 | 10,400 | 5,077 | 5,323 | 3,893 | 1,742 |
+| 64 | 8,320 | 2,754 | 5,566 | 2,124 | 918 |
+| 合计 | 45,760 | 16,635 | 29,125 | 12,780 | 5,878 |
+
+26种操作包含整数加/比较、扩宽加/乘/MAC、缩窄移位/饱和、六种符号/零扩展、
+FP加/FMA/扩宽加/扩宽FMA/宽窄转换、gather/EI16及slide。每种都有非零起点后继续计算样本，
+见[逐操作覆盖](operation-coverage.csv)。不是全部330种算术编码的非零起点穷举。
+5,878个起点之后有计算范围的目标中，5,847个至少有一个活动元素，31个被全mask关闭。
+CSV的resume_with_work记录起点<VL，resume_active_targets才记录实际活动计算目标。
+
+五种profile分别为起点0满VL、起点1交错mask、起点min(2,VLMAX)、起点127全mask关、
+起点1且VL=0。四种vta/vma随profile循环，不是策略×起点×mask的完整笛卡尔积。
+寄存器数据非零并含符号、舍入、饱和、sNaN、subnormal边界，五种合法frm和四种vxrm循环。
+每场景先独立装载RF、再写vstart，模拟恢复入口；没有宣称制造了真实异步中断或硬件trap。
+
+以下是单份语料计数，不把两个DUT重复执行相加：
+
+- 81,312个prestart元素、172,040个tail元素、15,149个inactive元素保持。
+- 29,125个拒绝目标保持RF/flags/vstart；6,902个合法no-op不改变RF/flags并清零vstart。
+- 961个目标实际改变fflags，399个目标实际改变vxsat，避免只有无异常数据。
+- 同宽、缩窄低部、扩宽高部合法重叠分别有2,364/525/190条目标-源边，
+  其中非零起点后有计算范围的边为835/193/76；多源指令可以贡献多条边，不是独立目标数。
+- 两次故意破坏prestart/空操作flags的条款负控制均检出。
+
+当前实现支持这些普通算术操作的非零vstart；规范允许特定实现拒绝其自身不会产生的
+非零起点。归约、compress、viota等自身特殊vstart限制不在本轮26操作矩阵中，
+保留既有测试，本轮没有把普通算术恢复规则套到所有指令。
+[冻结规范逐字引文、行号、锚点及计数](semantic-clauses.json)。
+
+## 时序与边界
+
+54个硬件源文件精确不变，复用已绑定的当前GSim模型，没有新增综合、DSP、RAM或物理时序。
+沿用M56宿主公共/计算顶层3.300ns条件预算；独立标准/Deep沿用M55的3.292/3.232ns。
+条件模型排除DSP影响端点及主IO，不含器件布局布线/真实时钟，未按ZU15EG-2校准，
+不能作为STA/SDF。**当前实际300MHz仍未知**，M53的旧RTL本地结果不移作当前签核。
+
+375基础V+16Zvbb官方目录和310种访存形式的历史结论保持。本轮增加3项有界条款证据，
+不声明完整V/RVA23/Zvkt。剩余工作包括其余操作的重叠/重启规则、架构测试套件验收、
+更多访存异常/恢复条款、Zvkt覆盖义务和当前器件时序。未修改Orbital/Valence，
+CPU退休、VS/FS、MMU/PMP和一致性仍由宿主负责。
+
+```bash
+python3 scripts/verify_m59.py
+python3 scripts/verify_m59.py --check-only
+```
+
+需要保留的M55/M56/M57/M58工具、模型与历史产物；build/和tools/不入Git。
+新机器不能仅凭clone核对云端历史散列，见README及仓库说明。
+旧receipt和测试产物未改写，M58文档精确冻结在archive/m58/source。
+'''
+    (out / 'evaluation.md').write_text(evaluation)
+    sources['reports/m59/evaluation.md'] = sha(out / 'evaluation.md')
+    receipt = dict(status='PASS', milestone=59, hardware_changed=False, baseline=previous,
+                   independent_reference_commands=commands, new_spike_dut_commands=0,
+                   spike_model_crosscheck_targets=16298, crosschecks=crosschecks, corpora=corpora,
+                   counts=clauses['counts'], runs=runs, runtime_negative_controls=negatives,
+                   predicate_negative_controls=2, literal_geometry_anchors=23,
+                   full_v=False, full_rva23=False, zvkt_claimed=False, passes_300MHz=None, passes_500MHz=None,
+                   source_sha256=sources, artifact_sha256=artifacts)
+    (out / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    check(receipt)
+    print('PASS M59', commands, 'new independent-reference commands;', len(artifacts), 'bound artifacts', flush=True)
+
+
+if __name__ == '__main__': main()

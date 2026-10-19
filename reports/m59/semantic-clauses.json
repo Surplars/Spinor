@@ -1,0 +1,407 @@
+{
+  "counts": {
+    "rejected_preserved": 29125,
+    "cases": 45760,
+    "legal": 16635,
+    "prestart_elements": 81312,
+    "inactive_elements": 15149,
+    "nonzero_start_legal": 12780,
+    "resume_with_work": 5878,
+    "resume_active_targets": 5847,
+    "no_op": 6902,
+    "tail_elements": 172040,
+    "legal_overlap_same": 2364,
+    "resume_overlap_same": 835,
+    "legal_overlap_narrow-low": 525,
+    "resume_overlap_narrow-low": 193,
+    "saturation_changed_targets": 399,
+    "legal_overlap_wide-high": 190,
+    "resume_overlap_wide-high": 76,
+    "resume_all_masked_targets": 31,
+    "flags_changed_targets": 961
+  },
+  "anchors": [
+    {
+      "id": "wide-high",
+      "case": {
+        "name": "vwaddu_vv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 9,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": true,
+      "reasons": []
+    },
+    {
+      "id": "wide-low",
+      "case": {
+        "name": "vwaddu_vv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 8,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "destination-overlap"
+      ]
+    },
+    {
+      "id": "fraction-wide-alias",
+      "case": {
+        "name": "vwaddu_vv",
+        "sew": 8,
+        "lmul": 7,
+        "vd": 8,
+        "vs2": 8,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "destination-overlap"
+      ]
+    },
+    {
+      "id": "fraction-wide-disjoint",
+      "case": {
+        "name": "vwaddu_vv",
+        "sew": 8,
+        "lmul": 7,
+        "vd": 8,
+        "vs2": 16,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": true,
+      "reasons": []
+    },
+    {
+      "id": "narrow-low",
+      "case": {
+        "name": "vnsrl_wv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 8,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": true,
+      "reasons": []
+    },
+    {
+      "id": "narrow-high",
+      "case": {
+        "name": "vnsrl_wv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 9,
+        "vs2": 8,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "destination-overlap"
+      ]
+    },
+    {
+      "id": "narrow-source-eew",
+      "case": {
+        "name": "vnsrl_wv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 16,
+        "vs2": 8,
+        "vs1": 8,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "source-eew"
+      ]
+    },
+    {
+      "id": "mac-old-dest-source-eew",
+      "case": {
+        "name": "vwmaccu_vv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 9,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "source-eew"
+      ]
+    },
+    {
+      "id": "extend-high",
+      "case": {
+        "name": "vzext_vf4",
+        "sew": 32,
+        "lmul": 3,
+        "vd": 8,
+        "vs2": 14,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": true,
+      "reasons": []
+    },
+    {
+      "id": "extend-low",
+      "case": {
+        "name": "vzext_vf4",
+        "sew": 32,
+        "lmul": 3,
+        "vd": 8,
+        "vs2": 8,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "destination-overlap"
+      ]
+    },
+    {
+      "id": "extend-middle",
+      "case": {
+        "name": "vzext_vf4",
+        "sew": 32,
+        "lmul": 3,
+        "vd": 8,
+        "vs2": 12,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "destination-overlap"
+      ]
+    },
+    {
+      "id": "mask-low",
+      "case": {
+        "name": "vmseq_vv",
+        "sew": 8,
+        "lmul": 1,
+        "vd": 8,
+        "vs2": 8,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": true,
+      "reasons": []
+    },
+    {
+      "id": "mask-high",
+      "case": {
+        "name": "vmseq_vv",
+        "sew": 8,
+        "lmul": 1,
+        "vd": 9,
+        "vs2": 8,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "destination-overlap"
+      ]
+    },
+    {
+      "id": "gather-dest-index",
+      "case": {
+        "name": "vrgather_vv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 16,
+        "vs1": 8,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "gather-overlap"
+      ]
+    },
+    {
+      "id": "gather-source-alias",
+      "case": {
+        "name": "vrgather_vv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 16,
+        "vs1": 16,
+        "vm": 1
+      },
+      "legal": true,
+      "reasons": []
+    },
+    {
+      "id": "gather-index-eew",
+      "case": {
+        "name": "vrgatherei16_vv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 16,
+        "vs1": 16,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "source-eew"
+      ]
+    },
+    {
+      "id": "gather-index-same-eew",
+      "case": {
+        "name": "vrgatherei16_vv",
+        "sew": 16,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 16,
+        "vs1": 16,
+        "vm": 1
+      },
+      "legal": true,
+      "reasons": []
+    },
+    {
+      "id": "slide-up-alias",
+      "case": {
+        "name": "vslideup_vx",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 8,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "slide-up-overlap"
+      ]
+    },
+    {
+      "id": "slide-down-alias",
+      "case": {
+        "name": "vslidedown_vx",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 8,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": true,
+      "reasons": []
+    },
+    {
+      "id": "mask-source-eew",
+      "case": {
+        "name": "vadd_vv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 8,
+        "vs2": 0,
+        "vs1": 24,
+        "vm": 0
+      },
+      "legal": false,
+      "reasons": [
+        "source-eew"
+      ]
+    },
+    {
+      "id": "mask-destination",
+      "case": {
+        "name": "vadd_vv",
+        "sew": 8,
+        "lmul": 0,
+        "vd": 0,
+        "vs2": 16,
+        "vs1": 24,
+        "vm": 0
+      },
+      "legal": false,
+      "reasons": [
+        "mask-destination"
+      ]
+    },
+    {
+      "id": "unaligned",
+      "case": {
+        "name": "vadd_vv",
+        "sew": 8,
+        "lmul": 1,
+        "vd": 9,
+        "vs2": 16,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "alignment-range"
+      ]
+    },
+    {
+      "id": "range",
+      "case": {
+        "name": "vadd_vv",
+        "sew": 8,
+        "lmul": 3,
+        "vd": 31,
+        "vs2": 16,
+        "vs1": 24,
+        "vm": 1
+      },
+      "legal": false,
+      "reasons": [
+        "alignment-range"
+      ]
+    }
+  ],
+  "clauses": [
+    {
+      "id": "source-eew",
+      "source": "docs/references/m57-v-spec-maintained.adoc",
+      "first_line": 977,
+      "last_line": 983,
+      "quote": "A vector register cannot be used to provide source operands with more\nthan one EEW for a single instruction.  A mask register source is\nconsidered to have EEW=1 for this constraint.  An encoding that would\nresult in the same vector register being read with two or more\ndifferent EEWs, including when the vector register appears at\ndifferent positions within two or more vector register groups, is\nreserved.",
+      "scope": "BOUNDED_26_OPERATION_MATRIX_NOT_FULL_RVV_CLOSURE"
+    },
+    {
+      "id": "destination-overlap",
+      "source": "docs/references/m57-v-spec-maintained.adoc",
+      "first_line": 990,
+      "last_line": 1008,
+      "quote": "A destination vector register group can overlap a source vector register\ngroup only if one of the following holds:\n\n- The destination EEW equals the source EEW.\n- The destination EEW is smaller than the source EEW and the overlap is in\n  the lowest-numbered part of the source register group (e.g., when LMUL=1,\n  `vnsrl.wi v0, v0, 3` is legal, but a destination of `v1` is not).\n- The destination EEW is greater than the source EEW, the source EMUL is\n  at least 1, and the overlap is in the highest-numbered part of the\n  destination register group (e.g., when LMUL=8, `vzext.vf4 v0, v6` is legal,\n  but a source of `v0`, `v2`, or `v4` is not).\n\nFor the purpose of determining register group overlap constraints,\nmask elements have EEW=1.\n\nNOTE: The overlap constraints are designed to support resumable\nexceptions in machines without register renaming.\n\nAny instruction encoding that violates the overlap constraints is reserved.",
+      "scope": "BOUNDED_26_OPERATION_MATRIX_NOT_FULL_RVV_CLOSURE"
+    },
+    {
+      "id": "vstart-state",
+      "source": "docs/references/m57-v-spec-maintained.adoc",
+      "first_line": 547,
+      "last_line": 556,
+      "quote": "All vector instructions are defined to begin execution with the\nelement number given in the `vstart` CSR, leaving earlier elements in\nthe destination vector undisturbed, and to reset the `vstart` CSR to\nzero at the end of execution.\n\nNOTE: All vector instructions, including `vset{i}vl{i}`, reset the `vstart`\nCSR to zero.\n\n`vstart` is not modified by vector instructions that raise illegal-instruction\nexceptions.",
+      "scope": "BOUNDED_26_OPERATION_MATRIX_NOT_FULL_RVV_CLOSURE"
+    }
+  ],
+  "negative_controls": {
+    "no-op-flags": "REJECTED",
+    "prestart": "REJECTED"
+  }
+}
