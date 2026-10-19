@@ -12,8 +12,10 @@ case class SpinorParams(
   monitorCounterBits:Int=32,
   vlen:Int=128,
   elen:Int=64,
-  lanes:Int=1
+  lanes:Int=1,
+  hostFcsr:Boolean=false
 ) {
+  require(!hostFcsr || enableFp,"Host FCSR mode requires the FP implementation")
   require(vlen==128 && elen==64,"This implementation supports VLEN128/ELEN64 only")
   require(lanes==1,"Multiple execution lanes are not implemented")
   require(Set(16,32).contains(aluStageBits),"ALU stage bits must be 16 or 32")

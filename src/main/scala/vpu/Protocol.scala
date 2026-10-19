@@ -29,6 +29,15 @@ class Completion extends Bundle {
   val instruction = UInt(32.W)
 }
 
+/** CPU owns architectural FCSR. Snapshot frm on command.fire; merge flags
+  * only with completion.fire. This sideband never writes CPU architectural state.
+  */
+class FcsrHostPort extends Bundle {
+  val frm = Input(UInt(3.W))
+  val fflags = Input(UInt(5.W))
+  val flags = Valid(UInt(5.W))
+}
+
 object Op {
   val add = 0; val sub = 1; val and = 2; val or = 3; val xor = 4
   val sll = 5; val srl = 6; val sra = 7

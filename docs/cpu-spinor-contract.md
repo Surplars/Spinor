@@ -82,3 +82,16 @@ FOF元素0错误按原异常处理，原VL保持；后续元素错误则正常�
 ## M50浮点广播与合并
 
 `vfmv.v.f`及`vfmerge.vfm`使用`Command.scalar`接收FPR的完整FLEN64位模式，f0是有效源，不能套用x0取零。SEW32检查NaN boxing：高32位非全1时使用规范NaN；合法sNaN位模式按数据复制，不quiet、不增加fflags。合并的v0是选择数据，vm=0时全部body元素执行，非普通写掩码。仍在completion握手时发布候选RF版本，flush撤销；CPU负责FP权限/FS与向量脏状态。monitor实现ID更新为0x5001，ABI1和能力布局不变。
+
+## M56 宿主管理 FCSR
+
+原默认 standalone 接口保持；接入原生 Orbital 标量/向量共享 FCSR 时，选择
+`SpinorParams(hostFcsr=true)` 或生成参数 `--fcsr-owner host`。此模式增加
+`io.core.fcsrHost`，由 CPU 提供已提交 frm/fflags；VPU 锁存执行用 frm，返回当前
+成功 FP 完成的逐指令 flags。CPU 只在 completion.fire 同边沿合并，不能在 valid
+出现时提前合并。flags 更新与原 completion 使用同一 token/拥有者，不另发射或退休。
+
+0x001/0x002/0x003 CSR 在宿主模式必须留在 CPU，转发到 VPU 会报非法，包括零源读。
+上下文 helper 的 execute 回调也须相应路由；向量 CSR 与 VRF 仍由 VPU 负责。
+权限、VS/FS dirty、全局退休和共享 FCSR 的顺序管理仍属于 CPU。monitor ID0x5602
+标识宿主版，默认独立版保持0x5501。详细端口及验证限制见 [M56](m56-host-fcsr.md)。

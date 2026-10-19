@@ -3,12 +3,13 @@
 Valence SoC / Orbital CPU / Spinor VPU。目标器件 `xczu15eg-ffvb1156-2-i`，
 采用 **Mill 1.1.7 / Scala 2.13.18 / Chisel 7.16.0**，按 300 MHz 设计。
 
-**当前 M55：增加 Zvbb 的 10 类操作、16 种编码。** 四种规模预设均支持，
-monitor 实现号 `0x5501`。仍是 VLEN128/ELEN64、单 lane、单向量指令在途，
-整数元素可在分段流水线中重叠，寄存器文件采用版本化 RAM。
+**当前 M56：增加宿主管理 FCSR 的 SoC 接口。** CPU 保留唯一架构 FCSR，VPU
+锁存舍入模式并在完成时返回逐指令异常标志。VLEN128/ELEN64、单 lane、单向量
+指令在途，版本化 RAM 寄存器文件保持。独立模式默认保留，四预设 SV 与 M55
+逐字节一致；宿主模式 monitor ID0x5602，独立模式0x5501。
 
-- [当前进度](CURRENT.md)、[M55 功能与边界](docs/m55-zvbb.md)
-- [M55 验证/资源/时序报告](reports/m55/evaluation.md)、[逐编码样本](reports/m55/canonical-coverage.csv)
+- [当前进度](CURRENT.md)、[M56 接口与边界](docs/m56-host-fcsr.md)
+- [M56 验证/资源/时序](reports/m56/evaluation.md)、[M55 Zvbb 集合](docs/m55-zvbb.md)
 - [规模参数](docs/m39-configurations-and-fp-transfers.md)、[CPU 接入契约](docs/cpu-spinor-contract.md)
 - [独立上下文镜像](software/context/spinor_context.h)、[FP16 最小转换](docs/m54-half-conversions.md)
 
@@ -34,29 +35,31 @@ make bootstrap
 ```
 
 预设为 `standard`、`deep`、`integer`、`integer-deep`。输出 SV 和配置 JSON，
-JSON 明确列出 FP、Zvbb、规模、接口地址及 `device_timing_verified:false`。
+原生 Orbital 共享 FCSR 时加 `--fcsr-owner host`，FCSR CSR 留在 CPU；默认
+`standalone` 继续用于独立验证。JSON 明确列出 FCSR 所有者、FP、Zvbb、规模及 `device_timing_verified:false`。
 工具首次下载需要网络，下载地址和版本由仓库锁文件约束。
 
 ## 当前验证与时序
 
-M55 四预设公共端口对照未修改上游 Spike 共 **101,584 条命令**，另有独立非零
-vstart、规范保留编码、逐周期 flush、上下文/监控及真实 ALU 网表验证。局部
-bit pipeline 完成 32 个 SEW/操作有界 SAT 证明，均带完成性检查。
+M56 两宿主预设新增 FCSR 舍入快照/异常标志差分与 CSR 路由拒绝测试，重跑完整
+访存/故障、上下文与浮点 flush。原独立预设通过逐字节 RTL 对照保留 M55 证据，
+不计作 M56 新增回归。Zvkt 清单核对与两预设各43,560个完成延迟抽样通过，仍不能
+作为完整 Zvkt 合规证明。
 
-默认 Yosys xcup：**24,184 逻辑 LUT、13,888 FF、9 DSP**，寄存器 RAM 数量保持。
-固定云端条件预算：公共顶层 **3.292ns**、计算/访存顶层 **3.232ns**，均≤3.333ns。
-模型排除 DSP 影响端点，不含器件布局布线/真实时钟，未按 -2 校准，不能作为 STA。
-M55 的实际 300/500MHz 结果仍未知。
+默认宿主 Yosys xcup：**24,247 逻辑 LUT、13,882 FF、9 DSP**，RAM 数量保持。
+公共/计算顶层固定云端条件预算均 **3.300ns**，≤3.333ns。模型排除 DSP 影响端点
+和主输入/输出，不含器件布局布线/真实时钟，未按 -2 校准，不能作为 STA。
+M56 实际 300/500MHz 结果仍未知，宿主侧带还需 SoC 时序约束。
 
 最新本地证据是 [M53 Vivado 报告](reports/local-m53-resume/evaluation.md)：旧 RTL
 300MHz OOC setup +0.090ns、hold +0.042ns，不自动适用 M55。宿主 IO 和实际时钟源
 还需 SoC 约束。[实际 DSP 表及配置限制](reports/dsp-m53/evaluation.md) 单独保留。
 
-在**已有 M54 固定工具及参考产物的云端工作区**，当前验收入口：
+在**已有 M55 固定工具及参考产物的云端工作区**，当前验收入口：
 
 ```bash
-python3 scripts/verify_m55.py
-python3 scripts/verify_m55.py --check-only
+python3 scripts/verify_m56.py
+python3 scripts/verify_m56.py --check-only
 ```
 
 `--check-only` 对验收时的精确源码/产物散列进行审计。Git 保存源码、报告、冻结

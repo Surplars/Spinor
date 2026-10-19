@@ -1,0 +1,11 @@
+SpinorHost 50 ps/link 3.482 ns vpu.engine.cmd_scalar[0] -> vpu.engine.addressCarry[0].D
+SpinorHost 100 ps/link 4.232 ns vpu.engine.cmd_scalar[0] -> vpu.engine.addressCarry[0].D
+SpinorHost 200 ps/link 5.732 ns vpu.engine.cmd_scalar[0] -> vpu.engine.addressCarry[0].D
+LishiVpuMemoryHost 50 ps/link 4.082 ns engine.cmd_scalar[0] -> engine.addressCarry[0].D
+LishiVpuMemoryHost 100 ps/link 4.982 ns engine.cmd_scalar[0] -> engine.addressCarry[0].D
+LishiVpuMemoryHost 200 ps/link 6.782 ns engine.cmd_scalar[0] -> engine.addressCarry[0].D
+Traceback (most recent call last):
+  File "/workspace/Spinor/scripts/check_timing_gate_m56.py", line 33, in <module>
+    ns=scenario['worst']['budget_ns'];assert ns<=1000/300,(top,ns,'exceeds fixed 300 MHz conditional budget')
+                                             ^^^^^^^^^^^^
+AssertionError: ('SpinorHost', 4.232, 'exceeds fixed 300 MHz conditional budget')

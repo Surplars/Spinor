@@ -11,7 +11,7 @@ class VectorMemoryStatus extends Bundle {
   * Memory instructions are irrevocable ROB-head operations: flush requests a
   * boundary stop and DOES NOT silently cancel completion or issued stores.
   */
-class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28) extends Module {
+class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28,shortUnitAdder:Boolean=false) extends Module {
   require(regionBytes>=8 && (regionBytes&(regionBytes-1))==0 && regionBase%regionBytes==0)
   val io=IO(new Bundle {
     val stop=Input(Bool());val command=Flipped(Decoupled(new Command));val completion=Decoupled(new Completion)
@@ -23,10 +23,11 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val memoryRequest=Decoupled(new VpuMemoryRequest(VpuTLParams()))
     val memoryResponse=Flipped(Decoupled(new VpuMemoryResponse))
   })
-  val states=Enum(34)
+  val states=Enum(if(shortUnitAdder)35 else 34)
+  val addressMiddle=if(shortUnitAdder)states(34) else states(0)
   val Seq(idle,decode,validate,maskLow,maskLowWait,maskHigh,maskHighWait,checkElement,addressLow,addressHigh,
     checkAddress,readChunk,readChunkWait,sendMemory,waitMemory,writeChunk,writeChunkWait,writeStart,reply)=states.take(19)
-  val Seq(strideSeek,strideAdd0,strideAdd1,strideAdd2,strideAdd3,indexValidate,indexRead,indexReadWait,indexExtract,specialDecode,specialValidate,segmentDecode,segmentSeek,segmentAdvance,segmentAlias)=states.drop(19)
+  val Seq(strideSeek,strideAdd0,strideAdd1,strideAdd2,strideAdd3,indexValidate,indexRead,indexReadWait,indexExtract,specialDecode,specialValidate,segmentDecode,segmentSeek,segmentAdvance,segmentAlias)=states.slice(19,34)
   val state=RegInit(idle);val cmd=Reg(new Command);val length=Reg(UInt(8.W));val typ=Reg(UInt(64.W))
   val lastIndex=Reg(UInt(8.W));val index=Reg(UInt(8.W));val width=Reg(UInt(2.W));val baseRegister=Reg(UInt(5.W));val store=Reg(Bool());val masked=Reg(Bool())
   val mask=Reg(UInt(128.W));val original=Reg(UInt(64.W));val result=Reg(UInt(64.W))
@@ -244,7 +245,14 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   // off a long combinational adder. The cursor stays stable while A or D stalls.
   for((phase,part)<-Seq(strideAdd0,strideAdd1,strideAdd2,strideAdd3).zipWithIndex) {
     when(state===phase) {
-      val sum=CarrySelect.add(address(16*part+15,16*part),addend(16*part+15,16*part),if(part==0)false.B else addressCarry)
+      val sum=if(shortUnitAdder) {
+        val x=address(16*part+15,16*part);val y=addend(16*part+15,16*part)
+        val carry=if(part==0)false.B else addressCarry
+        val lo=CarrySelect.add(x(7,0),y(7,0),carry)
+        val hi0=CarrySelect.add(x(15,8),y(15,8),false.B)
+        val hi1=CarrySelect.add(x(15,8),y(15,8),true.B)
+        Cat(Mux(lo(8),hi1,hi0),lo(7,0))
+      } else CarrySelect.add(address(16*part+15,16*part),addend(16*part+15,16*part),if(part==0)false.B else addressCarry)
       val pieces=(0 until 4).reverse.map(k=>if(k==part)sum(15,0) else address(16*k+15,16*k))
       address:=Cat(pieces);addressCarry:=sum(16)
       if(part<3) {state:=Seq(strideAdd1,strideAdd2,strideAdd3)(part)}
@@ -259,8 +267,21 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
   }
   when(state===addressLow) {
     chunkAddress:=((baseRegister<<1)+byteOffset(6,3))(5,0)
-    val sum=CarrySelect.add(cmd.scalar(31,0),unitOffset.pad(32),false.B)
-    address:=Cat(cmd.scalar(63,32),sum(31,0));addressCarry:=sum(32);state:=addressHigh
+    if(shortUnitAdder) {
+      // Reuse address/addressCarry across a separate middle-half stage. The
+      // low add must not feed the high-prefix logic in the same cycle.
+      val low=CarrySelect.add(cmd.scalar(15,0),unitOffset.pad(16),false.B)
+      address:=Cat(cmd.scalar(63,16),low(15,0));addressCarry:=low(16);state:=addressMiddle
+    } else {
+      val sum=CarrySelect.add(cmd.scalar(31,0),unitOffset.pad(32),false.B)
+      address:=Cat(cmd.scalar(63,32),sum(31,0));addressCarry:=sum(32);state:=addressHigh
+    }
+  }
+  if(shortUnitAdder) {
+    when(state===addressMiddle) {
+      address:=Cat(cmd.scalar(63,32),ParallelIncrement(cmd.scalar(31,16),addressCarry),address(15,0))
+      addressCarry:=addressCarry && cmd.scalar(31,16).andR;state:=addressHigh
+    }
   }
   when(state===addressHigh) {
     val upperBytes=(0 until 4).map { byte =>
@@ -330,10 +351,10 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
 /** Current physical normal-RAM load/store top. Host must keep irrevocable
   * memory-command ownership until completion, including after a stop/flush.
   */
-class LishiVpuMemory(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28,chunkBits:Int=32,enableFp:Boolean=true) extends Module {
+class LishiVpuMemory(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28,chunkBits:Int=32,enableFp:Boolean=true,hostFcsr:Boolean=false) extends Module {
   require(Set(16,32).contains(chunkBits))
   override def desiredName=if(chunkBits==16)"LishiVpuMemory16" else "LishiVpuMemory"
-  val vpu=Module(new MemoryRamVector(chunkBits=chunkBits,enableFp=enableFp));val engine=Module(new VectorMemoryEngine(regionBase,regionBytes))
+  val vpu=Module(new MemoryRamVector(chunkBits=chunkBits,enableFp=enableFp,hostFcsr=hostFcsr));val engine=Module(new VectorMemoryEngine(regionBase,regionBytes,shortUnitAdder=hostFcsr))
   val bridge=Module(new TileLinkReservation)
   val io=IO(new Bundle {
     val core=chiselTypeOf(vpu.io);val tl=new VpuTileLinkMaster(VpuTLParams())
@@ -366,6 +387,12 @@ class LishiVpuMemory(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=
   io.core.vl:=vpu.io.vl;io.core.vtype:=vpu.io.vtype;io.core.vstart:=vpu.io.vstart
   io.core.vxrm:=vpu.io.vxrm;io.core.vxsat:=vpu.io.vxsat;io.core.versions:=vpu.io.versions
   if(enableFp) {io.core.frm.get:=vpu.io.frm.get;io.core.fflags.get:=vpu.io.fflags.get}
+  if(hostFcsr) {
+    vpu.io.fcsrHost.get.frm:=io.core.fcsrHost.get.frm
+    vpu.io.fcsrHost.get.fflags:=io.core.fcsrHost.get.fflags
+    io.core.fcsrHost.get.flags.valid:=vpu.io.fcsrHost.get.flags.valid && !busy
+    io.core.fcsrHost.get.flags.bits:=Mux(!busy,vpu.io.fcsrHost.get.flags.bits,0.U)
+  }
   io.core.busy:=vpu.io.busy || busy || bridge.io.busy
   bridge.io.request<>engine.io.memoryRequest;engine.io.memoryResponse<>bridge.io.response
   bridge.io.flush:=false.B;io.tl<>bridge.io.tl

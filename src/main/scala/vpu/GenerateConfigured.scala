@@ -10,12 +10,13 @@ object GenerateConfigured extends App {
   val pairs=args.grouped(2).map(x=>x(0)->x(1)).toSeq
   require(pairs.map(_._1).distinct.size==pairs.size,"Duplicate option")
   val opts=pairs.toMap
-  val allowed=Set("--out","--name","--preset","--fp","--alu-stage-bits","--region-base","--region-bytes","--monitor-base","--vlen","--elen","--lanes")
+  val allowed=Set("--fcsr-owner","--out","--name","--preset","--fp","--alu-stage-bits","--region-base","--region-bytes","--monitor-base","--vlen","--elen","--lanes")
   require(opts.keySet.subsetOf(allowed),"Unknown option: "+(opts.keySet--allowed).mkString(","))
   def number(s:String):BigInt=if(s.startsWith("0x"))BigInt(s.drop(2),16) else BigInt(s)
   val preset=opts.getOrElse("--preset","standard")
   val initial=SpinorParams.preset(preset)
   val cfg=initial.copy(
+    hostFcsr=opts.get("--fcsr-owner").map {case "host"=>true;case "standalone"=>false;case _=>throw new IllegalArgumentException("--fcsr-owner must be host or standalone")}.getOrElse(false),
     enableFp=opts.get("--fp").map {case "true"=>true;case "false"=>false;case _=>throw new IllegalArgumentException("--fp must be true or false")}.getOrElse(initial.enableFp),
     aluStageBits=opts.get("--alu-stage-bits").map(_.toInt).getOrElse(initial.aluStageBits),
     regionBase=opts.get("--region-base").map(number).getOrElse(initial.regionBase),
@@ -38,9 +39,10 @@ object GenerateConfigured extends App {
   "instruction_capacity":1, "architectural_vrf_bytes":512, "vrf":"versioned-ram",
   "alu_stage_bits":${cfg.aluStageBits}, "fp32_fp64":${cfg.enableFp}, "has_fp_csr_ports":${cfg.enableFp},
   "physical_region_base":"0x${cfg.regionBase.toString(16)}", "physical_region_bytes":"0x${cfg.regionBytes.toString(16)}",
+  "fcsr_owner":"${if(cfg.hostFcsr)"host" else "standalone"}", "fflags_delta_port":${cfg.hostFcsr},
   "zvbb":true,
   "fp16_min_conversions":${cfg.enableFp},
-  "monitor_base":"0x${base.toString(16)}", "monitor_implementation":"0x5501", "monitor_abi":"1.0", "monitor_caps":"0x${caps.toString(16)}",
+  "monitor_base":"0x${base.toString(16)}", "monitor_implementation":"${if(cfg.hostFcsr)"0x5602" else "0x5501"}", "monitor_abi":"1.0", "monitor_caps":"0x${caps.toString(16)}",
   "device_timing_verified":false, "full_rvv":false
 }
 """)

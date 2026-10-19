@@ -1,0 +1,11 @@
+SpinorHost 50 ps/link 2.7 ns vpu.vpu.unit.request_c[22] -> vpu.vpu.unit.raw32_2_sExp[8].D
+SpinorHost 100 ps/link 3.3 ns vpu.vpu.unit.request_c[22] -> vpu.vpu.unit.raw32_2_sExp[8].D
+SpinorHost 200 ps/link 4.5 ns vpu.vpu.unit.request_c[22] -> vpu.vpu.unit.raw32_2_sExp[8].D
+LishiVpuMemoryHost 50 ps/link 2.882 ns engine._GEN_0[5] -> engine.addressCarry[0].D
+LishiVpuMemoryHost 100 ps/link 3.482 ns engine._GEN_0[5] -> engine.addressCarry[0].D
+LishiVpuMemoryHost 200 ps/link 4.682 ns engine._GEN_0[5] -> engine.addressCarry[0].D
+Traceback (most recent call last):
+  File "/workspace/Spinor/scripts/check_timing_gate_m56.py", line 31, in <module>
+    for file,h in d['input_sha256'].items():assert sha(ROOT/file)==h,file;inputs[file]=h
+                                                   ^^^^^^^^^^^^^^^^^
+AssertionError: scripts/cloud_budget.py

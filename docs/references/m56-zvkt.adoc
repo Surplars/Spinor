@@ -1,0 +1,181 @@
+[[zvkt,Zvkt]]
+=== `Zvkt` - Vector Data-Independent Execution Latency
+
+The Zvkt extension requires all implemented instructions from the following list to be
+executed with data-independent execution latency as defined in the 
+link:https://github.com/riscv/riscv-crypto/releases/tag/v1.0.1-scalar[RISC-V Scalar Cryptography Extensions specification].
+
+Data-independent execution latency (DIEL) applies to all _data operands_ of an instruction, even those that are not a
+part of the body or that are inactive. However, DIEL does not apply
+to other values such as vl, vtype, and the mask (when used to control
+execution of a masked vector instruction).
+Also, DIEL does not apply to constant values specified in the
+instruction encoding such as the use of the zero register (`x0`), and, in the
+case of immediate forms of an instruction, the values in the immediate
+fields (i.e., imm, and uimm).
+
+In some cases --- which are explicitly specified in the lists below
+--- operands that are used as control rather than data
+are exempt from DIEL.
+
+[NOTE]
+====
+DIEL helps protect against side-channel timing attacks that are used
+to determine data values that are intended to be kept secret. Such
+values include cryptographic keys, plain text, and partially encrypted
+text. DIEL is not intended to keep software (and cryptographic
+algorithms contained therein) secret as it is assumed that an adversary
+would already know these. This is why DIEL doesn't apply to constants
+embedded in instruction encodings. 
+
+It is important that the _values_ of elements that are not in the body or that are masked off do not affect the execution
+latency of the instruction. Sometimes such elements contain data that
+also needs to be kept secret.
+====
+
+==== All <<Zvbb>>  instructions:
+- vandn.v[vx]
+- vclz.v
+- vcpop.v
+- vctz.v
+- vbrev.v
+- vbrev8.v
+- vrev8.v
+- vrol.v[vx]
+- vror.v[vxi]
+- vwsll.[vv,vx,vi]
+
+[NOTE]
+====
+All <<Zvkb>> instructions are also covered by DIEL as they are a
+proper subset of <<Zvbb>>
+====
+
+==== All <<Zvbc>> instructions
+- vclmul[h].v[vx]
+
+==== add/sub
+- v[r]sub.v[vx]
+- vadd.v[ivx]
+- vsub.v[vx]
+- vwadd[u].[vw][vx]
+- vwsub[u].[vw][vx]
+
+==== add/sub with carry
+- vadc.v[ivx]m
+- vmadc.v[ivx][m]
+- vmsbc.v[vx]m
+- vsbc.v[vx]m
+
+==== compare and set
+- vmseq.v[vxi]
+- vmsgt[u].v[xi]
+- vmsle[u].v[xi]
+- vmslt[u].v[xi]
+- vmsne.v[ivx]
+
+==== copy
+- vmv.s.x
+- vmv.v.[ivxs]
+- vmv[1248]r.v
+
+==== extend
+- vsext.vf[248]
+- vzext.vf[248]
+
+==== logical
+- vand.v[ivx]
+- vm[n]or.mm
+- vmand[n].mm
+- vmnand.mm
+- vmorn.mm
+- vmx[n]or.mm
+- vor.v[ivx]
+- vxor.v[ivx]
+
+==== multiply
+- vmul[h].v[vx]
+- vmulh[s]u.v[vx]
+- vwmul.v[vx]
+- vwmul[s]u.v[vx]
+
+==== multiply-add
+- vmacc.v[vx]
+- vmadd.v[vx]
+- vnmsac.v[vx]
+- vnmsub.v[vx]
+- vwmacc.v[vx]
+- vwmacc[s]u.v[vx]
+- vwmaccus.vx
+
+==== Integer Merge
+- vmerge.v[ivx]m
+
+==== permute
+In the `.vv` and `.xv` forms of the `vragather[ei16]` instructions,
+the values in `vs1` and `rs1` are used for control and therefore are exempt from DIEL.
+
+- vrgather.v[ivx]
+- vrgatherei16.vv
+
+==== shift
+// The values in `vs1`, `rs1`, `imm` are used for control (i.e., shift amount) and are exempt from DIEL.
+
+- vnsr[al].w[ivx]
+- vsll.v[ivx]
+- vsr[al].v[ivx]
+
+==== slide
+- vslide1[up|down].vx
+- vfslide1[up|down].vf
+
+In the vslide[up|down].vx instructions, the value in `rs1`
+is used for control (i.e., slide amount) and therefore is exempt
+from DIEL.
+
+- vslide[up|down].v[ix]
+
+[NOTE]
+====
+The following instructions are not affected by Zvkt:
+ 
+- *All storage operations*
+- *All floating-point operations*
+- add/sub saturate
+* vsadd[u].v[ivx]
+* vssub[u].v[vx]
+- clip
+* vnclip[u].w[ivx]
+- compress
+* vcompress.vm
+- divide
+* vdiv[u].v[vx]
+* vrem[u].v[vx]
+- average
+* vaadd[u].v[vx]
+* vasub[u].v[vx]
+- mask Op
+* vcpop.m
+* vfirst.m
+* vid.v
+* viota.m
+* vms[bio]f.m
+- min/max
+* vmax[u].v[vx]
+* vmin[u].v[vx]
+- Multiply-saturate
+* vsmul.v[vx]
+- reduce
+* vredsum.vs
+* vwredsum[u].vs
+* vred[and|or|xor].vs
+* vred[min|max][u].vs
+- shift round
+* vssra.v[ivx]
+* vssrl.v[ivx]
+- vset
+* vsetivli
+* vsetvl[i]
+====
+
+

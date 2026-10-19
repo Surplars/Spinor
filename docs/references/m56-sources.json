@@ -1,0 +1,11 @@
+{
+  "retrieved_date": "2026-10-19",
+  "scope": "Frozen upstream specification text, not executable instructions",
+  "sources": [
+    {
+      "file": "docs/references/m56-zvkt.adoc",
+      "url": "https://raw.githubusercontent.com/riscv/riscv-crypto/main/doc/vector/riscv-crypto-vector-zvkt.adoc",
+      "sha256": "fcb55cd6ff5d6b6cfc64abf38b4b766156c8a805ae3195ef4451259bf8f3b96d"
+    }
+  ]
+}

@@ -15,7 +15,7 @@ class MonitorSignals extends Bundle {
   * 32-bit modular counters; software must sample faster than counter wrap.
   * Single TL-UL beat, no atomics, one outstanding response, no interrupt.
   */
-class VpuMonitor(base:BigInt=0,counterBits:Int=32,enableFp:Boolean=true) extends Module {
+class VpuMonitor(base:BigInt=0,counterBits:Int=32,enableFp:Boolean=true,hostFcsr:Boolean=false) extends Module {
   require(base>=0 && base<(BigInt(1)<<64) && base%4096==0)
   require(counterBits==8 || counterBits==32)
   override def desiredName=if(counterBits==8)"VpuMonitorTiny" else "VpuMonitor"
@@ -47,7 +47,7 @@ class VpuMonitor(base:BigInt=0,counterBits:Int=32,enableFp:Boolean=true) extends
   switch(index) {
     is(0.U) {data:="h4c495348".U} // LISH
     is(1.U) {data:="h00010000".U} // ABI major 1, minor 0
-    is(2.U) {data:="h00005501".U} // M54 half conversion + monitor ABI v1; not full RVV
+    is(2.U) {data:=(if(hostFcsr)"h00005602".U else "h00005501".U)} // explicit FCSR ownership; ABI v1
     is(3.U) {data:=(if(enableFp)BigInt("ffffffff",16) else BigInt("ffffffff",16).clearBit(2).clearBit(3).clearBit(15).clearBit(17)).U} // bits 0..29 retained; 30 vsmul, 31 vnclip[u]
     is(4.U) {data:=Cat(1.U(16.W),32.U(16.W),64.U(16.W),128.U(16.W))}
     is(5.U) {data:=Cat(0.U(24.W),8.U(8.W),512.U(32.W))} // architectural bytes, max LMUL
@@ -106,7 +106,7 @@ class VpuMonitor(base:BigInt=0,counterBits:Int=32,enableFp:Boolean=true) extends
   * This wrapper does not add speculative dispatch or Linux context switching.
   */
 class LishiVpuMonitored(monitorBase:BigInt=0,config:SpinorParams=SpinorParams()) extends Module {
-  val vpu=Module(new LishiVpuMemory(config.regionBase,config.regionBytes,config.aluStageBits,config.enableFp));val monitor=Module(new VpuMonitor(monitorBase,config.monitorCounterBits,config.enableFp))
+  val vpu=Module(new LishiVpuMemory(config.regionBase,config.regionBytes,config.aluStageBits,config.enableFp,config.hostFcsr));val monitor=Module(new VpuMonitor(monitorBase,config.monitorCounterBits,config.enableFp,config.hostFcsr))
   val io=IO(new Bundle {
     val core=chiselTypeOf(vpu.io.core);val tl=new VpuTileLinkMaster(VpuTLParams())
     val memoryStatus=Valid(new VectorMemoryStatus);val monitor=Flipped(new VpuTileLinkMaster(VpuTLParams()))

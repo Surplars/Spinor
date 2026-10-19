@@ -11,7 +11,8 @@ import chisel3.util._
   * Shared FP32/FP64 lane with same-width integer conversions. NOT full RVV: LSU,
   * widening/narrowing conversions and remaining integer groups absent.
   */
-class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean = false, enableMemoryCommit: Boolean = false, stageControl: Boolean = false) extends Module {
+class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean = false, enableMemoryCommit: Boolean = false, stageControl: Boolean = false, hostFcsr: Boolean = false) extends Module {
+  require(!hostFcsr || enableFp,"Host FCSR mode requires FP")
   val staged=enableFp || stageControl
   override def desiredName = if(enableMemoryCommit && !enableFp) (if(chunkBits==16) "RamVectorIntegerMemory16" else "RamVectorIntegerMemory") else if(enableMemoryCommit) (if(chunkBits==16) "RamVectorFpMemory16" else "RamVectorFpMemory") else if(enableFp) (if(chunkBits==16) "RamVectorFp16" else "RamVectorFp") else if (!useRam) "RamVectorFlops" else if (chunkBits==16) "RamVector16" else "RamVector"
   val io = IO(new Bundle {
@@ -28,6 +29,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val versions = Output(UInt(32.W))
     val frm = if(enableFp) Some(Output(UInt(3.W))) else None
     val fflags = if(enableFp) Some(Output(UInt(5.W))) else None
+    val fcsrHost = if(hostFcsr) Some(new FcsrHostPort) else None
     val busy = Output(Bool())
   })
   val memoryCommit = if(enableMemoryCommit) Some(IO(Flipped(Decoupled(UInt(7.W))))) else None
@@ -65,7 +67,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val vxrm = RegInit(0.U(2.W))
   val vxsat = RegInit(false.B)
   val frm=if(enableFp)RegInit(0.U(3.W)) else WireDefault(0.U(3.W))
-  val fflags=if(enableFp)RegInit(0.U(5.W)) else WireDefault(0.U(5.W))
+  val fflags=if(hostFcsr)WireDefault(io.fcsrHost.get.fflags) else if(enableFp)RegInit(0.U(5.W)) else WireDefault(0.U(5.W))
   val fp=if(enableFp)RegInit(false.B) else WireDefault(false.B)
   val fpOp=Reg(UInt(5.W)); val fpDestMultiply=Reg(Bool()); val fpReverse=Reg(Bool())
   val fpFlags=if(enableFp)RegInit(0.U(5.W)) else WireDefault(0.U(5.W))
@@ -74,7 +76,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val fixed=RegInit(false.B);val fixedMode=Reg(UInt(4.W));val fixedCarry=Reg(Bool());val fixedFlags=RegInit(false.B)
   val integerMac=RegInit(false.B)
   val macDestMultiply=Reg(Bool());val macSubtract=Reg(Bool())
-  io.frm.foreach(x=>x:=frm); io.fflags.foreach(x=>x:=fflags)
+  io.frm.foreach(x=>x:=(if(hostFcsr)io.fcsrHost.get.frm else frm)); io.fflags.foreach(x=>x:=fflags)
   val illegal = Reg(Bool())
   val kind = Reg(UInt(2.W)) // 0 arithmetic, 1 vset, 2 CSR
   val scalarResult = Reg(UInt(64.W))
@@ -161,7 +163,15 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   io.completion.bits.scalar := Mux(illegal || (kind===0.U && indexGenerate=/=0.U),0.U,scalarResult)
   io.completion.bits.writesScalar := scalarWrite && !illegal
   io.completion.bits.illegal := illegal
-  when(io.command.fire) { command := io.command.bits; state := decode }
+  if(hostFcsr) {
+    val port=io.fcsrHost.get
+    port.flags.valid:=io.completion.valid && !illegal && kind===0.U && fp
+    port.flags.bits:=Mux(port.flags.valid,fpFlags,0.U)
+  }
+  when(io.command.fire) {
+    command := io.command.bits; state := decode
+    if(hostFcsr) {frm:=io.fcsrHost.get.frm}
+  }
   val inst = command.instruction
   val f3 = inst(14,12); val f6 = inst(31,26)
   val vd = inst(11,7); val vs2 = inst(24,20); val vs1 = inst(19,15)
@@ -515,7 +525,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         is(0xc21.U) { old := vtype }
         is(0xc22.U) { old := 16.U }
       }
-      if(enableFp) {
+      if(enableFp && !hostFcsr) {
         switch(address) {
           is(0x001.U) { old:=fflags }
           is(0x002.U) { old:=frm }
@@ -523,7 +533,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         }
       }
       known := (Seq(0x008,0x009,0x00a,0x00f,0xc20,0xc21,0xc22)++
-        (if(enableFp)Seq(0x001,0x002,0x003) else Seq.empty)).map(x => address === x.U).reduce(_||_)
+        (if(enableFp && !hostFcsr)Seq(0x001,0x002,0x003) else Seq.empty)).map(x => address === x.U).reduce(_||_)
       val action = f3(1,0)
       val source = Mux(f3(2),vs1.pad(64),command.scalar)
       val write = action === 1.U || (vs1 =/= 0.U && action =/= 0.U)
@@ -953,7 +963,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
               is(0x00a.U) { vxrm := csrData(1,0) }
               is(0x00f.U) { vxrm := csrData(2,1); vxsat := csrData(0) }
             }
-            if(enableFp) {
+            if(enableFp && !hostFcsr) {
               switch(inst(31,20)) {
                 is(0x001.U) { fflags:=csrData(4,0) }
                 is(0x002.U) { frm:=csrData(2,0) }
@@ -964,7 +974,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
         }.otherwise {
           when(hasElements) { rf.io.commit := true.B }
           when(fixed || fractional) {vxsat:=vxsat || fixedFlags}
-          if(enableFp) { when(fp) { fflags:=fflags | fpFlags } }
+          if(enableFp && !hostFcsr) { when(fp) { fflags:=fflags | fpFlags } }
           vstart := 0.U
         }
     }
