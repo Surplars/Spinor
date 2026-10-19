@@ -1,19 +1,20 @@
-# Spinor 当前进度：M57
+# Spinor 当前进度：M58
 
-ISA目录已独立核对：375条基础V+16条Zvbb，名称及match/mask逐项一致。
-310种访存形式全部有合法成功样本，补齐此前12种跨步分段形式的缺样本。
-没有发现目录漏指令；完整ISA语义与架构测试验收仍未关闭，不能宣布完整V/RVA23/Zvkt。
+330种算术编码×22种SEW/LMUL配置×4种vta/vma策略，标准/Deep数值矩阵通过。
+每预设另有404个分段字段故障/FOF后算术、CSR读VL及重试场景。
+本轮共235,088条独立Spike参考命令，逐条比较完整RF/CSR；访存还比较8KiB RAM。
 
-- [ISA实现与未关闭验收项](docs/m57-isa-audit.md)
-- [逐编码目录](reports/m57/isa-catalog.csv)、[访存NF展开](reports/m57/memory-forms.csv)
-- [M57验证报告](reports/m57/evaluation.md)
-- [M56宿主FCSR接口](docs/m56-host-fcsr.md)、[CPU接入契约](docs/cpu-spinor-contract.md)
-- [M53实际Vivado时序](reports/local-m53-resume/evaluation.md)：仅适用旧RTL
+- [M58语义、条款与边界](docs/m58-semantics.md)
+- [M58验证报告](reports/m58/evaluation.md)、[机器可读条款](reports/m58/semantic-clauses.json)
+- [编码/策略覆盖](reports/m58/policy-coverage.csv)、[恢复场景](reports/m58/recovery-cases.csv)
+- [ISA目录及验收清单](docs/m57-isa-audit.md)
+- [CPU接入契约](docs/cpu-spinor-contract.md)
 
-本轮54个Scala源文件不变。标准/Deep实际重新执行175,556条Spike差分命令和
-2,024条独立策略命令；原始编码扫描使用VL0，仅验证解码/状态边界。
-整数/宿主预设沿用已有证据；Orbital/Valence未修改或联编。
+本轮建立5项条款有界证据。固定算术寄存器布局、vstart=0；通用重叠、
+非零算术vstart、更广架构套件、Zvkt全面验收和实际SoC接入仍待推进。
+375基础V+16Zvbb目录没有发现漏项，310种访存形式有样本；仍不声明完整V/RVA23/Zvkt。
 
-Mill/Chisel7.16.0、VLEN128/ELEN64、RAM配置保持。沿用M56宿主公共/计算顶层
-3.300ns条件预算，没有新综合或实际300MHz器件签核。
-入口 `python3 scripts/verify_m57.py`；旧文档与旧receipt按版本保留。
+54个Scala源文件不变，Mill/Chisel7.16.0、VLEN128/ELEN64、RAM保持。
+沿用宿主公共/计算顶层3.300ns条件预算，无当前RTL的实际300MHz器件签核。
+整数/宿主预设沿用历史证据；Orbital/Valence未修改或联编。
+入口 `python3 scripts/verify_m58.py`，`--check-only`核对当前精确证据。

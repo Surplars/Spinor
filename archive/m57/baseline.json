@@ -1,0 +1,13 @@
+{
+  "commit": "46efccf82c3ca8004d3cea92c27917865a174310",
+  "m57_check_only_passed": true,
+  "hardware_changed": false,
+  "archive_sha256": {
+    "archive/m57/source/README.md": "8eb2525763c4126405e9f6d06a639273a6a18a19ded99d2bb41a2b41ec632d2f",
+    "archive/m57/source/CURRENT.md": "17a9855702e49d40341526117aa497492ba13e0a66b1d7cca83e4bc5a01f2467",
+    "archive/m57/source/.gitattributes": "b210f26ffff37840c6c9d5bb74cb925c04f5126d3d484cae810e83f1f2d8fe32",
+    "archive/m57/source/docs/isa-coverage.md": "b7bb04c8848695a00fccce6f2e1e8c7ba3cac2b7d9545822f4d0befce4510828",
+    "archive/m57/source/docs/rvv-completion-plan.md": "2db5e50d878257cad46bddfb53a35022862316e69598cd536004f8046c7f187c"
+  },
+  "receipt_sha256": "470d64e2b8d6d970e5cfc7e75ec343d27b143957ea5438e262e2db0cb7036a30"
+}

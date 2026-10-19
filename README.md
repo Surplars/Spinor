@@ -3,13 +3,15 @@
 Valence SoC / Orbital CPU / Spinor VPU。目标器件 `xczu15eg-ffvb1156-2-i`，
 采用 **Mill 1.1.7 / Scala 2.13.18 / Chisel 7.16.0**，按 300 MHz 设计。
 
-**当前 M57：ISA 目录清账与分段访存覆盖补齐。** 官方375条基础V、16条Zvbb
-目录逐项对应，未发现目录漏项；310种访存形式均有成功样本。完整ISA语义验收
-仍未关闭。硬件保持M56：VLEN128/ELEN64、单lane、单指令在途、版本化RAM。
+**当前 M58：四种尾部/掩码策略数值验证与字段级恢复。** 两预设的330种算术编码、
+22种配置、四种策略数值矩阵及404场景故障/FOF序列通过；建立5项规范条款映射。
+目录375基础V+16Zvbb、310种访存形式的样本结论保持，完整ISA语义验收仍未关闭。
+硬件保持M56：VLEN128/ELEN64、单lane、单指令在途、版本化RAM。
 CPU持有宿主FCSR，VPU锁存frm并返回逐指令flags；宿主/独立monitor ID保持0x5602/0x5501。
 
-- [当前进度](CURRENT.md)、[ISA 实现与验收清单](docs/m57-isa-audit.md)
-- [M57 验证](reports/m57/evaluation.md)、[M56 接口与边界](docs/m56-host-fcsr.md)
+- [当前进度](CURRENT.md)、[M58 语义与范围](docs/m58-semantics.md)
+- [M58 验证](reports/m58/evaluation.md)、[ISA目录及验收清单](docs/m57-isa-audit.md)
+- [M56 接口与边界](docs/m56-host-fcsr.md)
 - [M56 验证/资源/时序](reports/m56/evaluation.md)、[M55 Zvbb 集合](docs/m55-zvbb.md)
 - [规模参数](docs/m39-configurations-and-fp-transfers.md)、[CPU 接入契约](docs/cpu-spinor-contract.md)
 - [独立上下文镜像](software/context/spinor_context.h)、[FP16 最小转换](docs/m54-half-conversions.md)
@@ -42,10 +44,11 @@ make bootstrap
 
 ## 当前验证与时序
 
-M57标准/Deep预设新增175,556条Spike差分命令和2,024条独立保留策略命令，
-包含原始解码、vtype/CSR及全部310种访存形式；补齐此前12种分段形式的成功样本。
-原始解码扫描在VL0进行，不冒充算术数值测试。本轮硬件不变，整数/宿主预设沿用
-历史证据。M56两宿主预设各43,560个延迟抽样仍不构成完整Zvkt合规证明。
+M58标准/Deep新增235,088条Spike参考命令，包含初始化/拒绝命令：
+232,320条四策略数值命令、2,768条分段恢复/FOF后算术和CSR读取命令。
+330种算术编码均有VL>0数值样本，具体操作不支持的几何由参考拒绝；
+固定寄存器布局、算术vstart=0，不能算作通用重叠/非零算术vstart穷举。
+硬件不变，整数/宿主预设沿用历史证据。M56延迟抽样仍不构成完整Zvkt合规证明。
 
 默认宿主 Yosys xcup：**24,247 逻辑 LUT、13,882 FF、9 DSP**，RAM 数量保持。
 公共/计算顶层固定云端条件预算均 **3.300ns**，≤3.333ns。模型排除 DSP 影响端点
@@ -56,11 +59,11 @@ M57标准/Deep预设新增175,556条Spike差分命令和2,024条独立保留策�
 300MHz OOC setup +0.090ns、hold +0.042ns，不自动适用当前RTL。宿主 IO 和实际时钟源
 还需 SoC 约束。[实际 DSP 表及配置限制](reports/dsp-m53/evaluation.md) 单独保留。
 
-在**已有 M55/M56 固定工具及参考产物的云端工作区**，当前验收入口：
+在**已有 M55/M56/M57 固定工具及参考产物的云端工作区**，当前验收入口：
 
 ```bash
-python3 scripts/verify_m57.py
-python3 scripts/verify_m57.py --check-only
+python3 scripts/verify_m58.py
+python3 scripts/verify_m58.py --check-only
 ```
 
 `--check-only` 对验收时的精确源码/产物散列进行审计。Git 保存源码、报告、冻结
