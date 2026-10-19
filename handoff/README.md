@@ -1,12 +1,28 @@
 # M53 Windows timing handoff
 
-Download [spinor-m53-timing.zip](spinor-m53-timing.zip), extract the whole archive,
+Download [spinor-m53-timing-fix1.zip](spinor-m53-timing-fix1.zip), extract the whole archive,
 and open PowerShell in the folder containing `run.ps1`. Set the installed Vivado
 path in this command:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File .\run.ps1 -VivadoBat "D:\Xilinx\Vivado\2025.1\bin\vivado.bat"
 ```
+
+If your original run failed with `invalid command name "redirect"`, **use
+`resume.ps1` instead of starting over**:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\resume.ps1 -PreviousRun "D:\surplars\Downloads\spinor-m53-timing\runs\M53_Timing_20261019_144108_769"
+```
+
+It reads the installed Vivado path from the old run, validates the recorded RTL,
+checkpoint part/public ports and saved clock, then regenerates reports and DSP
+exports in a new directory. It never repeats synth/placement/routing, changes the
+clock constraint, or rewrites the original checkpoint. `-VivadoBat` can override
+the installed path. The [received local report](../reports/local-m53/evaluation.md)
+already shows positive setup/hold slack; the failure was in the report wrapper.
+The original ZIP is retained only for provenance and reproducing the diagnosed
+failure. New users should use fix1.
 
 The default target is **xczu15eg-ffvb1156-2-i, 3.333333ns (300MHz)**, standard FP
 SpinorVpu. If the complete ordering code differs, pass `-Part` with the correct
@@ -29,8 +45,11 @@ The package pins the M53 source/RTL evidence and verifies input SHA256 before
 starting. The new runner has passed Linux PowerShell 7 + Tcl mock tests for normal
 completion, negative hold slack, missing timing paths, optional DSP failure,
 partial-error report packing, repeat/full packing, invalid destinations and
-modified-input rejection. **This package has not been executed in Windows/Vivado
-in the cloud.** The mock tests verify flow control and ZIP integrity only.
+modified-input rejection. Fix1 adds report-only resume tests, checkpoint part/
+public-port mismatch rejection and strict rejection of unmodelled Tcl commands,
+including the original `redirect` bug. **Fix1 has not been executed in actual
+Windows/Vivado.** These mock tests verify flow control and ZIP integrity only;
+the original Windows run supplied the independent physical timing evidence.
 
 Cloud rebuild (requires established M53 artifacts):
 

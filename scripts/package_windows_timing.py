@@ -8,10 +8,10 @@ from report_m51 import check
 sha=lambda b:hashlib.sha256(b).hexdigest()
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--output',type=Path,default=ROOT/'handoff/spinor-m53-timing.zip');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--output',type=Path,default=ROOT/'handoff/spinor-m53-timing-fix1.zip');a=p.parse_args()
     old,base=baseline_check();latest=ROOT/'reports/m53/receipt.json';check(json.loads(latest.read_text()))
     rtl=ROOT/'build/rtl/SpinorVpu.sv';assert sha(rtl.read_bytes())==old['artifact_sha256']['build/rtl/SpinorVpu.sv']
-    files={n:(ROOT/'scripts/windows-timing'/n).read_bytes() for n in ['run.ps1','pack_results.ps1','run_vivado.tcl','RUN_ME_FIRST.txt']}
+    files={n:(ROOT/'scripts/windows-timing'/n).read_bytes() for n in ['run.ps1','resume.ps1','pack_results.ps1','run_vivado.tcl','resume_vivado.tcl','RUN_ME_FIRST.txt']}
     files['rtl/SpinorVpu.sv']=rtl.read_bytes()
     exporter=ROOT/'third_party/rapidwright/dump_all_dsp_delay.tcl';manifest=json.loads((exporter.parent/'manifest.json').read_text())
     assert sha(exporter.read_bytes())==manifest['sha256'];files['dump_all_dsp_delay.tcl']=exporter.read_bytes()
@@ -28,7 +28,7 @@ def main():
     files['evidence/conditional-gate.json']=gate.read_bytes()
     hardware={rel:sha((ROOT/rel).read_bytes()) for rel in sorted(old['source_sha256']) if rel.endswith('.scala')}
     files['evidence/hardware-source-sha256.json']=(json.dumps(hardware,indent=2)+'\n').encode()
-    provenance=dict(milestone='M53',top='SpinorVpu',preset='Standard_FP_VLEN128_ELEN64',
+    provenance=dict(milestone='M53',runner_revision='M53-timing-fix1',top='SpinorVpu',preset='Standard_FP_VLEN128_ELEN64',
         hardware_baseline_commit='9dec43e',rtl_sha256=sha(rtl.read_bytes()),baseline_audit=base,
         m53_receipt_sha256=sha(latest.read_bytes()),source_builder_sha256=sha(Path(__file__).read_bytes()),
         default_part='xczu15eg-ffvb1156-2-i',default_period_ns=3.333333,DSP_exporter=manifest,

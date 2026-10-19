@@ -1,0 +1,93 @@
+{
+  "status": "PASS",
+  "scope": "USER_VIVADO_ROUTED_STANDARD_OOC_REPORT_AUDIT",
+  "milestone": "M53",
+  "part": "xczu15eg-ffvb1156-2-i",
+  "rtl_sha256": "e01014731b31a242a778f66a999de789a90b2e7b1a606ae9770da9f0a0da169d",
+  "requested_period_ns": 3.333333,
+  "reported_clock_period_ns": 3.333,
+  "internal_OOC_300MHz_constraints_met": true,
+  "SoC_300MHz_signoff": null,
+  "passes_500MHz": null,
+  "hardware_changed": false,
+  "tool": "Vivado 2025.1 build 6140274 Windows",
+  "timing": {
+    "setup_slack_ns": 0.09,
+    "setup_total_negative_slack_ns": 0.0,
+    "setup_failing_endpoints": 0,
+    "setup_total_endpoints": 27562,
+    "hold_slack_ns": 0.042,
+    "hold_total_negative_slack_ns": 0.0,
+    "hold_failing_endpoints": 0,
+    "hold_total_endpoints": 27562,
+    "pulse_width_slack_ns": 1.124,
+    "pulse_width_total_negative_slack_ns": 0.0,
+    "pulse_width_failing_endpoints": 0,
+    "pulse_width_total_endpoints": 12679
+  },
+  "coverage": {
+    "no_clock": 0,
+    "unconstrained_internal_endpoints": 0,
+    "no_input_delay": 613,
+    "no_output_delay": 608,
+    "loops": 0,
+    "latch_loops": 0
+  },
+  "routing": {
+    "routable_nets": 26029,
+    "fully_routed_nets": 26029,
+    "routing_errors": 0
+  },
+  "resources": {
+    "total_LUT": 18085,
+    "logic_LUT": 17989,
+    "memory_LUT": 96,
+    "FF": 12490,
+    "BRAM36": 2,
+    "DSP": 7
+  },
+  "worst_setup": {
+    "source": "vpu/vpu/rf/storage_ext/Memory_reg_1/CLKARDCLK",
+    "destination": "vpu/vpu/stagedData_reg[79]/D",
+    "data_path_ns": 3.177,
+    "logic_ns": 1.404,
+    "route_ns": 1.773,
+    "logic_levels": 5
+  },
+  "flow_exit": 1,
+  "flow_failure": "POST_REPORT_UNSUPPORTED_REDIRECT_COMMAND",
+  "routed_checkpoint_saved_per_log": true,
+  "routed_checkpoint_uploaded": false,
+  "DSP_export": "NOT_REACHED",
+  "SDF_simulation": "NOT_RUN",
+  "clock_source_location": "UNSPECIFIED",
+  "input_zip_sha256": "543601af947bc383487d96ed3b89a309104eb4a738616204a5024206e79801c4",
+  "input_members_sha256": {
+    "clock.xdc": "346e4d963022e777ad1a1ebcbcc2c8462aaa6ed3df9c4899aa9fd0a38f656c0d",
+    "clockInfo.txt": "0180f09de06d111c32ae83142f0fcd7f0b3133861327083b6a1f7ad42581a7c7",
+    "clocks.rpt": "e2bb1dad43128267f2cdd31191e87609b08cc4a2837cc9eb4631d62723f8366c",
+    "constraints.xdc": "82ffae8756e9b656753ee58ab1b6762a03250222f7c7c312a1a481ef0211b6cd",
+    "dfx_runtime.txt": "f6c9230c06b714bc847c245c9e0176c27c0885ed465dc5eb2ef80bc68ea34beb",
+    "drc.rpt": "d7bd92609054c3a1f856fb28d1d2960151d9cc72e440d8441be7f527c0bbac5d",
+    "flow-error.txt": "a64c6e2923291ec6b82e55f1ff1c9a73f725bc48a3571c055996da920c0ca978",
+    "hold_paths.rpt": "b8e5d541b04d1b0ac41b6008e016a7112b1bd0ac68317e18e81872a8c7e35871",
+    "route_status.rpt": "562fceb4c0053f6a03b49c2d99b3bc09be11a9bdab5e7cdc4d9c6f36e32e5e0e",
+    "run-inputs.json": "600435ab2b5c8ee782184e0b0840c1ecd2dd519115cdf6db21255d4017aa2cd8",
+    "setup_paths.rpt": "d322e066f5fa6345778db85d3a3c3d8e9c274fad894612005f8868ad1aa533d1",
+    "timing_placed.rpt": "57fba15ce64b132dbd811722c27e25224231c877849fd371bc076f498e15eb6d",
+    "timing_routed.rpt": "c0ab483b368c07265684d9f34af33c1c538f53c3ad5227de6b9994d704bf6d61",
+    "tool-version.txt": "7f91516d0fdfb58360305226563b0dadc3e48984c90b4cd958824fdd24e67a21",
+    "utilization_hierarchical.rpt": "c68dca1a9031166e316eda3130ff102a163b1adad5198f80908b220a936b3ea5",
+    "utilization_routed.rpt": "8ed979782617789360422fe9d79a3e0444b3d12ff17598524fcd1fe2bd294dbf",
+    "utilization_synth.rpt": "bc8e1268870dabf088d463c5caa19440f865d1768632c467ecd0d99a5f95ec63",
+    "vivado.jou": "7f4b691bf9b3d4b6e3c34f08e070f48dbc3999450db7629112368b38c2dbd4c4",
+    "vivado.log": "185b7ae9c1ce788afa41c85e3e9e8eacd58f1a6c320f3152e77c9fefd9394a0e"
+  },
+  "source_sha256": {
+    "scripts/analyze_m53_vivado.py": "ec56a380dcb77a53c5d8fd6113ddbeccca9009fa4ac9839b5cfff9daed8fff01"
+  },
+  "artifact_sha256": {
+    "reports/local-m53/input-reports.zip": "543601af947bc383487d96ed3b89a309104eb4a738616204a5024206e79801c4",
+    "reports/local-m53/evaluation.md": "e9c68b45e2dc7a612837f33f4448ca9b181b8b8e741822acfd7db441d3ecec56"
+  }
+}

@@ -65,6 +65,10 @@ proc main {} {
     route_design
     # Preserve physical evidence before optional DSP extraction.
     write_checkpoint -force [file join $result_dir routed.dcp]
+    finish_reports $period $part $export
+}
+proc finish_reports {period part export} {
+    global result_dir
     write_edif -force [file join $result_dir routed.edf]
     write_xdc -force [file join $result_dir constraints.xdc]
     report_route_status -file [file join $result_dir route_status.rpt]
@@ -75,7 +79,18 @@ proc main {} {
     report_timing_summary -delay_type min_max -report_unconstrained -max_paths 30 -file [file join $result_dir timing_routed.rpt]
     report_timing -delay_type max -max_paths 50 -path_type full_clock_expanded -file [file join $result_dir setup_paths.rpt]
     report_timing -delay_type min -max_paths 30 -path_type full_clock_expanded -file [file join $result_dir hold_paths.rpt]
-    redirect -file [file join $result_dir check_timing.rpt] {check_timing -verbose}
+    # Vivado does not implement the Synopsys-style `redirect` command.
+    # Log the native command and retain the check section already emitted by
+    # report_timing_summary, without guessing unsupported output flags.
+    check_timing -verbose
+    set f [open [file join $result_dir timing_routed.rpt] r];set body [read $f];close $f
+    set begin [string first "check_timing report" $body]
+    set end [string first "| Design Timing Summary" $body [expr {max(0,$begin)}]]
+    if {$begin>=0 && $end>$begin} {
+        write_text [file join $result_dir check_timing.rpt] [string range $body $begin [expr {$end-1}]]
+    } else {
+        write_text [file join $result_dir check_timing.rpt] "See check_timing output in vivado.log and timing_routed.rpt."
+    }
     set setup [get_timing_paths -quiet -delay_type max -max_paths 1]
     set hold [get_timing_paths -quiet -delay_type min -max_paths 1]
     if {[llength $setup]==0 || [llength $hold]==0} {error "Missing setup or hold paths"}
@@ -96,13 +111,15 @@ proc main {} {
         set summary [lreplace $summary end end "DSP_export_status=$dsp_status"]
         write_text [file join $result_dir run-summary.txt] [join $summary "\n"]
     }
-    puts "DONE: M53 fresh implementation; inspect $result_dir"
+    puts "DONE: M53 routed reports; inspect $result_dir"
 }
-if {[catch {main} message options]} {
-    puts stderr "FLOW FAILED: $message"
-    if {$::result_dir ne "" && [file isdirectory $::result_dir]} {
-        catch {write_text [file join $::result_dir flow-error.txt] "$message\n[dict get $options -errorinfo]"}
+if {![info exists ::spinor_timing_library_only]} {
+    if {[catch {main} message options]} {
+        puts stderr "FLOW FAILED: $message"
+        if {$::result_dir ne "" && [file isdirectory $::result_dir]} {
+            catch {write_text [file join $::result_dir flow-error.txt] "$message\n[dict get $options -errorinfo]"}
+        }
+        exit 1
     }
-    exit 1
+    exit 0
 }
-exit 0

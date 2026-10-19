@@ -1,4 +1,17 @@
-Spinor M53: fresh Vivado 300MHz timing run (Windows PowerShell 5.1 or PowerShell 7)
+Spinor M53 timing fix1 (Windows PowerShell 5.1 or PowerShell 7)
+
+If the previous M53 run failed at "invalid command name redirect", routing and
+timing reports were already saved. Use resume.ps1 from this new bundle:
+
+   powershell -NoProfile -ExecutionPolicy Bypass -File .\resume.ps1 -PreviousRun "D:\surplars\Downloads\spinor-m53-timing\runs\M53_Timing_20261019_144108_769"
+
+It reads Vivado's installed path from the previous run-inputs.json. Override
+with -VivadoBat if needed. Original RTL fingerprints, checkpoint part/public
+ports and saved clock are checked. It only opens routed.dcp and regenerates
+reports/DSP data into a new directory. No synth, opt, placement, routing, clock
+changes or checkpoint rewrite. Preserve the original run directory.
+
+For a completely fresh implementation instead:
 
 1. Extract the entire ZIP to a new folder, for example D:\surplars\Downloads\spinor-m53-timing
 2. Open PowerShell in the extracted folder containing run.ps1.
