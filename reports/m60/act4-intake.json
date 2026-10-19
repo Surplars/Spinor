@@ -1,0 +1,35 @@
+{
+  "scope": "PINNED_UPSTREAM_INTAKE_ONLY",
+  "upstream_revision": "51c0ed49294c5797a59d0203517b14e1f5fe9656",
+  "probes": {
+    "make": true,
+    "uv": true,
+    "ruby": false,
+    "sail_riscv_sim": false
+  },
+  "contract": {
+    "vector_target": {
+      "vlen": 128,
+      "elen": 64,
+      "xlen": 64,
+      "base_v": true,
+      "zvfhmin": true,
+      "zvbb": true,
+      "zvkt_certified": false,
+      "fcsr_owner": "HOST_FOR_NATIVE_CPU_STANDALONE_FOR_CURRENT_TESTS"
+    },
+    "runner_requirements": [
+      "full ELF scalar control-flow execution",
+      "vector/CSR dispatch to real VPU public ports",
+      "matching Sail/UDB configuration",
+      "pass/fail console and termination hooks",
+      "memory map and ordinary RAM service",
+      "explicit trap/VS/FS ownership by host model"
+    ],
+    "hardware_scope": "NO_SCALAR_CPU_PRIVILEGE_MMU_IMPLEMENTED_IN_VPU",
+    "existing_elf_adapter": "BOUNDED_COMPILER_KERNEL_ADAPTER_NOT_ACT4_RUNNER",
+    "readiness": "INTAKE_ONLY_NOT_READY_TO_EXECUTE_ACT4_ELFS"
+  },
+  "act4_elfs_generated": 0,
+  "act4_tests_executed": 0
+}

@@ -1,0 +1,13 @@
+{
+  "repository": "https://github.com/riscv-non-isa/riscv-arch-test",
+  "revision": "51c0ed49294c5797a59d0203517b14e1f5fe9656",
+  "commit_date": "2026-10-19T04:28:35Z",
+  "tree_truncated": false,
+  "retrieval": "GitHub commit and recursive tree APIs; raw README at exact revision",
+  "sha256": {
+    "docs/references/m60-act-README.md": "93eb0db70ccb4b3c37c460de23fe4e742eae5daee4440e2679bce893d182d69a",
+    "docs/references/m60-act-tree.json.gz": "f3f5d636d7c8591078b50e82475734eb6fe02de340b22bd40cfd1db0e39e419a"
+  },
+  "tests_executed": false,
+  "elfs_generated": false
+}

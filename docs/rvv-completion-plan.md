@@ -1,17 +1,17 @@
-# Spinor 完整RVV目标与验收计划（M59）
+# Spinor 完整RVV目标与验收计划（M60）
 
 目标是VLEN128/ELEN64下的基础V，以及RVA23向量侧要求的Zvfhmin/Zvbb/Zvkt。
-本轮独立官方目录核对没有发现漏指令；完整ISA语义与架构测试验收仍未关闭。
-进度按[重叠/重启证据](m59-overlap-restart.md)、[策略/恢复证据](m58-semantics.md)和[目录清单](m57-isa-audit.md)判断，不按里程碑编号或编码数折算百分比。
+M57独立官方目录核对没有发现漏指令；完整ISA语义与架构测试验收仍未关闭。
+进度按[重启分类](m60-classified-restart.md)、[类型重叠](m59-overlap-restart.md)、[策略/恢复](m58-semantics.md)和[目录清单](m57-isa-audit.md)判断，不按里程碑编号或编码数折算百分比。
 
 | 工作块 | 当前状态 | 下一步 |
 |---|---|---|
-| 基础V算术/配置 | M58有330种算术×22配置×4策略数值矩阵；M59补26种代表操作的重叠/非零vstart两预设检查 | 扩大其余操作的重叠/重启和特殊限制条款，接入固定架构测试套件 |
+| 基础V算术/配置 | M58四策略矩阵、M59类型重叠、M60全部330种算术的重启分类两预设验证 | 扩大未覆盖布局/边界，推进独立ELF宿主与固定架构测试套件 |
 | 基础V访存 | 310种形式均有成功样本；M58每预设404个字段故障/FOF后消费者场景通过 | 保留条款映射，扩大尚未覆盖的异常/恢复组合；当前仅物理普通RAM |
 | Zvfhmin | 两种要求的FP16↔FP32转换定义已实现 | 保留独立数值与边界回归；不与完整Zvfh混淆 |
 | Zvbb | 10操作类、16编码已实现 | 保留规范编码、数值和几何/重启验证 |
 | Zvkt | 规范清单、两宿主预设各43,560个延迟抽样 | 关闭范围解释、控制条件与覆盖义务，不凭抽样宣布合规 |
-| 架构套件/程序 | Spike/SoftFloat/Python、局部SAT和编译器ELF回归 | 固定架构测试套件版本、明确目标配置、记录可复现验收；ELF标量适配器不是Orbital |
+| 架构套件/程序 | Spike/SoftFloat/Python、局部SAT、内核ELF回归；M60固定ACT4来源与接入条件 | 独立ELF测试宿主桥接、Sail/UDB/平台宏配置，再生成和运行ACT4；当前未运行ACT4 ELF |
 | Orbital/SoC | 宿主所有权、TileLink、宿主管理FCSR接口已提供 | 实际CPU退休、VS/FS、异常、翻译/PMP和一致性接入；单独验收 |
 | ARM/Linux | monitor与上下文helper | 作业提交代理/驱动、真实Linux/硬件测试；monitor不是计算驱动 |
 | 物理时序 | 沿用M56的300MHz条件预算；M53有旧RTL本地证据 | 当前RTL在ZU15EG-2上的约束与Vivado布局布线签核 |
@@ -24,6 +24,6 @@ VLEN128、单lane和单指令在途是合法规模选择；ELEN以外的SEW64→
 不能仅凭性能、乱序/多发射与否判断ISA完整性。应采用明确规范条款与架构测试覆盖
 目标，而非要求所有输入穷举。完整V/RVA23声明仍须对应实现和验收证据。
 
-[M59报告](../reports/m59/evaluation.md)、[M58报告](../reports/m58/evaluation.md)、[逐指令目录](../reports/m57/isa-catalog.csv)。
+[M60报告](../reports/m60/evaluation.md)、[ACT4接入](act4-intake.md)、[逐指令目录](../reports/m57/isa-catalog.csv)。
 更新前M50计划保存在[版本归档](../archive/m56/source/docs/rvv-completion-plan.md)，
 其“Zvfhmin/Zvbb待实现”和“访存尚无独立差分”已被后续里程碑完成的工作取代。

@@ -3,14 +3,15 @@
 Valence SoC / Orbital CPU / Spinor VPU。目标器件 `xczu15eg-ffvb1156-2-i`，
 采用 **Mill 1.1.7 / Scala 2.13.18 / Chisel 7.16.0**，按 300 MHz 设计。
 
-**当前 M59：寄存器重叠与非零算术vstart验证。** 两预设新增457,600条独立参考命令，
-覆盖26种代表操作的16种布局及5种起点/掩码profile。M58四策略和字段级恢复证据保持。
+**当前 M60：全部330种算术编码的重启分类验证。** 两预设新增726,000条参考命令，
+307种编码有合法非零起点可见结果，23种按限制拒绝。M59类型重叠与M58策略/恢复证据保持。
 目录375基础V+16Zvbb、310种访存形式的样本结论保持，完整ISA语义验收仍未关闭。
 硬件保持M56：VLEN128/ELEN64、单lane、单指令在途、版本化RAM。
 CPU持有宿主FCSR，VPU锁存frm并返回逐指令flags；宿主/独立monitor ID保持0x5602/0x5501。
 
-- [当前进度](CURRENT.md)、[M59 重叠与重启](docs/m59-overlap-restart.md)
-- [M59 验证](reports/m59/evaluation.md)、[ISA目录及验收清单](docs/m57-isa-audit.md)
+- [当前进度](CURRENT.md)、[M60 重启分类](docs/m60-classified-restart.md)
+- [M60 验证](reports/m60/evaluation.md)、[ISA目录及验收清单](docs/m57-isa-audit.md)
+- [M59 类型重叠](docs/m59-overlap-restart.md)、[ACT4 接入条件](docs/act4-intake.md)
 - [M58 四策略与字段恢复](reports/m58/evaluation.md)
 - [M56 接口与边界](docs/m56-host-fcsr.md)
 - [M56 验证/资源/时序](reports/m56/evaluation.md)、[M55 Zvbb 集合](docs/m55-zvbb.md)
@@ -45,11 +46,12 @@ make bootstrap
 
 ## 当前验证与时序
 
-M59标准/Deep新增457,600条Python/SoftFloat参考命令，包含初始化/拒绝命令。
-每预设45,760个目标中16,635合法；12,780个合法非零vstart目标，5,847个有活动计算。
-固定Spike拒绝非零算术vstart，仅用于16,298个vstart=0模型交叉核对；
-非零起点矩阵不是Spike差分。26种操作有数值样本，不是全部330编码的重启穷举。
-23个明确重叠锚点、24次运行错误注入、2次条款负控制通过。
+M60标准/Deep新增726,000条分类参考命令，包含初始化/拒绝命令。
+每预设72,600个目标中50,914合法；全部330编码有合法样本，307种有非零起点可见结果。
+Spike始终在vstart=0；普通执行mask变换与carry/merge、whole/scalar例外分开，
+不是直接非零Spike差分。5,720个场景与M59数学/SoftFloat模型再次校准。
+24次运行错误注入、5次条款负控制通过；不是全部布局/数据的穷举。
+ACT4官方来源已固定、接入条件已清点，尚未生成或执行ACT4 ELF。
 硬件不变，整数/宿主预设沿用历史证据。M56延迟抽样仍不构成完整Zvkt合规证明。
 
 默认宿主 Yosys xcup：**24,247 逻辑 LUT、13,882 FF、9 DSP**，RAM 数量保持。
@@ -61,11 +63,11 @@ M59标准/Deep新增457,600条Python/SoftFloat参考命令，包含初始化/拒
 300MHz OOC setup +0.090ns、hold +0.042ns，不自动适用当前RTL。宿主 IO 和实际时钟源
 还需 SoC 约束。[实际 DSP 表及配置限制](reports/dsp-m53/evaluation.md) 单独保留。
 
-在**已有 M55/M56/M57 固定工具及参考产物的云端工作区**，当前验收入口：
+在**已有 M55至M59 固定工具及参考产物的云端工作区**，当前验收入口：
 
 ```bash
-python3 scripts/verify_m59.py
-python3 scripts/verify_m59.py --check-only
+python3 scripts/verify_m60.py
+python3 scripts/verify_m60.py --check-only
 ```
 
 `--check-only` 对验收时的精确源码/产物散列进行审计。Git 保存源码、报告、冻结

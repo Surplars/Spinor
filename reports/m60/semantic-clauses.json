@@ -1,0 +1,43 @@
+{
+  "counts": {
+    "rejected_preserved": 21686,
+    "cases": 72600,
+    "prestart_elements": 430822,
+    "whole_vl0_visible_effect": 88,
+    "scalar_read_vl0": 62,
+    "scalar_insert_nonzero": 114
+  },
+  "clauses": [
+    {
+      "id": "integer-scalar-exceptions",
+      "first_line": 4476,
+      "last_line": 4496,
+      "quote": "The `vmv.x.s` instruction copies a single SEW-wide element from index 0 of the\nsource vector register to a destination integer register.  If SEW > XLEN, the\nleast-significant XLEN bits are transferred and the upper SEW-XLEN bits are\nignored.  If SEW < XLEN, the value is sign-extended to XLEN bits.\n\nNOTE: `vmv.x.s` performs its operation even if `vstart` {ge} `vl` or `vl`=0.\n\nThe `vmv.s.x` instruction copies the scalar integer register to element 0 of\nthe destination vector register.  If SEW < XLEN, the least-significant bits\nare copied and the upper XLEN-SEW bits are ignored.  If SEW > XLEN, the value\nis sign-extended to SEW bits.  The other elements in the destination vector\nregister ( 0 < index < VLEN/SEW) are treated as tail elements using the current tail agnostic/undisturbed policy.  If `vstart` {ge} `vl`, no\noperation is performed and the destination register is not updated.\n\nNOTE: As a consequence, when `vl`=0, no elements are updated in the\ndestination vector register group, regardless of `vstart`.\n\nThe encodings corresponding to the masked versions (`vm=0`) of `vmv.x.s`\nand `vmv.s.x` are reserved.\n\n=== Floating-Point Scalar Move Instructions",
+      "source": "docs/references/m57-v-spec-maintained.adoc",
+      "scope": "BOUNDED_CURRENT_MATRIX"
+    },
+    {
+      "id": "fp-scalar-exceptions",
+      "first_line": 4507,
+      "last_line": 4521,
+      "quote": "The `vfmv.f.s` instruction copies a single SEW-wide element from index\n0 of the source vector register to a destination scalar floating-point\nregister.\n\nNOTE: `vfmv.f.s` performs its operation even if `vstart` {ge} `vl` or `vl`=0.\n\nThe `vfmv.s.f` instruction copies the scalar floating-point register\nto element 0 of the destination vector register.  The other elements\nin the destination vector register ( 0 < index < VLEN/SEW) are treated\nas tail elements using the current tail agnostic/undisturbed policy.\nIf `vstart` {ge} `vl`, no operation is performed and the destination\nregister is not updated.\n\nNOTE: As a consequence, when `vl`=0, no elements are updated in the\ndestination vector register group, regardless of `vstart`.",
+      "source": "docs/references/m57-v-spec-maintained.adoc",
+      "scope": "BOUNDED_CURRENT_MATRIX"
+    },
+    {
+      "id": "whole-evl",
+      "first_line": 4840,
+      "last_line": 4856,
+      "quote": "The `vmv<nr>r.v` instructions copy whole vector registers (i.e., all\nVLEN bits) and can copy whole vector register groups.  The `nr` value\nin the opcode is the number of individual vector registers, NREG, to\ncopy.  The instructions operate as if EEW=SEW, EMUL = NREG, effective\nlength `evl`= EMUL * VLEN/SEW.\n\nNOTE: These instructions are intended to aid compilers to shuffle\nvector registers without needing to know or change `vl` or `vtype`.\n\nNOTE: The usual property that no elements are written if `vstart` {ge} `vl`\ndoes not apply to these instructions.\nInstead, no elements are written if `vstart` {ge} `evl`.\n\nNOTE: If `vd` is equal to `vs2` the instruction is an architectural\nNOP, but is treated as a hint to implementations that rearrange data\ninternally that the register group will next be accessed with an EEW\nequal to SEW.",
+      "source": "docs/references/m57-v-spec-maintained.adoc",
+      "scope": "BOUNDED_CURRENT_MATRIX"
+    }
+  ],
+  "negative_controls": {
+    "prestart": "REJECTED",
+    "reject-start": "REJECTED",
+    "scalar-insert": "REJECTED",
+    "scalar-read-vl0": "REJECTED",
+    "whole-vl0": "REJECTED"
+  }
+}

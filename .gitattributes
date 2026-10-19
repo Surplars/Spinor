@@ -10,3 +10,5 @@ archive/m56/source/** whitespace=-blank-at-eol,-blank-at-eof
 docs/references/m57-*.adoc whitespace=-blank-at-eol,-blank-at-eof
 archive/m57/source/** whitespace=-blank-at-eol,-blank-at-eof
 archive/m58/source/** whitespace=-blank-at-eol,-blank-at-eof
+archive/m59/source/** whitespace=-blank-at-eol,-blank-at-eof
+docs/references/m60-act-README.md whitespace=-blank-at-eol,-blank-at-eof
