@@ -11,7 +11,7 @@ import chisel3.util._
   * Shared FP32/FP64 lane with same-width integer conversions. NOT full RVV: LSU,
   * widening/narrowing conversions and remaining integer groups absent.
   */
-class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean = false, enableMemoryCommit: Boolean = false, stageControl: Boolean = false, hostFcsr: Boolean = false) extends Module {
+class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean = false, enableMemoryCommit: Boolean = false, stageControl: Boolean = false, hostFcsr: Boolean = false, stageOperands: Boolean = false) extends Module {
   require(!hostFcsr || enableFp,"Host FCSR mode requires FP")
   val staged=enableFp || stageControl
   override def desiredName = if(enableMemoryCommit && !enableFp) (if(chunkBits==16) "RamVectorIntegerMemory16" else "RamVectorIntegerMemory") else if(enableMemoryCommit) (if(chunkBits==16) "RamVectorFpMemory16" else "RamVectorFpMemory") else if(enableFp) (if(chunkBits==16) "RamVectorFp16" else "RamVectorFp") else if (!useRam) "RamVectorFlops" else if (chunkBits==16) "RamVector16" else "RamVector"
@@ -33,7 +33,8 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     val busy = Output(Bool())
   })
   val memoryCommit = if(enableMemoryCommit) Some(IO(Flipped(Decoupled(UInt(7.W))))) else None
-  val states=Enum(if(staged)38 else 36)
+  val stateCount=if(staged)38 else 36
+  val states=Enum(stateCount+(if(stageOperands)3 else 0))
   val Seq(idle, decode, copyRead, copyWrite, maskRead, maskCapture, dispatch,
     readA, captureA, readB, captureB, launch, awaitResult, maskOldRead, maskWrite, finish) = states.take(16)
   val readC=states(if(staged)16 else 29)
@@ -53,6 +54,9 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   val wholeRead=states(if(staged)35 else 33)
   val wholeWrite=states(if(staged)36 else 34)
   val wholeCheck=states(if(staged)37 else 35)
+  val fetchA=if(stageOperands)states(stateCount) else captureA
+  val fetchB=if(stageOperands)states(stateCount+1) else captureB
+  val fetchC=if(stageOperands)states(stateCount+2) else captureC
   val wholeMove=RegInit(false.B)
   val copyLast=Reg(Bool())
   // Freeze FP width controls at admission, before operand fetch. Raw selector
@@ -687,7 +691,10 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     }
   }
 
-  val ramByte=VecInit((0 until 16).map(i=>rf.io.readData(8*i+7,8*i)))(index(6,3))
+  val stagedRamByte=if(stageOperands)Some(Reg(UInt(8.W))) else None
+  val ramByte=if(stageOperands)Mux(state===captureA,stagedRamByte.get,
+    VecInit((0 until 16).map(i=>rf.io.readData(8*i+7,8*i)))(index(6,3))) else
+    VecInit((0 until 16).map(i=>rf.io.readData(8*i+7,8*i)))(index(6,3))
   val predicateByte=VecInit((0 until 16).map(i=>mask(8*i+7,8*i)))(index(6,3))
   // Preserve the eighth index bit: advancing the last byte must yield 128,
   // never wrap to zero. vstart may begin in the middle of the first byte.
@@ -775,9 +782,21 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   when(state===readA || state===readB || state===readC) {
     elementByteSelect:=UIntToOH(bitOffset(6,3),16)
   }
-  val ramElement=PackedElementRead(rf.io.readData,elementByteSelect)
+  val ramElement=if(stageOperands) {
+    val rawRamElement=PackedElementRead(rf.io.readData,elementByteSelect)
+    // Isolated integer configuration: separate RAM/window selection from
+    // extension, width masking and the operand priority muxes.
+    val captured=Reg(UInt(64.W))
+    when(state===fetchA || state===fetchB || state===fetchC) {captured:=rawRamElement}
+    when(state===fetchA) {
+      stagedRamByte.get:=VecInit((0 until 16).map(i=>rf.io.readData(8*i+7,8*i)))(index(6,3));state:=captureA
+    }
+    when(state===fetchB) {state:=captureB}
+    when(state===fetchC) {state:=captureC}
+    captured
+  } else PackedElementRead(rf.io.readData,elementByteSelect)
   when(state === readA) {
-    rf.io.readEnable := true.B; rf.io.readAddress := Mux(indexGenerate===1.U,vs2,(vs2+sourceOffset)(4,0)); state := captureA
+    rf.io.readEnable := true.B; rf.io.readAddress := Mux(indexGenerate===1.U,vs2,(vs2+sourceOffset)(4,0)); state := fetchA
   }
   when(state === captureA) {
     val value=ramElement
@@ -825,7 +844,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
     state := Mux(indexGenerate===3.U,slideAddress,Mux(vectorSource1,readB,Mux(fused,readC,launch)))
   }
   when(state === readB) {
-    rf.io.readEnable := true.B; rf.io.readAddress := (vs1+sourceOffset)(4,0); state := captureB
+    rf.io.readEnable := true.B; rf.io.readAddress := (vs1+sourceOffset)(4,0); state := fetchB
   }
   when(state === captureB) {
     val value=ramElement
@@ -840,7 +859,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   }
   when(state===readC) {
     // Read the committed destination, never a partially updated candidate.
-    rf.io.readEnable:=true.B; rf.io.readAddress:=destination; state:=captureC
+    rf.io.readEnable:=true.B; rf.io.readAddress:=destination; state:=fetchC
   }
   when(state===captureC) { c:=ramElement&elementMask; state:=launch }
   val lane = Module(new IntegerLane(true,chunkBits))
@@ -854,7 +873,7 @@ class RamVector(useRam: Boolean = true, chunkBits: Int = 32, enableFp: Boolean =
   lane.io.in.bits.op := Mux(state===macLaunch,Mux(macSubtract,Op.sub.U,Op.add.U),op)
   lane.io.in.bits.select := mask(index(6,0)); lane.io.in.bits.tag := index
   streaming := !fixed && !fp && !comparison && !isMul && !isDiv && !reduction && !maskScalar && scalarMove===0.U && indexGenerate=/=3.U
-  val streamActive=state===slideAddress || state===dispatch || state===readA || state===captureA || state===readB || state===captureB || state===launch || state===awaitResult
+  val streamActive=state===slideAddress || state===dispatch || state===readA || state===captureA || state===readB || state===captureB || state===launch || state===awaitResult || (if(stageOperands)state===fetchA || state===fetchB || state===fetchC else false.B)
   lane.io.out.ready := ((Mux(streaming,streamActive,state===awaitResult) && !fixed && !fp && !isMul && !isDiv) || state===macAwait) && !io.flush
   when(lane.io.in.fire) {
     when(streaming) { index:=ParallelIncrement(index,true.B);state:=dispatch }.otherwise { state:=Mux(state===macLaunch,macAwait,awaitResult) }

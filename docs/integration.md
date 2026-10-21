@@ -2,6 +2,8 @@
 
 本指南面向当前 `vpu.SpinorVpu` 顶层。接口与宿主 CPU 的内部 ROB、寄存器文件或总线库类型解耦；接入侧提供字段转换和提交授权。所有直接连接默认处于同一时钟域。
 
+新工程若需切断CPU/总线组合路径，优先阅读[寄存隔离顶层](m61-isolation.md)，生成`SpinorIsolated`并使用preview/grant/done。以下描述保留的直接接口，其completion/reply同拍协议不能与新grant/done混接。
+
 ## 1. 选择接入方式
 
 | 使用方式 | 推荐配置 | 接入侧需要提供 |

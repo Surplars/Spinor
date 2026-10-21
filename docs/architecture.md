@@ -2,6 +2,8 @@
 
 Spinor 是以 RAM 为主要状态存储的向量协处理器。当前 VLEN128/ELEN64、单 lane、单指令在途，目标器件 `xczu15eg-ffvb1156-2-i`。构建与连接步骤见[接入指南](integration.md)。
 
+M61提供可选`SpinorIsolated`外层：输入先寄存、四个总线方向寄存化，并通过preview/grant/done区分结果可用、发布授权和发布确认。隔离配置另启用LSU与整数操作数分级，旧直接配置RTL逐字节保持，详见[隔离指南](m61-isolation.md)。
+
 ```mermaid
 flowchart LR
     Host[宿主操作数与提交] --> Boundary[VpuHostBoundary]

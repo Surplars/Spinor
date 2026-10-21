@@ -105,8 +105,8 @@ class VpuMonitor(base:BigInt=0,counterBits:Int=32,enableFp:Boolean=true,hostFcsr
 /** Monitor is a separate MMIO slave. Datapath TL remains the physical RAM master.
   * This wrapper does not add speculative dispatch or Linux context switching.
   */
-class LishiVpuMonitored(monitorBase:BigInt=0,config:SpinorParams=SpinorParams()) extends Module {
-  val vpu=Module(new LishiVpuMemory(config.regionBase,config.regionBytes,config.aluStageBits,config.enableFp,config.hostFcsr));val monitor=Module(new VpuMonitor(monitorBase,config.monitorCounterBits,config.enableFp,config.hostFcsr))
+class LishiVpuMonitored(monitorBase:BigInt=0,config:SpinorParams=SpinorParams(),retimeMemory:Boolean=false) extends Module {
+  val vpu=Module(new LishiVpuMemory(config.regionBase,config.regionBytes,config.aluStageBits,config.enableFp,config.hostFcsr,retimeMemory));val monitor=Module(new VpuMonitor(monitorBase,config.monitorCounterBits,config.enableFp,config.hostFcsr))
   val io=IO(new Bundle {
     val core=chiselTypeOf(vpu.io.core);val tl=new VpuTileLinkMaster(VpuTLParams())
     val memoryStatus=Valid(new VectorMemoryStatus);val monitor=Flipped(new VpuTileLinkMaster(VpuTLParams()))

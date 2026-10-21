@@ -8,6 +8,7 @@
 |---|---|
 | [构建与仓库](repository.md) | 工具、输出目录、新环境与历史验证产物 |
 | [接入指南](integration.md) | 配置、端口、CPU/作业执行器接入和首次联调 |
+| [寄存隔离顶层](m61-isolation.md) | 新工程的寄存边界、preview/grant/done和时序隔离证据 |
 | [CPU 提交协议](cpu-spinor-contract.md) | 所有权、完成授权、取消与异常映射 |
 | [TileLink 与访存](tilelink.md) | 数据主端、物理窗口、错误、停止和恢复单位 |
 | [MMIO monitor](monitor-soc.md) | 地址、寄存器、快照和 Linux UIO 使用 |
@@ -18,6 +19,7 @@
 ## 当前功能与验收
 
 - [当前进度](../CURRENT.md)、[ISA 覆盖](isa-coverage.md)、[RVV 验收计划](rvv-completion-plan.md)。
+- [M61隔离顶层](m61-isolation.md)与[报告](../reports/m61/evaluation.md)。
 - [M60 重启分类](m60-classified-restart.md)与[报告](../reports/m60/evaluation.md)。
 - [M59 类型重叠](m59-overlap-restart.md)、[M58 策略与恢复](m58-semantics.md)。
 - [宿主 FCSR](m56-host-fcsr.md)、[Zvbb](m55-zvbb.md)、[最小 FP16 转换](m54-half-conversions.md)。

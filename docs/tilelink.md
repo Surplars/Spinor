@@ -2,6 +2,8 @@
 
 当前公开顶层 `SpinorVpu` 已将向量 LSU 接到 `io.tl` 数据主端。另一个 `io.monitor` 是独立 MMIO 从端，方向和用途不同，见[monitor 指南](monitor-soc.md)。整体连接步骤见[接入指南](integration.md)。
 
+可选`SpinorIsolated`在RAM和monitor的A/D四个方向增加非直通寄存切片，字段不变、无flush丢弃路径；参数和访存语义仍适用本页。其额外延迟、monitor缓冲和新提交协议见[隔离指南](m61-isolation.md)。
+
 ## 数据主端参数
 
 采用工程内的 `VpuTileLinkMaster` / `VpuTLA` / `VpuTLD` 类型，定义于 [TileLinkReservation.scala](../src/main/scala/vpu/TileLinkReservation.scala)。这些是显式 Bundle，不提供 Diplomacy 节点或参数协商；接入其他总线库时需字段转换，接 AXI 等协议需另设桥。

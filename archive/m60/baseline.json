@@ -1,0 +1,23 @@
+{
+  "commit": "f34ee9baa0fd2a245eed88f2a9b100aa8a707670",
+  "documentation_evidence_audit_passed": true,
+  "legacy_hardware_changed": false,
+  "archive_sha256": {
+    "archive/m60/source/README.md": "53b1502e451e488af23d385009d749951a7c1774fb4a87cc01e6c0046417f51c",
+    "archive/m60/source/CURRENT.md": "d2ff4f274df1497718ff3707315616fa4681a2b82c6374b2ba5667913ffbd201",
+    "archive/m60/source/.gitattributes": "5a624aa9991dbef6a868a418cd52588cb588fd97eab91e42911b9662307f810d",
+    "archive/m60/source/docs/README.md": "49a9dcce9d24f52e684af14d79b65653e8af625a9229d64855e407f111a87d15",
+    "archive/m60/source/docs/integration.md": "c5cf814cd7cfa9caab2ebe315797fb46cdb3b6c1b5851cc5cf7d7c4667236e29",
+    "archive/m60/source/docs/cpu-spinor-contract.md": "4332bfc6c19779ebea752f3a0f073c5302f13de8da19af5fe6c7a085ffdd5b79",
+    "archive/m60/source/docs/tilelink.md": "c0c771a84bb4b66707a37c1cc039fc2e605608207ffa60d09409674104b6e3e6",
+    "archive/m60/source/docs/architecture.md": "491c40cd89fa0bbe77f8972da2ddd7b43e4144e01f8c354b80531a39561150a4",
+    "archive/m60/source/docs/validation.md": "5b90b3f98fdf5a5b6722bbe354284f4362328194a909071470ec3f42799c9b41",
+    "archive/m60/source/scripts/check_docs.py": "88adb2cee44f55f99cc743df8c22e9335ebe32e59bdbbf967a2a003c5d17b085",
+    "archive/m60/source/src/main/scala/vpu/SpinorVpu.scala": "9d9f604850ee20d489d20257d2356f1c848ae62bfdb5803f93d36aac7d9b7a26",
+    "archive/m60/source/src/main/scala/vpu/VpuMonitor.scala": "3c577bc1e3d7bc6115bb10a628518f47479299e51cb0d980d9a2a19350ccbb75",
+    "archive/m60/source/src/main/scala/vpu/VectorMemoryEngine.scala": "86e3dbba8b2fc1faa32968bb4e0a7ba838d35ef0651024b8e7adb8d1d6093445",
+    "archive/m60/source/src/main/scala/vpu/RamVector.scala": "34dfdddfdc1c40d06966947cb73e9681c787cbddea3b467ceae57c3d8676a14c",
+    "archive/m60/source/src/main/scala/vpu/MemoryRamVector.scala": "002eed44d28e51a0b5fed57e8817f6901bddbf4cecb69dbe1b46d60026e63ac1"
+  },
+  "receipt_sha256": "a17220c5f7c6c02281ff1511100ea36ea4dd5cafa8e4f7e9fca47520ca079334"
+}

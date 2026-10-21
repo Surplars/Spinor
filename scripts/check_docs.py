@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Check current documentation and resolve exact pre-edit document evidence.
 
-No old receipt is rewritten. Only the eight explicitly frozen text inputs can
-resolve through docs-m60; hardware, reference programs and artifacts stay strict.
+No old receipt is rewritten. Historical documents and five opt-in-retimed
+Scala inputs resolve only through their exact, explicitly frozen snapshots.
 """
 import argparse
 import hashlib
@@ -17,6 +17,7 @@ DOCUMENTS = [
     'README.md', 'CURRENT.md', 'docs/README.md', 'docs/integration.md',
     'docs/repository.md', 'docs/cpu-spinor-contract.md', 'docs/tilelink.md',
     'docs/monitor-soc.md', 'docs/architecture.md', 'docs/validation.md',
+    'docs/m61-isolation.md',
 ]
 FROZEN = {
     'README.md', 'CURRENT.md', '.gitattributes', 'docs/repository.md',
@@ -25,6 +26,8 @@ FROZEN = {
 GROUPS = ('source_sha256', 'artifact_sha256', 'sha256', 'input_sha256', 'netlist_sha256',
           'external_source_sha256', 'external_tool_dependency_sha256')
 CACHE = {}
+RETIMED = {'src/main/scala/vpu/'+name+'.scala' for name in
+           ('SpinorVpu','VpuMonitor','VectorMemoryEngine','RamVector','MemoryRamVector')}
 
 
 def sha(path):
@@ -51,7 +54,16 @@ def main():
     receipt = json.loads(prior.read_text())
     expected = {rel:h for rel,h in receipt['source_sha256'].items() if rel.endswith('.scala')}
     actual = {str(p.relative_to(ROOT)):sha(p) for p in (ROOT/'src/main/scala').rglob('*.scala')}
-    assert actual == expected and len(actual) == 54, 'documentation update must not change RTL'
+    assert len(expected)==54
+    for rel,h in expected.items():
+        candidate=ROOT/'archive/m60/source'/rel if rel in RETIMED else ROOT/rel
+        assert sha(candidate)==h,('unapproved legacy source change',rel)
+    added=set(actual)-set(expected)
+    if added:
+        assert added=={'src/main/scala/vpu/SpinorIsolated.scala','src/main/scala/vpu/GenerateIsolated.scala'}
+        current=json.loads((ROOT/'reports/m61/receipt.json').read_text());assert current['status']=='PASS'
+        assert current['baseline']['legacy_direct_sv_byte_identical']
+        for rel in added|RETIMED:assert actual[rel]==current['source_sha256'][rel],rel
     links = 0
     for rel in DOCUMENTS:
         text = (ROOT/rel).read_text()
@@ -63,7 +75,7 @@ def main():
             assert dest.is_relative_to(ROOT) and dest.exists(), (rel, target)
             links += 1
     assert 'Valence SoC / Orbital CPU / Spinor VPU' not in (ROOT/'README.md').read_text()
-    print(f'PASS documentation: {len(DOCUMENTS)} pages, {links} local links, 8 exact snapshots, 54 unchanged Scala sources', flush=True)
+    print(f'PASS documentation: {len(DOCUMENTS)} pages, {links} local links, 8 document snapshots, 49 unchanged Scala sources, 5 opt-in-retimed sources, {len(added)} added isolation sources', flush=True)
     if not args.evidence: return
 
     def resolve(rel, h):
@@ -71,6 +83,9 @@ def main():
         if path.is_file() and sha(path) == h: return path
         item = locked['documents'].get(rel)
         if item and item['sha256'] == h: return ROOT/item['archived']
+        if rel in RETIMED:
+            snapshot=ROOT/'archive/m60/source'/rel
+            if sha(snapshot)==h:return snapshot
         return historical_resolve(rel, h)
 
     count = snapshots = 0

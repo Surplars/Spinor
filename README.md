@@ -39,9 +39,18 @@ make bootstrap
 
 预设不改变 VLEN/ELEN、lane 数或指令在途容量。原生 CPU 与标量 FPU 共享 FCSR 时使用 `--fcsr-owner host`，详见[接入指南](docs/integration.md)。
 
+需要切断CPU/总线组合握手路径时，优先选择可选的寄存隔离顶层：
+
+```bash
+./mill Vpu.runMain vpu.GenerateIsolated --out build/isolated --name SpinorIsolated --preset standard --fcsr-owner host
+```
+
+它使用“预览→授权→发布确认”协议；[隔离接入指南](docs/m61-isolation.md)说明CPU迁移、停止和上下文规则。原`SpinorVpu`直接接口继续保留。
+
 ## 接入与使用
 
 - [接入指南](docs/integration.md)：选择配置、连接端口、提交/取消、浮点状态、上下文及首次联调。
+- [寄存隔离顶层](docs/m61-isolation.md)：CPU和总线边界寄存化及两阶段发布协议。
 - [CPU 提交协议](docs/cpu-spinor-contract.md)：指令所有权、完成授权和异常映射。
 - [TileLink 与访存](docs/tilelink.md)：总线参数、物理窗口、错误和停止规则。
 - [MMIO monitor](docs/monitor-soc.md)：寄存器、快照、Linux UIO 工具和多宿主访问。
@@ -49,7 +58,7 @@ make bootstrap
 
 ## 验证与时序
 
-最新功能验证为 M60：标准/Deep 合计 726,000 条命令通过，覆盖全部 330 种算术编码的重启分类。[报告](reports/m60/evaluation.md)保留参考方法、错误注入和覆盖边界；[ACT4 接入清单](docs/act4-intake.md)记录官方架构测试的后续工作。
+M61新增可选隔离顶层，并为隔离配置切分LSU与整数操作数长链；四种旧直接配置的生成RTL逐字节保持。四配置执行数值、授权、停止及总线排空回归，并检查完整映射网表的组合隔离；见[M61报告](reports/m61/evaluation.md)。M60的全部330种算术编码重启分类证据继续保留，[ACT4接入](docs/act4-intake.md)仍待后续推进。
 
 云端宿主配置沿用 **3.300 ns 条件估计**。该模型不含器件布局布线和真实时钟，排除 DSP 影响端点，不能作为实际 300 MHz 时序签核。当前 RTL 仍需 Vivado 综合、实现和完整约束验证；旧版本的本地通过结果仅作历史参考。
 

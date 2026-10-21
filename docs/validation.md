@@ -2,9 +2,9 @@
 
 ## 当前功能证据
 
-最新功能轮次为M60，标准/Deep公共端口合计726,000条命令通过，覆盖全部330种算术编码的重启分类。参考变换、独立Python/SoftFloat校准、29次错误注入及边界见[完整报告](../reports/m60/evaluation.md)。这不等同于完整ISA/架构套件认证；[ACT4接入](act4-intake.md)目前还未生成或运行官方ELF。
+最新接口优化为M61，验证寄存隔离顶层的数值、授权/取消、访存排空和网表组合隔离，见[M61报告](../reports/m61/evaluation.md)。49个原Scala文件不变，5个增加默认关闭的可选分级；四种旧直接配置RTL逐字节保持。M60标准/Deep的726,000条算术重启分类证据保持，[原报告](../reports/m60/evaluation.md)记录范围。这不等同于完整ISA/架构套件认证；[ACT4接入](act4-intake.md)尚未生成或运行官方ELF。
 
-本次整理只更新文档与文档审计入口，未改硬件、参考语义、功能测试或旧receipt。M60及更早报告保留原文，其文档输入由精确快照解析；不会把新介绍写回旧报告来改动历史证据。
+先前文档整理和M60及更早报告保留原文，其文档输入由精确快照解析；M61新增隔离顶层、可选核心分级及对应验证，没有改写旧receipt。
 
 ## 文档检查
 
@@ -26,6 +26,15 @@ python3 scripts/check_docs.py --evidence
 
 ## 功能复现
 
+当前隔离顶层：
+
+```bash
+python3 scripts/verify_m61.py
+python3 scripts/verify_m61.py --check-only
+```
+
+完整重跑需要固定工具与保留的M60参考语料；生成/映射中间文件使用`/tmp/spinor-m61`，精确输入和网表压缩保存在`build/m61`，当前check-only不要求临时目录仍存在。
+
 M60的原始入口为：
 
 ```bash
@@ -41,7 +50,7 @@ python3 scripts/verify_m60.py --check-only
 
 默认host FCSR配置的历史Yosys xcup结果为24,247逻辑LUT、13,882 FF、9 DSP，详见[M56报告](../reports/m56/evaluation.md)。配置、生成输入或映射流程变化后需要重新评估，其他预设不能直接套用这一数字。
 
-当前云端宿主公共/计算顶层沿用3.300ns条件预算；独立标准/Deep沿用3.292/3.232ns。条件模型排除DSP影响端点与主IO，不含真实器件布局布线、时钟树和ZU15EG-2校准，不能作为STA/SDF或实际频率通过证明。
+M61隔离顶层的标准host、Deep host、标准standalone条件预算为3.300ns，integer-deep为3.277ns，详见[M61报告](../reports/m61/evaluation.md)。保留的直接顶层历史预算与资源见M56。条件模型采用固定100ps/link假设，排除DSP影响端点与主IO，不含真实器件布局布线、时钟树和ZU15EG-2校准，不能作为STA/SDF或实际频率通过证明。
 
 [M53本地结果](../reports/local-m53-resume/evaluation.md)为旧RTL的300MHz OOC setup +0.090ns、hold +0.042ns，仅对该输入有效。当前RTL和真实SoC仍需Vivado完整约束及实现：明确时钟、IO/宿主侧带、时钟域和例外，检查setup、hold、未约束路径与方法学报告，再生成bitstream。
 

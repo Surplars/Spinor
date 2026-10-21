@@ -1,14 +1,13 @@
-# 当前进度
+# 当前进度：M61
 
-硬件与功能验证版本为 **M60**。本次更新整理项目入口、接入指南和文档导航，没有改RTL或增加功能验证轮次。
+新增可选寄存隔离顶层 `SpinorIsolated`，原直接提交协议保留。隔离配置启用LSU分级和整数操作数分级；四种旧直接配置重新生成的RTL与已验收版本逐字节相同。
 
-- [接入指南](docs/integration.md)：配置、公共端口、提交/停止、FCSR、上下文和首次联调。
-- [文档导航](docs/README.md)、[构建说明](docs/repository.md)、[验证与时序](docs/validation.md)。
-- [M60报告](reports/m60/evaluation.md)、[逐编码重启覆盖](reports/m60/restart-coverage.csv)。
-- [ISA覆盖](docs/isa-coverage.md)、[RVV验收计划](docs/rvv-completion-plan.md)、[ACT4接入条件](docs/act4-intake.md)。
+- [隔离顶层接入](docs/m61-isolation.md)：输入/总线寄存化、preview/grant/done、停止和上下文迁移。
+- [M61报告](reports/m61/evaluation.md)：四配置数值/访存定向回归、完整映射网表组合隔离与条件预算。
+- [通用接入](docs/integration.md)、[文档导航](docs/README.md)、[验证说明](docs/validation.md)。
 
-M60标准/Deep合计726,000条分类参考命令通过。330种算术编码均有合法样本，307种有非零起点可见结果，23种按限制拒绝；每预设72,600个目标中50,914合法、21,686拒绝。普通执行mask变换与carry/merge、whole/scalar例外分开处理，非直接非零Spike差分。完整范围以报告为准。
+CPU在offer前完成本地队头/排空资格检查，preview不是完成；grant授权后保持不可撤销owner，直到done.fire。错误身份封锁，不通过缓冲提前消费核心完成。外部payload先采样再比较，RAM和monitor A/D各自经过非直通寄存切片；仍只支持同一时钟域。
 
-54个Scala硬件源文件保持；VLEN128/ELEN64、单lane、单指令在途、版本化RAM。尚未声明完整V/RVA23/Zvkt，ACT4 ELF生成和执行均为0，真实CPU/Linux接入待验收。当前云端3.300ns为条件估计，实际300MHz仍需当前RTL的Vivado器件结果。
+仍为VLEN128/ELEN64、单lane、单指令在途和版本化RAM。M60全部330算术编码的重启分类及历史访存证据保持；未声明完整V/RVA23/Zvkt或真实CPU/Linux集成。当前实际300MHz仍需Vivado器件结果，组合隔离和云端条件预算不能替代布局布线签核。
 
-后续重点为独立ELF测试宿主桥接、官方架构测试、访存恢复条款及SoC接入。整理前的M60入口文档保存在[精确快照](archive/docs-m60/source/README.md)，历史报告不改写。
+当前验收入口：`python3 scripts/verify_m61.py`，`--check-only`核对精确输入与压缩证据。历史文档及M50至M60证据通过`python3 scripts/check_docs.py --evidence`按快照核对，不改写旧报告。

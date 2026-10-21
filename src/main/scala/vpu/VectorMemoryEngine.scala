@@ -11,7 +11,7 @@ class VectorMemoryStatus extends Bundle {
   * Memory instructions are irrevocable ROB-head operations: flush requests a
   * boundary stop and DOES NOT silently cancel completion or issued stores.
   */
-class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28,shortUnitAdder:Boolean=false) extends Module {
+class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28,shortUnitAdder:Boolean=false,pipelineDecode:Boolean=false) extends Module {
   require(regionBytes>=8 && (regionBytes&(regionBytes-1))==0 && regionBase%regionBytes==0)
   val io=IO(new Bundle {
     val stop=Input(Bool());val command=Flipped(Decoupled(new Command));val completion=Decoupled(new Completion)
@@ -23,12 +23,17 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val memoryRequest=Decoupled(new VpuMemoryRequest(VpuTLParams()))
     val memoryResponse=Flipped(Decoupled(new VpuMemoryResponse))
   })
-  val states=Enum(if(shortUnitAdder)35 else 34)
+  val baseStates=if(shortUnitAdder)35 else 34
+  val states=Enum(baseStates+(if(pipelineDecode)1 else 0))
+  val geometryDecode=if(pipelineDecode)states(baseStates) else states(0)
   val addressMiddle=if(shortUnitAdder)states(34) else states(0)
   val Seq(idle,decode,validate,maskLow,maskLowWait,maskHigh,maskHighWait,checkElement,addressLow,addressHigh,
     checkAddress,readChunk,readChunkWait,sendMemory,waitMemory,writeChunk,writeChunkWait,writeStart,reply)=states.take(19)
   val Seq(strideSeek,strideAdd0,strideAdd1,strideAdd2,strideAdd3,indexValidate,indexRead,indexReadWait,indexExtract,specialDecode,specialValidate,segmentDecode,segmentSeek,segmentAdvance,segmentAlias)=states.slice(19,34)
   val state=RegInit(idle);val cmd=Reg(new Command);val length=Reg(UInt(8.W));val typ=Reg(UInt(64.W))
+  val geometry=if(pipelineDecode)Some(Reg(new Bundle {
+    val group=UInt(4.W);val valid=Bool();val integral=Bool();val dataGroup=UInt(4.W)
+  })) else None
   val lastIndex=Reg(UInt(8.W));val index=Reg(UInt(8.W));val width=Reg(UInt(2.W));val baseRegister=Reg(UInt(5.W));val store=Reg(Bool());val masked=Reg(Bool())
   val mask=Reg(UInt(128.W));val original=Reg(UInt(64.W));val result=Reg(UInt(64.W))
   // Reuse original as one write-through register-file chunk, never a whole group snapshot.
@@ -91,7 +96,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
       cmd.scalar2:=0.U
     }
     cachedValid:=false.B;segmentAdd:=0.U;trimmed:=false.B;address:=io.command.bits.scalar
-    stopped:=false.B;illegal:=false.B;status:=0.U.asTypeOf(new VectorMemoryStatus);state:=decode
+    stopped:=false.B;illegal:=false.B;status:=0.U.asTypeOf(new VectorMemoryStatus);state:=(if(pipelineDecode)geometryDecode else decode)
   }
   when(io.stop && state=/=idle) { stopped:=true.B }
   def setStart(value:UInt,finish:Bool):Unit={ nextStart:=value;finishAfterStart:=finish;state:=writeStart }
@@ -105,6 +110,15 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
       status.fault:=true.B;status.cause:=cause;status.address:=address;status.element:=index;setStart(index,true.B)
     }
   }
+  if(pipelineDecode) {
+    when(state===geometryDecode) {
+      val (g,v,i)=MemoryGeometry.decode(typ,cmd.instruction(13,12))
+      val lm=Mux(typ(2),typ(2,0).asSInt,typ(2,0).zext)
+      geometry.get.group:=g;geometry.get.valid:=v;geometry.get.integral:=i
+      geometry.get.dataGroup:=Mux(cmd.instruction(26),Mux(lm>0.S,(1.U(4.W)<<lm.asUInt(1,0))(3,0),1.U(4.W)),g)
+      state:=decode
+    }
+  }
   when(state===decode) {
     val inst=cmd.instruction;val f3=inst(14,12);lastIndex:=length-1.U
     for(byte<-1 until 4) { upperAddressPrefix(byte-1):=cmd.scalar(31+8*byte,32).andR }
@@ -112,7 +126,8 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     // Decode validity separately so f3[2] does not gate the EMUL arithmetic.
     val ew=f3(1,0)
     val lm=Mux(typ(2),typ(2,0).asSInt,typ(2,0).zext)
-    val (group,validEmul,integralEmul)=MemoryGeometry.decode(typ,ew)
+    val (group,validEmul,integralEmul)=if(pipelineDecode)
+      (geometry.get.group,geometry.get.valid,geometry.get.integral) else MemoryGeometry.decode(typ,ew)
     val vr=inst(11,7);val isStore=inst(6,0)==="h27".U
     val validOpcode=inst(6,0)==="h07".U || isStore
     val isFof= !isStore && inst(27,26)===0.U && inst(24,20)===16.U
@@ -120,7 +135,7 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
     val validWidth=f3===0.U || f3===5.U || f3===6.U || f3===7.U
     val isStrided=inst(27,26)===2.U
     val isIndexed=inst(26)
-    val dataGroup=Mux(isIndexed,Mux(lm>0.S,(1.U(4.W)<<lm.asUInt(1,0))(3,0),1.U(4.W)),group)
+    val dataGroup=if(pipelineDecode)geometry.get.dataGroup else Mux(isIndexed,Mux(lm>0.S,(1.U(4.W)<<lm.asUInt(1,0))(3,0),1.U(4.W)),group)
     val indexBase=inst(24,20)
     val bad= !validOpcode || !validWidth || typ(63) || typ(5,3)>3.U || !validEmul ||
       inst(28) || (!isStrided && !isIndexed && inst(24,20)=/=0.U && !isFof) || (vr&(dataGroup-1.U))=/=0.U ||
@@ -351,10 +366,10 @@ class VectorMemoryEngine(regionBase:BigInt=BigInt("80000000",16),regionBytes:Big
 /** Current physical normal-RAM load/store top. Host must keep irrevocable
   * memory-command ownership until completion, including after a stop/flush.
   */
-class LishiVpuMemory(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28,chunkBits:Int=32,enableFp:Boolean=true,hostFcsr:Boolean=false) extends Module {
+class LishiVpuMemory(regionBase:BigInt=BigInt("80000000",16),regionBytes:BigInt=BigInt(1)<<28,chunkBits:Int=32,enableFp:Boolean=true,hostFcsr:Boolean=false,retimeMemory:Boolean=false) extends Module {
   require(Set(16,32).contains(chunkBits))
   override def desiredName=if(chunkBits==16)"LishiVpuMemory16" else "LishiVpuMemory"
-  val vpu=Module(new MemoryRamVector(chunkBits=chunkBits,enableFp=enableFp,hostFcsr=hostFcsr));val engine=Module(new VectorMemoryEngine(regionBase,regionBytes,shortUnitAdder=hostFcsr))
+  val vpu=Module(new MemoryRamVector(chunkBits=chunkBits,enableFp=enableFp,hostFcsr=hostFcsr,stageOperands=retimeMemory && !enableFp));val engine=Module(new VectorMemoryEngine(regionBase,regionBytes,shortUnitAdder=hostFcsr || retimeMemory,pipelineDecode=retimeMemory))
   val bridge=Module(new TileLinkReservation)
   val io=IO(new Bundle {
     val core=chiselTypeOf(vpu.io);val tl=new VpuTileLinkMaster(VpuTLParams())

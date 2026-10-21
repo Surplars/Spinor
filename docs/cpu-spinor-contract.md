@@ -2,6 +2,8 @@
 
 本协议适用于同一时钟域的 `SpinorVpu` 与 `VpuHostBoundary`。首次集成步骤和连接示例见[接入指南](integration.md)。边界容量为一条不可撤销指令，CPU 的取指、ROB、权限和全局退休由宿主实现。
 
+这是原直接接口的同拍完成协议。M61的[寄存隔离顶层](m61-isolation.md)使用独立的preview/grant/done协议，不再外接本边界；CPU必须按新协议保留授权至确认之间的owner。
+
 ## 指令与所有权
 
 `Command` 含 32 位 instruction、64 位 scalar/scalar2/avl 和 **80 位 token**。token 的索引、tag、epoch 由宿主打包，边界原样保存和比较；不能截断为早期接口的位宽。
