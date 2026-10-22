@@ -1,2 +1,0 @@
-PASS ram-vector commands=1673 reads=5126 cycles=284054
-/workspace/zu15-vpu/build/test/m7-div-fp-tb.sv:10334: $finish called at 2847459 (1s)

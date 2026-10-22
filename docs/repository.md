@@ -35,7 +35,7 @@ bootstrap下载并核验固定Mill和OSS CAD Suite；首次构建还会解析Mav
 | `scripts/` | 工具准备、验证、综合、条件时序；维护工具集中在`maintenance/`，见[工具导航](../scripts/README.md) |
 | `docs/` | [当前文档导航](README.md)和按版本保存的设计记录 |
 | `reports/m61/` / `reports/repository-layout/` | 最新硬件验证、源码整理报告和精确证据清单 |
-| `archive/` | 冻结的历史源码、文档及验证输入 |
+| `archive/` | 历史源码、文档及小型验证输入；展开产物见[保留规则](artifacts.md) |
 | `tools/` / `build/` | 本地工具、RTL、模型、日志与网表；不入Git |
 
 ## 新环境与已有验证工作区
@@ -45,6 +45,8 @@ Git保留源码、报告与指定历史输入，不包含安装后的工具、�
 M60验证依赖固定Spike、SoftFloat、既有公共端口GSim模型及历史基线，完整步骤和范围见[M60报告](../reports/m60/evaluation.md)。这些里程碑脚本属于相应源码快照；不要将`verify_m18.py`、`verify_m48.py`等旧入口当成“当前全功能测试”运行。
 
 根Makefile默认显示帮助；当前入口为`make compile`、`make rtl-direct`、`make rtl-isolated`和`make check`。原里程碑配方在`scripts/legacy.mk`，显式使用`make -f scripts/legacy.mk <target>`。
+
+报告按[产物保留规则](artifacts.md)简化保存：大型receipt的JSON为精简索引，原文为同目录gzip；完整旧日志、展开网表和重复归档可从固定Git对象恢复。`make audit-retention`验证这些原文；浅克隆或源码ZIP不包含全部历史对象。
 
 本次目录与注释整理通过Scala token和8个完整RTL顶层对照，不重写历史receipt。原M61完整回归在提交`f8df80e`及匹配工具/build产物上复现；原M60使用`0790a6e`。已有工作区的保留证据可通过`make audit-evidence`核对，细节见[验证说明](validation.md)。
 

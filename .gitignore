@@ -12,3 +12,9 @@ __pycache__/
 *.pyc
 /*-m*.zip
 /*-m*.zip.sha256
+# Reproducible run output belongs under build/, not in source/report history.
+*.log
+*.vcd
+*.fst
+mapped.json
+mapped.json.gz

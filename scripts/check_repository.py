@@ -10,11 +10,13 @@ import re
 import subprocess
 from urllib.parse import unquote, urlsplit
 from maintenance.layout import ROOT, LAYOUT, LOCK, sha, baseline, check_sources, check_evidence_binding
+from maintenance.retention import read_receipt, check_layout as check_retention_layout
 
 DOCUMENTS = ['README.md','CURRENT.md','src/README.md','scripts/README.md','tests/README.md',
              'docs/README.md','docs/repository.md','docs/development.md','docs/integration.md',
              'docs/cpu-spinor-contract.md','docs/tilelink.md','docs/monitor-soc.md','docs/architecture.md',
-             'docs/validation.md','docs/m61-isolation.md']
+             'docs/validation.md','docs/m61-isolation.md','docs/artifacts.md','reports/README.md',
+             'archive/README.md','reports/retention/evaluation.md']
 HASH_GROUPS = ('source_sha256','artifact_sha256','sha256','input_sha256','netlist_sha256',
                'external_source_sha256','external_tool_dependency_sha256')
 
@@ -25,7 +27,9 @@ def maintenance_inputs():
              *[ROOT/p for p in ('Makefile','scripts/legacy.mk','build.mill','mill',
                                '.mill-version','.mill-jvm-opts','tools.lock.json',
                                'scripts/check_repository.py','scripts/check_docs.py',
-                               'scripts/maintenance/layout.py','tests/test_repository_checks.py')], LAYOUT]
+                               'scripts/maintenance/layout.py','tests/test_repository_checks.py',
+                               'scripts/maintenance/retention.py','scripts/retained_artifacts.py',
+                               'tests/test_retention.py','reports/retention/manifest.json')], LAYOUT]
     lock, _ = baseline()
     paths += [ROOT/p for p in lock['member_sha256']
               if p.startswith(('scripts/','tests/')) and (ROOT/p).is_file()]
@@ -95,7 +99,7 @@ def check_links():
 def audit_evidence():
     counts = {}
     for milestone in range(50, 62):
-        data = json.loads((ROOT/f'reports/m{milestone}/receipt.json').read_text())
+        data = read_receipt(f'reports/m{milestone}/receipt.json')
         assert data['status'] == 'PASS', milestone
         for group in HASH_GROUPS:
             for rel, digest in data.get(group, {}).items():
@@ -194,6 +198,7 @@ def main():
     if args.record and not (args.rtl and args.evidence): parser.error('--record requires --rtl --evidence')
     before = input_snapshot() if args.rtl or args.evidence else None
     result = dict(source=check_sources(verify_equivalence=args.rtl),documentation=check_links())
+    result['retention'] = check_retention_layout()
     print('PASS source layout/comments and documentation:',result['source']['sources'],'Scala sources;',
           result['documentation']['local_links'],'local links',flush=True)
     if args.rtl:

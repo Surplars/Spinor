@@ -1,2 +1,0 @@
-PASS boundary transactions=128 stale_rejections=171 blocked_reply_cycles=640
-/workspace/zu15-vpu/tests/boundary_tb.sv:68: $finish called at 18466 (1s)

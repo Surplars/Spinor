@@ -1,0 +1,1196 @@
+{
+  "note": "Bounded excerpts, not a complete warning/error inventory or new validation verdict. Full originals are recoverable through manifest.json.",
+  "logs": {
+    "archive/m1/reports/ValenceBoundary.log": {
+      "original_bytes": 151,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS boundary transactions=128 stale_rejections=171 blocked_reply_cycles=640"
+      ],
+      "tail": [
+        "PASS boundary transactions=128 stale_rejections=171 blocked_reply_cycles=640",
+        "/workspace/zu15-vpu/tests/boundary_tb.sv:68: $finish called at 18466 (1s)"
+      ]
+    },
+    "archive/m1/reports/mill-generate.log": {
+      "original_bytes": 1094,
+      "original_lines": 9,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "79/79, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 18s"
+      ],
+      "tail": [
+        "79] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "79/79, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 18s"
+      ]
+    },
+    "archive/m11/reports/vector-memory-mapped.log": {
+      "original_bytes": 36984,
+      "original_lines": 856,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=62 requests=783 responses=783 cycles=16000"
+      ],
+      "tail": [
+        "STOP 70 0 1",
+        "PASS vector-memory commands=62 requests=783 responses=783 cycles=16000",
+        "/workspace/zu15-vpu/build/test/vector-memory-mapped-tb.sv:1680: $finish called at 160534000000000000 (1ps)"
+      ]
+    },
+    "archive/m11/reports/vector-memory-rtl.log": {
+      "original_bytes": 177534,
+      "original_lines": 4028,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=222 requests=3727 responses=3727 cycles=79015"
+      ],
+      "tail": [
+        "STOP 298 0 1",
+        "PASS vector-memory commands=222 requests=3727 responses=3727 cycles=79015",
+        "/workspace/zu15-vpu/build/test/vector-memory-rtl-tb.sv:7962: $finish called at 792654 (1s)"
+      ]
+    },
+    "archive/m11/reports/vector-memory-smoke.log": {
+      "original_bytes": 36970,
+      "original_lines": 856,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=62 requests=783 responses=783 cycles=16000"
+      ],
+      "tail": [
+        "STOP 70 0 1",
+        "PASS vector-memory commands=62 requests=783 responses=783 cycles=16000",
+        "/workspace/zu15-vpu/build/test/vector-memory-smoke-tb.sv:1680: $finish called at 160534 (1s)"
+      ]
+    },
+    "archive/m12/reports/vector-memory-mapped.log": {
+      "original_bytes": 37732,
+      "original_lines": 921,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14968"
+      ],
+      "tail": [
+        "STOP 70 0 1",
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14968",
+        "/workspace/zu15-vpu/build/test/vector-memory-mapped-tb.sv:1685: $finish called at 150214000000000000 (1ps)"
+      ]
+    },
+    "archive/m12/reports/vector-memory-rtl.log": {
+      "original_bytes": 181099,
+      "original_lines": 4275,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=222 requests=3752 responses=3752 cycles=74170"
+      ],
+      "tail": [
+        "STOP 298 0 1",
+        "PASS vector-memory commands=222 requests=3752 responses=3752 cycles=74170",
+        "/workspace/zu15-vpu/build/test/vector-memory-rtl-tb.sv:7967: $finish called at 744204 (1s)"
+      ]
+    },
+    "archive/m12/reports/vector-memory-smoke.log": {
+      "original_bytes": 37728,
+      "original_lines": 921,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14968"
+      ],
+      "tail": [
+        "STOP 70 0 1",
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14968",
+        "/workspace/zu15-vpu/build/test/vector-memory-smoke-tb.sv:1685: $finish called at 150214 (1s)"
+      ]
+    },
+    "archive/m13/reports/fp-convert-lane.log": {
+      "original_bytes": 174674,
+      "original_lines": 5021,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-convert vectors=5019 cancels=492 cycles=331769"
+      ],
+      "tail": [
+        "F 5018 00000000bf800000 00 9a 0 76",
+        "PASS fp-convert vectors=5019 cancels=492 cycles=331769",
+        "/workspace/zu15-vpu/build/test/fp-convert-lane-tb.sv:5569: $finish called at 3318182 (1s)"
+      ]
+    },
+    "archive/m13/reports/fp-lane-mapped.log": {
+      "original_bytes": 12972,
+      "original_lines": 387,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727"
+      ],
+      "tail": [
+        "F 384 0000000040000000 00 80 0 31",
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727",
+        "/workspace/zu15-vpu/build/test/fp-lane-mapped-tb.sv:455: $finish called at 117282000000000000 (1ps)"
+      ]
+    },
+    "archive/m13/reports/fp-lane-smoke.log": {
+      "original_bytes": 12958,
+      "original_lines": 387,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727"
+      ],
+      "tail": [
+        "F 384 0000000040000000 00 80 0 31",
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727",
+        "/workspace/zu15-vpu/build/test/fp-lane-smoke-tb.sv:455: $finish called at 117282 (1s)"
+      ]
+    },
+    "archive/m13/reports/fp-lane.log": {
+      "original_bytes": 233909,
+      "original_lines": 6813,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=6811 stalls=16972 cancels=205 cycles=303168"
+      ],
+      "tail": [
+        "F 6810 0000000040000000 00 9a 0 31",
+        "PASS fp-lane vectors=6811 stalls=16972 cancels=205 cycles=303168",
+        "/workspace/zu15-vpu/build/test/fp-lane-tb.sv:7074: $finish called at 3031885 (1s)"
+      ]
+    },
+    "archive/m13/reports/fp-vector-m9-convert.log": {
+      "original_bytes": 150,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-vector commands=2157 reads=9512 cycles=221879"
+      ],
+      "tail": [
+        "PASS fp-vector commands=2157 reads=9512 cycles=221879",
+        "/workspace/zu15-vpu/build/test/fp-vector-m9-convert-tb.sv:14631: $finish called at 2231187 (1s)"
+      ]
+    },
+    "archive/m13/reports/vector-memory-mapped.log": {
+      "original_bytes": 37732,
+      "original_lines": 921,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971"
+      ],
+      "tail": [
+        "STOP 70 0 1",
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971",
+        "/workspace/zu15-vpu/build/test/vector-memory-mapped-tb.sv:1685: $finish called at 150244000000000000 (1ps)"
+      ]
+    },
+    "archive/m13/reports/vector-memory-rtl.log": {
+      "original_bytes": 181099,
+      "original_lines": 4275,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=222 requests=3752 responses=3752 cycles=74173"
+      ],
+      "tail": [
+        "STOP 298 0 1",
+        "PASS vector-memory commands=222 requests=3752 responses=3752 cycles=74173",
+        "/workspace/zu15-vpu/build/test/vector-memory-rtl-tb.sv:7967: $finish called at 744234 (1s)"
+      ]
+    },
+    "archive/m13/reports/vector-memory-smoke.log": {
+      "original_bytes": 37728,
+      "original_lines": 921,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971"
+      ],
+      "tail": [
+        "STOP 70 0 1",
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971",
+        "/workspace/zu15-vpu/build/test/vector-memory-smoke-tb.sv:1685: $finish called at 150244 (1s)"
+      ]
+    },
+    "archive/m14/reports/RamVectorFp.log": {
+      "original_bytes": 140,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS ram-vector commands=1673 reads=5126 cycles=284054"
+      ],
+      "tail": [
+        "PASS ram-vector commands=1673 reads=5126 cycles=284054",
+        "/workspace/zu15-vpu/build/test/m7-div-fp-tb.sv:10334: $finish called at 2847459 (1s)"
+      ]
+    },
+    "archive/m14/reports/fp-convert-lane.log": {
+      "original_bytes": 174674,
+      "original_lines": 5021,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-convert vectors=5019 cancels=492 cycles=335105"
+      ],
+      "tail": [
+        "F 5018 00000000bf800000 00 9a 0 76",
+        "PASS fp-convert vectors=5019 cancels=492 cycles=335105",
+        "/workspace/zu15-vpu/build/test/fp-convert-lane-tb.sv:5569: $finish called at 3351542 (1s)"
+      ]
+    },
+    "archive/m14/reports/fp-convert-mapped.log": {
+      "original_bytes": 171249,
+      "original_lines": 5023,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-convert vectors=5021 cancels=60 cycles=123755"
+      ],
+      "tail": [
+        "F 5020 00000000bf800000 00 9c 0 72",
+        "PASS fp-convert vectors=5021 cancels=60 cycles=123755",
+        "/workspace/zu15-vpu/build/test/fp-convert-mapped-tb.sv:5139: $finish called at 1237610 (1s)"
+      ]
+    },
+    "archive/m14/reports/fp-convert-rtl.log": {
+      "original_bytes": 171247,
+      "original_lines": 5023,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-convert vectors=5021 cancels=492 cycles=315119"
+      ],
+      "tail": [
+        "F 5020 00000000bf800000 00 9c 0 72",
+        "PASS fp-convert vectors=5021 cancels=492 cycles=315119",
+        "/workspace/zu15-vpu/build/test/fp-convert-rtl-tb.sv:5571: $finish called at 3151682 (1s)"
+      ]
+    },
+    "archive/m14/reports/fp-lane-mapped.log": {
+      "original_bytes": 12972,
+      "original_lines": 387,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727"
+      ],
+      "tail": [
+        "F 384 0000000040000000 00 80 0 31",
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727",
+        "/workspace/zu15-vpu/build/test/fp-lane-mapped-tb.sv:455: $finish called at 117282000000000000 (1ps)"
+      ]
+    },
+    "archive/m14/reports/fp-lane-smoke.log": {
+      "original_bytes": 12958,
+      "original_lines": 387,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727"
+      ],
+      "tail": [
+        "F 384 0000000040000000 00 80 0 31",
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727",
+        "/workspace/zu15-vpu/build/test/fp-lane-smoke-tb.sv:455: $finish called at 117282 (1s)"
+      ]
+    },
+    "archive/m14/reports/fp-lane.log": {
+      "original_bytes": 233909,
+      "original_lines": 6813,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=6811 stalls=16972 cancels=205 cycles=303168"
+      ],
+      "tail": [
+        "F 6810 0000000040000000 00 9a 0 31",
+        "PASS fp-lane vectors=6811 stalls=16972 cancels=205 cycles=303168",
+        "/workspace/zu15-vpu/build/test/fp-lane-tb.sv:7074: $finish called at 3031885 (1s)"
+      ]
+    },
+    "archive/m14/reports/fp-vector-m9-convert.log": {
+      "original_bytes": 150,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-vector commands=2157 reads=9512 cycles=222811"
+      ],
+      "tail": [
+        "PASS fp-vector commands=2157 reads=9512 cycles=222811",
+        "/workspace/zu15-vpu/build/test/fp-vector-m9-convert-tb.sv:14631: $finish called at 2240507 (1s)"
+      ]
+    },
+    "archive/m14/reports/generate.log": {
+      "original_bytes": 1156,
+      "original_lines": 9,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ]
+    },
+    "archive/m14/reports/integer-multiply-mapped.log": {
+      "original_bytes": 158,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533"
+      ],
+      "tail": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533",
+        "/workspace/zu15-vpu/build/test/integer-multiply-tb.sv:2876: $finish called at 1295440000000000000 (1ps)"
+      ]
+    },
+    "archive/m14/reports/integer-multiply-rtl.log": {
+      "original_bytes": 145,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533"
+      ],
+      "tail": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533",
+        "/workspace/zu15-vpu/build/test/integer-multiply-tb.sv:2876: $finish called at 1295440 (1s)"
+      ]
+    },
+    "archive/m14/reports/proof.log": {
+      "original_bytes": 15137,
+      "original_lines": 367,
+      "matching_diagnostic_lines": 50,
+      "diagnostic_excerpt": [
+        "2.13. Executing OPT pass (performing simple optimizations).",
+        "2.13.1. Executing OPT_EXPR pass (perform const folding).",
+        "2.13.2. Executing OPT_MERGE pass (detect identical cells).",
+        "2.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).",
+        "2.14. Executing SORT pass.",
+        "2.16. Executing CHECK pass (checking for obvious problems).",
+        "3. Executing SAT pass (solving SAT problems in the circuit).",
+        "SAT proof finished - no model found: SUCCESS!"
+      ],
+      "tail": [
+        "                 \\____ $$$|__/|________/|__/|_______/|__/",
+        "                       \\__/                              ",
+        ""
+      ]
+    },
+    "archive/m14/reports/recode-generate.log": {
+      "original_bytes": 1156,
+      "original_lines": 9,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ]
+    },
+    "archive/m14/reports/recode-proof.log": {
+      "original_bytes": 15137,
+      "original_lines": 367,
+      "matching_diagnostic_lines": 50,
+      "diagnostic_excerpt": [
+        "2.13. Executing OPT pass (performing simple optimizations).",
+        "2.13.1. Executing OPT_EXPR pass (perform const folding).",
+        "2.13.2. Executing OPT_MERGE pass (detect identical cells).",
+        "2.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).",
+        "2.14. Executing SORT pass.",
+        "2.16. Executing CHECK pass (checking for obvious problems).",
+        "3. Executing SAT pass (solving SAT problems in the circuit).",
+        "SAT proof finished - no model found: SUCCESS!"
+      ],
+      "tail": [
+        "                 \\____ $$$|__/|________/|__/|_______/|__/",
+        "                       \\__/                              ",
+        ""
+      ]
+    },
+    "archive/m14/reports/vector-memory-mapped.log": {
+      "original_bytes": 37732,
+      "original_lines": 921,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971"
+      ],
+      "tail": [
+        "STOP 70 0 1",
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971",
+        "/workspace/zu15-vpu/build/test/vector-memory-mapped-tb.sv:1685: $finish called at 150244000000000000 (1ps)"
+      ]
+    },
+    "archive/m14/reports/vector-memory-rtl.log": {
+      "original_bytes": 181099,
+      "original_lines": 4275,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=222 requests=3752 responses=3752 cycles=74173"
+      ],
+      "tail": [
+        "STOP 298 0 1",
+        "PASS vector-memory commands=222 requests=3752 responses=3752 cycles=74173",
+        "/workspace/zu15-vpu/build/test/vector-memory-rtl-tb.sv:7967: $finish called at 744234 (1s)"
+      ]
+    },
+    "archive/m14/reports/vector-memory-smoke.log": {
+      "original_bytes": 37728,
+      "original_lines": 921,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971"
+      ],
+      "tail": [
+        "STOP 70 0 1",
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971",
+        "/workspace/zu15-vpu/build/test/vector-memory-smoke-tb.sv:1685: $finish called at 150244 (1s)"
+      ]
+    },
+    "archive/m15/reports/RamVectorFp.log": {
+      "original_bytes": 140,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS ram-vector commands=1673 reads=5126 cycles=284054"
+      ],
+      "tail": [
+        "PASS ram-vector commands=1673 reads=5126 cycles=284054",
+        "/workspace/zu15-vpu/build/test/m7-div-fp-tb.sv:10334: $finish called at 2847459 (1s)"
+      ]
+    },
+    "archive/m15/reports/divider-generate.log": {
+      "original_bytes": 977,
+      "original_lines": 6,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateDividerP...ild/divider-proof/DividerWordProof.sv 9s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateDividerP...ild/divider-proof/DividerWordProof.sv 9s"
+      ]
+    },
+    "archive/m15/reports/divider-proof.log": {
+      "original_bytes": 12927,
+      "original_lines": 260,
+      "matching_diagnostic_lines": 45,
+      "diagnostic_excerpt": [
+        "2.13. Executing OPT pass (performing simple optimizations).",
+        "2.13.1. Executing OPT_EXPR pass (perform const folding).",
+        "2.13.2. Executing OPT_MERGE pass (detect identical cells).",
+        "2.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).",
+        "2.14. Executing SORT pass.",
+        "2.16. Executing CHECK pass (checking for obvious problems).",
+        "3. Executing SAT pass (solving SAT problems in the circuit).",
+        "SAT proof finished - no model found: SUCCESS!"
+      ],
+      "tail": [
+        "                 \\____ $$$|__/|________/|__/|_______/|__/",
+        "                       \\__/                              ",
+        ""
+      ]
+    },
+    "archive/m15/reports/fp-convert-lane.log": {
+      "original_bytes": 174674,
+      "original_lines": 5021,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-convert vectors=5019 cancels=492 cycles=335105"
+      ],
+      "tail": [
+        "F 5018 00000000bf800000 00 9a 0 76",
+        "PASS fp-convert vectors=5019 cancels=492 cycles=335105",
+        "/workspace/zu15-vpu/build/test/fp-convert-lane-tb.sv:5569: $finish called at 3351542 (1s)"
+      ]
+    },
+    "archive/m15/reports/fp-convert-mapped.log": {
+      "original_bytes": 171249,
+      "original_lines": 5023,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-convert vectors=5021 cancels=60 cycles=123755"
+      ],
+      "tail": [
+        "F 5020 00000000bf800000 00 9c 0 72",
+        "PASS fp-convert vectors=5021 cancels=60 cycles=123755",
+        "/workspace/zu15-vpu/build/test/fp-convert-mapped-tb.sv:5139: $finish called at 1237610 (1s)"
+      ]
+    },
+    "archive/m15/reports/fp-convert-rtl.log": {
+      "original_bytes": 171247,
+      "original_lines": 5023,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-convert vectors=5021 cancels=492 cycles=315119"
+      ],
+      "tail": [
+        "F 5020 00000000bf800000 00 9c 0 72",
+        "PASS fp-convert vectors=5021 cancels=492 cycles=315119",
+        "/workspace/zu15-vpu/build/test/fp-convert-rtl-tb.sv:5571: $finish called at 3151682 (1s)"
+      ]
+    },
+    "archive/m15/reports/fp-lane-mapped.log": {
+      "original_bytes": 12972,
+      "original_lines": 387,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727"
+      ],
+      "tail": [
+        "F 384 0000000040000000 00 80 0 31",
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727",
+        "/workspace/zu15-vpu/build/test/fp-lane-mapped-tb.sv:455: $finish called at 117282000000000000 (1ps)"
+      ]
+    },
+    "archive/m15/reports/fp-lane-smoke.log": {
+      "original_bytes": 12958,
+      "original_lines": 387,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727"
+      ],
+      "tail": [
+        "F 384 0000000040000000 00 80 0 31",
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727",
+        "/workspace/zu15-vpu/build/test/fp-lane-smoke-tb.sv:455: $finish called at 117282 (1s)"
+      ]
+    },
+    "archive/m15/reports/fp-lane.log": {
+      "original_bytes": 233909,
+      "original_lines": 6813,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=6811 stalls=16972 cancels=205 cycles=303168"
+      ],
+      "tail": [
+        "F 6810 0000000040000000 00 9a 0 31",
+        "PASS fp-lane vectors=6811 stalls=16972 cancels=205 cycles=303168",
+        "/workspace/zu15-vpu/build/test/fp-lane-tb.sv:7074: $finish called at 3031885 (1s)"
+      ]
+    },
+    "archive/m15/reports/fp-vector-m9-convert.log": {
+      "original_bytes": 150,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-vector commands=2157 reads=9512 cycles=222811"
+      ],
+      "tail": [
+        "PASS fp-vector commands=2157 reads=9512 cycles=222811",
+        "/workspace/zu15-vpu/build/test/fp-vector-m9-convert-tb.sv:14631: $finish called at 2240507 (1s)"
+      ]
+    },
+    "archive/m15/reports/generate.log": {
+      "original_bytes": 1156,
+      "original_lines": 9,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ]
+    },
+    "archive/m15/reports/integer-divide-mapped.log": {
+      "original_bytes": 153,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS divider checks=2894 flushes=270 cycles=470900"
+      ],
+      "tail": [
+        "PASS divider checks=2894 flushes=270 cycles=470900",
+        "/workspace/zu15-vpu/build/test/integer-divide-tb.sv:3197: $finish called at 4709270000000000000 (1ps)"
+      ]
+    },
+    "archive/m15/reports/integer-divide-rtl.log": {
+      "original_bytes": 140,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS divider checks=2894 flushes=270 cycles=470900"
+      ],
+      "tail": [
+        "PASS divider checks=2894 flushes=270 cycles=470900",
+        "/workspace/zu15-vpu/build/test/integer-divide-tb.sv:3197: $finish called at 4709270 (1s)"
+      ]
+    },
+    "archive/m15/reports/integer-multiply-mapped.log": {
+      "original_bytes": 158,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533"
+      ],
+      "tail": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533",
+        "/workspace/zu15-vpu/build/test/integer-multiply-tb.sv:2876: $finish called at 1295440000000000000 (1ps)"
+      ]
+    },
+    "archive/m15/reports/integer-multiply-rtl.log": {
+      "original_bytes": 145,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533"
+      ],
+      "tail": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533",
+        "/workspace/zu15-vpu/build/test/integer-multiply-tb.sv:2876: $finish called at 1295440 (1s)"
+      ]
+    },
+    "archive/m15/reports/proof.log": {
+      "original_bytes": 15137,
+      "original_lines": 367,
+      "matching_diagnostic_lines": 50,
+      "diagnostic_excerpt": [
+        "2.13. Executing OPT pass (performing simple optimizations).",
+        "2.13.1. Executing OPT_EXPR pass (perform const folding).",
+        "2.13.2. Executing OPT_MERGE pass (detect identical cells).",
+        "2.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).",
+        "2.14. Executing SORT pass.",
+        "2.16. Executing CHECK pass (checking for obvious problems).",
+        "3. Executing SAT pass (solving SAT problems in the circuit).",
+        "SAT proof finished - no model found: SUCCESS!"
+      ],
+      "tail": [
+        "                 \\____ $$$|__/|________/|__/|_______/|__/",
+        "                       \\__/                              ",
+        ""
+      ]
+    },
+    "archive/m15/reports/recode-generate.log": {
+      "original_bytes": 1156,
+      "original_lines": 9,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ]
+    },
+    "archive/m15/reports/recode-proof.log": {
+      "original_bytes": 15137,
+      "original_lines": 367,
+      "matching_diagnostic_lines": 50,
+      "diagnostic_excerpt": [
+        "2.13. Executing OPT pass (performing simple optimizations).",
+        "2.13.1. Executing OPT_EXPR pass (perform const folding).",
+        "2.13.2. Executing OPT_MERGE pass (detect identical cells).",
+        "2.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).",
+        "2.14. Executing SORT pass.",
+        "2.16. Executing CHECK pass (checking for obvious problems).",
+        "3. Executing SAT pass (solving SAT problems in the circuit).",
+        "SAT proof finished - no model found: SUCCESS!"
+      ],
+      "tail": [
+        "                 \\____ $$$|__/|________/|__/|_______/|__/",
+        "                       \\__/                              ",
+        ""
+      ]
+    },
+    "archive/m15/reports/vector-memory-mapped.log": {
+      "original_bytes": 37732,
+      "original_lines": 921,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971"
+      ],
+      "tail": [
+        "STOP 70 0 1",
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971",
+        "/workspace/zu15-vpu/build/test/vector-memory-mapped-tb.sv:1685: $finish called at 150244000000000000 (1ps)"
+      ]
+    },
+    "archive/m15/reports/vector-memory-rtl.log": {
+      "original_bytes": 181099,
+      "original_lines": 4275,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=222 requests=3752 responses=3752 cycles=74173"
+      ],
+      "tail": [
+        "STOP 298 0 1",
+        "PASS vector-memory commands=222 requests=3752 responses=3752 cycles=74173",
+        "/workspace/zu15-vpu/build/test/vector-memory-rtl-tb.sv:7967: $finish called at 744234 (1s)"
+      ]
+    },
+    "archive/m15/reports/vector-memory-smoke.log": {
+      "original_bytes": 37728,
+      "original_lines": 921,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971"
+      ],
+      "tail": [
+        "STOP 70 0 1",
+        "PASS vector-memory commands=62 requests=786 responses=786 cycles=14971",
+        "/workspace/zu15-vpu/build/test/vector-memory-smoke-tb.sv:1685: $finish called at 150244 (1s)"
+      ]
+    },
+    "archive/m16/reports/RamVector.log": {
+      "original_bytes": 137,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS ram-vector commands=789 reads=2968 cycles=49704"
+      ],
+      "tail": [
+        "PASS ram-vector commands=789 reads=2968 cycles=49704",
+        "/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 500875 (1s)"
+      ]
+    },
+    "archive/m16/reports/RamVector16.log": {
+      "original_bytes": 137,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS ram-vector commands=789 reads=2968 cycles=51009"
+      ],
+      "tail": [
+        "PASS ram-vector commands=789 reads=2968 cycles=51009",
+        "/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 513925 (1s)"
+      ]
+    },
+    "archive/m16/reports/RamVectorFlops.log": {
+      "original_bytes": 137,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS ram-vector commands=789 reads=2968 cycles=49704"
+      ],
+      "tail": [
+        "PASS ram-vector commands=789 reads=2968 cycles=49704",
+        "/workspace/zu15-vpu/build/test/ram_vector_tb.sv:5482: $finish called at 500875 (1s)"
+      ]
+    },
+    "archive/m16/reports/RamVectorFp.log": {
+      "original_bytes": 140,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS ram-vector commands=1673 reads=5126 cycles=284054"
+      ],
+      "tail": [
+        "PASS ram-vector commands=1673 reads=5126 cycles=284054",
+        "/workspace/zu15-vpu/build/test/m7-div-fp-tb.sv:10334: $finish called at 2847459 (1s)"
+      ]
+    },
+    "archive/m16/reports/divider-generate.log": {
+      "original_bytes": 977,
+      "original_lines": 6,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateDividerP...ild/divider-proof/DividerWordProof.sv 9s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateDividerP...ild/divider-proof/DividerWordProof.sv 9s"
+      ]
+    },
+    "archive/m16/reports/divider-proof.log": {
+      "original_bytes": 12927,
+      "original_lines": 260,
+      "matching_diagnostic_lines": 45,
+      "diagnostic_excerpt": [
+        "2.13. Executing OPT pass (performing simple optimizations).",
+        "2.13.1. Executing OPT_EXPR pass (perform const folding).",
+        "2.13.2. Executing OPT_MERGE pass (detect identical cells).",
+        "2.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).",
+        "2.14. Executing SORT pass.",
+        "2.16. Executing CHECK pass (checking for obvious problems).",
+        "3. Executing SAT pass (solving SAT problems in the circuit).",
+        "SAT proof finished - no model found: SUCCESS!"
+      ],
+      "tail": [
+        "                 \\____ $$$|__/|________/|__/|_______/|__/",
+        "                       \\__/                              ",
+        ""
+      ]
+    },
+    "archive/m16/reports/fp-convert-lane.log": {
+      "original_bytes": 174674,
+      "original_lines": 5021,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-convert vectors=5019 cancels=492 cycles=335105"
+      ],
+      "tail": [
+        "F 5018 00000000bf800000 00 9a 0 76",
+        "PASS fp-convert vectors=5019 cancels=492 cycles=335105",
+        "/workspace/zu15-vpu/build/test/fp-convert-lane-tb.sv:5569: $finish called at 3351542 (1s)"
+      ]
+    },
+    "archive/m16/reports/fp-convert-mapped.log": {
+      "original_bytes": 171249,
+      "original_lines": 5023,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-convert vectors=5021 cancels=60 cycles=123755"
+      ],
+      "tail": [
+        "F 5020 00000000bf800000 00 9c 0 72",
+        "PASS fp-convert vectors=5021 cancels=60 cycles=123755",
+        "/workspace/zu15-vpu/build/test/fp-convert-mapped-tb.sv:5139: $finish called at 1237610 (1s)"
+      ]
+    },
+    "archive/m16/reports/fp-convert-rtl.log": {
+      "original_bytes": 171247,
+      "original_lines": 5023,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-convert vectors=5021 cancels=492 cycles=315119"
+      ],
+      "tail": [
+        "F 5020 00000000bf800000 00 9c 0 72",
+        "PASS fp-convert vectors=5021 cancels=492 cycles=315119",
+        "/workspace/zu15-vpu/build/test/fp-convert-rtl-tb.sv:5571: $finish called at 3151682 (1s)"
+      ]
+    },
+    "archive/m16/reports/fp-lane-mapped.log": {
+      "original_bytes": 12972,
+      "original_lines": 387,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727"
+      ],
+      "tail": [
+        "F 384 0000000040000000 00 80 0 31",
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727",
+        "/workspace/zu15-vpu/build/test/fp-lane-mapped-tb.sv:455: $finish called at 117282000000000000 (1ps)"
+      ]
+    },
+    "archive/m16/reports/fp-lane-smoke.log": {
+      "original_bytes": 12958,
+      "original_lines": 387,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727"
+      ],
+      "tail": [
+        "F 384 0000000040000000 00 80 0 31",
+        "PASS fp-lane vectors=385 stalls=933 cancels=12 cycles=11727",
+        "/workspace/zu15-vpu/build/test/fp-lane-smoke-tb.sv:455: $finish called at 117282 (1s)"
+      ]
+    },
+    "archive/m16/reports/fp-lane.log": {
+      "original_bytes": 233909,
+      "original_lines": 6813,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-lane vectors=6811 stalls=16972 cancels=205 cycles=303168"
+      ],
+      "tail": [
+        "F 6810 0000000040000000 00 9a 0 31",
+        "PASS fp-lane vectors=6811 stalls=16972 cancels=205 cycles=303168",
+        "/workspace/zu15-vpu/build/test/fp-lane-tb.sv:7074: $finish called at 3031885 (1s)"
+      ]
+    },
+    "archive/m16/reports/fp-vector-m9-convert.log": {
+      "original_bytes": 150,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS fp-vector commands=2157 reads=9512 cycles=222811"
+      ],
+      "tail": [
+        "PASS fp-vector commands=2157 reads=9512 cycles=222811",
+        "/workspace/zu15-vpu/build/test/fp-vector-m9-convert-tb.sv:14631: $finish called at 2240507 (1s)"
+      ]
+    },
+    "archive/m16/reports/generate.log": {
+      "original_bytes": 1156,
+      "original_lines": 9,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ]
+    },
+    "archive/m16/reports/increment-generate.log": {
+      "original_bytes": 977,
+      "original_lines": 6,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateIncremen...ild/increment-proof/IncrementProof.sv 6s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateIncremen...ild/increment-proof/IncrementProof.sv 6s"
+      ]
+    },
+    "archive/m16/reports/increment-proof.log": {
+      "original_bytes": 9829,
+      "original_lines": 249,
+      "matching_diagnostic_lines": 45,
+      "diagnostic_excerpt": [
+        "2.13. Executing OPT pass (performing simple optimizations).",
+        "2.13.1. Executing OPT_EXPR pass (perform const folding).",
+        "2.13.2. Executing OPT_MERGE pass (detect identical cells).",
+        "2.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).",
+        "2.14. Executing SORT pass.",
+        "2.16. Executing CHECK pass (checking for obvious problems).",
+        "3. Executing SAT pass (solving SAT problems in the circuit).",
+        "SAT proof finished - no model found: SUCCESS!"
+      ],
+      "tail": [
+        "                 \\____ $$$|__/|________/|__/|_______/|__/",
+        "                       \\__/                              ",
+        ""
+      ]
+    },
+    "archive/m16/reports/integer-divide-mapped.log": {
+      "original_bytes": 153,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS divider checks=2894 flushes=270 cycles=470900"
+      ],
+      "tail": [
+        "PASS divider checks=2894 flushes=270 cycles=470900",
+        "/workspace/zu15-vpu/build/test/integer-divide-tb.sv:3197: $finish called at 4709270000000000000 (1ps)"
+      ]
+    },
+    "archive/m16/reports/integer-divide-rtl.log": {
+      "original_bytes": 140,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS divider checks=2894 flushes=270 cycles=470900"
+      ],
+      "tail": [
+        "PASS divider checks=2894 flushes=270 cycles=470900",
+        "/workspace/zu15-vpu/build/test/integer-divide-tb.sv:3197: $finish called at 4709270 (1s)"
+      ]
+    },
+    "archive/m16/reports/integer-multiply-mapped.log": {
+      "original_bytes": 158,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533"
+      ],
+      "tail": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533",
+        "/workspace/zu15-vpu/build/test/integer-multiply-tb.sv:2876: $finish called at 1295440000000000000 (1ps)"
+      ]
+    },
+    "archive/m16/reports/integer-multiply-rtl.log": {
+      "original_bytes": 145,
+      "original_lines": 2,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533"
+      ],
+      "tail": [
+        "PASS multiplier checks=2734 flushes=110 cycles=129533",
+        "/workspace/zu15-vpu/build/test/integer-multiply-tb.sv:2876: $finish called at 1295440 (1s)"
+      ]
+    },
+    "archive/m16/reports/proof.log": {
+      "original_bytes": 15137,
+      "original_lines": 367,
+      "matching_diagnostic_lines": 50,
+      "diagnostic_excerpt": [
+        "2.13. Executing OPT pass (performing simple optimizations).",
+        "2.13.1. Executing OPT_EXPR pass (perform const folding).",
+        "2.13.2. Executing OPT_MERGE pass (detect identical cells).",
+        "2.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).",
+        "2.14. Executing SORT pass.",
+        "2.16. Executing CHECK pass (checking for obvious problems).",
+        "3. Executing SAT pass (solving SAT problems in the circuit).",
+        "SAT proof finished - no model found: SUCCESS!"
+      ],
+      "tail": [
+        "                 \\____ $$$|__/|________/|__/|_______/|__/",
+        "                       \\__/                              ",
+        ""
+      ]
+    },
+    "archive/m16/reports/recode-generate.log": {
+      "original_bytes": 1156,
+      "original_lines": 9,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.GenerateRecodePr...uild/recode-proof/IeeeRecodeProof.sv 23s"
+      ]
+    },
+    "archive/m16/reports/recode-proof.log": {
+      "original_bytes": 15137,
+      "original_lines": 367,
+      "matching_diagnostic_lines": 50,
+      "diagnostic_excerpt": [
+        "2.13. Executing OPT pass (performing simple optimizations).",
+        "2.13.1. Executing OPT_EXPR pass (perform const folding).",
+        "2.13.2. Executing OPT_MERGE pass (detect identical cells).",
+        "2.13.3. Executing OPT_CLEAN pass (remove unused cells and wires).",
+        "2.14. Executing SORT pass.",
+        "2.16. Executing CHECK pass (checking for obvious problems).",
+        "3. Executing SAT pass (solving SAT problems in the circuit).",
+        "SAT proof finished - no model found: SUCCESS!"
+      ],
+      "tail": [
+        "                 \\____ $$$|__/|________/|__/|_______/|__/",
+        "                       \\__/                              ",
+        ""
+      ]
+    },
+    "archive/m16/reports/vector-memory-mapped.log": {
+      "original_bytes": 38464,
+      "original_lines": 985,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=94 requests=786 responses=786 cycles=15766"
+      ],
+      "tail": [
+        "STOP 102 0 1",
+        "PASS vector-memory commands=94 requests=786 responses=786 cycles=15766",
+        "/workspace/zu15-vpu/build/test/vector-memory-mapped-tb.sv:1889: $finish called at 158334000000000000 (1ps)"
+      ]
+    },
+    "archive/m16/reports/vector-memory-rtl.log": {
+      "original_bytes": 181867,
+      "original_lines": 4339,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=254 requests=3752 responses=3752 cycles=74968"
+      ],
+      "tail": [
+        "STOP 330 0 1",
+        "PASS vector-memory commands=254 requests=3752 responses=3752 cycles=74968",
+        "/workspace/zu15-vpu/build/test/vector-memory-rtl-tb.sv:8171: $finish called at 752324 (1s)"
+      ]
+    },
+    "archive/m16/reports/vector-memory-smoke.log": {
+      "original_bytes": 38460,
+      "original_lines": 985,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS vector-memory commands=94 requests=786 responses=786 cycles=15766"
+      ],
+      "tail": [
+        "STOP 102 0 1",
+        "PASS vector-memory commands=94 requests=786 responses=786 cycles=15766",
+        "/workspace/zu15-vpu/build/test/vector-memory-smoke-tb.sv:1889: $finish called at 158334 (1s)"
+      ]
+    },
+    "archive/m2/reports/mill-generate.log": {
+      "original_bytes": 917,
+      "original_lines": 6,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "79/79, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 5s"
+      ],
+      "tail": [
+        "79] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "79/79, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 5s"
+      ]
+    },
+    "archive/m2/reports/model-check.log": {
+      "original_bytes": 187,
+      "original_lines": 3,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "PASS reference checker deliberate setup=1 hold=1"
+      ],
+      "tail": [
+        "REF_SETUP tb.dut t=4.050 D_age=0.050 CE_age=10004.050",
+        "PASS reference checker deliberate setup=1 hold=1",
+        "/workspace/zu15-vpu/tests/timing_model_check.sv:14: $finish called at 5060000 (1fs)"
+      ]
+    },
+    "archive/m3/reports/mill-generate.log": {
+      "original_bytes": 1101,
+      "original_lines": 9,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 20s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 20s"
+      ]
+    },
+    "archive/m4/reports/mill-generate.log": {
+      "original_bytes": 1100,
+      "original_lines": 9,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 24s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 24s"
+      ]
+    },
+    "archive/m4/reports/probe.log": {
+      "original_bytes": 294,
+      "original_lines": 10,
+      "matching_diagnostic_lines": 0,
+      "diagnostic_excerpt": [],
+      "tail": [
+        "ARC_PS AFF CLK Q 77",
+        "NO_PLACEMENT_NO_ROUTING_NO_SPEED_GRADE_CALIBRATION",
+        "DEVICE xczu15eg rows=435 cols=455"
+      ]
+    },
+    "archive/m5/reports/mill-generate.log": {
+      "original_bytes": 1100,
+      "original_lines": 9,
+      "matching_diagnostic_lines": 1,
+      "diagnostic_excerpt": [
+        "130/130, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 22s"
+      ],
+      "tail": [
+        "130] Vpu.runMain",
+        "Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts",
+        "130/130, SUCCESS] mill Vpu.runMain vpu.Generate /workspace/zu15-vpu/build/rtl 22s"
+      ]
+    },
+    "archive/m5/reports/rapidwright-m4-reference.log": {
+      "original_bytes": 1071,
+      "original_lines": 22,
+      "matching_diagnostic_lines": 0,
+      "diagnostic_excerpt": [],
+      "tail": [
+        "PROBE_REFERENCE_START unit/request_c_reg[19]/Q",
+        "PROBE_REFERENCE_END unit/rc_reg[44]/D",
+        "PROBE_NO_CLOCK_TREE_HOLD_OR_SPEED_GRADE_SIGNOFF"
+      ]
+    },
+    "reports/cloud-m5/M4-probe.log": {
+      "original_bytes": 1071,
+      "original_lines": 22,
+      "matching_diagnostic_lines": 0,
+      "diagnostic_excerpt": [],
+      "tail": [
+        "PROBE_REFERENCE_START unit/request_c_reg[19]/Q",
+        "PROBE_REFERENCE_END unit/rc_reg[44]/D",
+        "PROBE_NO_CLOCK_TREE_HOLD_OR_SPEED_GRADE_SIGNOFF"
+      ]
+    },
+    "reports/cloud-m5/M5-probe.log": {
+      "original_bytes": 1067,
+      "original_lines": 22,
+      "matching_diagnostic_lines": 0,
+      "diagnostic_excerpt": [],
+      "tail": [
+        "PROBE_REFERENCE_START unit/request_b_reg[20]/Q",
+        "PROBE_REFERENCE_END unit/rb_reg[29]/D",
+        "PROBE_NO_CLOCK_TREE_HOLD_OR_SPEED_GRADE_SIGNOFF"
+      ]
+    }
+  }
+}

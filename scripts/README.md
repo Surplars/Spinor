@@ -10,9 +10,12 @@
 | 目录、注释、链接检查 | `make check` / [check_repository.py](check_repository.py) |
 | 本次整理的RTL对照 | `make check-rtl`，需保留的M61参考产物 |
 | 历史证据审计 | `make audit-evidence`，需原工具和build产物 |
+| 压缩原文与历史文件检查 | `make audit-retention` / [retained_artifacts.py](retained_artifacts.py)，旧展开产物需原Git对象 |
 | 旧文档检查命令 | [check_docs.py](check_docs.py)，转入当前维护检查 |
 
 [maintenance/](maintenance/) 保存目录映射、Scala注释/token检查和历史输入解析。[legacy.mk](legacy.mk) 保存原Makefile的里程碑配方，显式使用 `make -f scripts/legacy.mk <target>`，并准备对应版本的源码与工具。
+
+日志、大型receipt和生成网表的保存方式见[产物保留规则](../docs/artifacts.md)。`maintenance.retention.read_receipt`读取完整原文，避免把精简索引当作原始证据。
 
 `verify_m*.py`、`report_m*.py`、`m*_baseline.py`、`m*_evidence.py` 和按里程碑命名的打包脚本属于相应快照。文件中的旧源码路径可能是报告的原始键，不能批量改写。需要原样复现M61时使用提交 `f8df80e` 和匹配产物；当前整理通过8个完整生成顶层与该版本逐字节比较。
 

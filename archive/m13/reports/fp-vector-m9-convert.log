@@ -1,2 +1,0 @@
-PASS fp-vector commands=2157 reads=9512 cycles=221879
-/workspace/zu15-vpu/build/test/fp-vector-m9-convert-tb.sv:14631: $finish called at 2231187 (1s)

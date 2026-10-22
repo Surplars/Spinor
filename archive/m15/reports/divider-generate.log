@@ -1,6 +1,0 @@
-Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
-Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
-mill Vpu.runMain vpu.GenerateDividerProof /works...u15-vpu/build/divider-proof/DividerWordProof.sv
-130] Vpu.runMain
-Picked up JAVA_TOOL_OPTIONS: -Xmx3G -XX:ActiveProcessorCount=4 -Duser.home=/workspace/zu15-vpu/tools/cache -Dhttp.proxyHost=proxy -Dhttp.proxyPort=8080 -Dhttps.proxyHost=proxy -Dhttps.proxyPort=8080 -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
-130/130, SUCCESS] mill Vpu.runMain vpu.GenerateDividerP...ild/divider-proof/DividerWordProof.sv 9s

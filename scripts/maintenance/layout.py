@@ -215,6 +215,8 @@ def check_evidence_binding(rel, digest):
     if lock['member_sha256'].get(rel) == digest:
         assert hashlib.sha256(old[rel]).hexdigest() == digest
         return 'layout-snapshot'
+    from maintenance.retention import matches_original
+    if matches_original(rel, digest): return 'retained-original'
     for folder in ('archive/docs-m60/source', 'archive/m60/source'):
         candidate = ROOT / folder / rel
         if candidate.is_file() and sha(candidate) == digest: return folder

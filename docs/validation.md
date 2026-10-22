@@ -23,7 +23,9 @@ python3 scripts/check_repository.py --rtl --evidence
 
 `--rtl`比较全部56个Scala文件的代码token，并在`/tmp/spinor-source-layout`重新生成8个直接/隔离顶层，与已验收M61的压缩SV逐字节比较。它需要Mill工具和保留的M61参考产物；不覆盖旧build目录。结果见[整理报告](../reports/repository-layout/evaluation.md)。这项固定基线比较用于本次维护，不代替后续有意硬件变更的功能测试。
 
-`--evidence`（也可用`make audit-evidence`）核对保留的M50–M61原始输入和产物SHA。旧路径通过已有档案或`archive/m61/layout-baseline.zip`解析，旧receipt不改写。完整审计需要原tools/build环境，源码clone本身不包含全部仿真模型、网表或工具二进制。
+`--evidence`（也可用`make audit-evidence`）核对保留的M50–M61原始输入和产物SHA。旧路径通过已有档案、`archive/m61/layout-baseline.zip`及产物保留清单解析，核对原始证据字节。完整审计需要原tools/build环境，源码clone本身不包含全部仿真模型、网表或工具二进制。
+
+产物精简后，大型receipt原文改以gzip保存，原JSON位置保留明确标记的索引；审计读取的是解压后的完整原文。移除的旧网表和日志通过固定Git对象解析并核对SHA。`make audit-retention`可独立检查保留原文，详见[保留与恢复](artifacts.md)。
 
 ## 功能复现
 

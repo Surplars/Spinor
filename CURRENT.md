@@ -13,3 +13,5 @@ CPU在offer前完成本地队头/排空资格检查，preview不是完成；gran
 当前源码按功能目录组织，56个文件补齐注释，公开类名和生成命令保留。见[源码导航](src/README.md)、[开发规范](docs/development.md)和[整理报告](reports/repository-layout/evaluation.md)。
 
 日常检查：`make check`；本次重构RTL对照：`make check-rtl`；保留M50–M61证据审计：`make audit-evidence`。原M61完整功能入口对应提交`f8df80e`及匹配工具/build产物，复现前先使用该源码快照。
+
+历史产物已精简：大receipt无损压缩、日志保留摘要、重复网表按Git对象恢复。`make audit-retention`核对原文；[保留规则](docs/artifacts.md)说明索引格式和恢复方式。本轮不改变硬件。

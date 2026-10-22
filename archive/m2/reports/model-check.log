@@ -1,3 +1,0 @@
-REF_SETUP tb.dut t=4.050 D_age=0.050 CE_age=10004.050
-PASS reference checker deliberate setup=1 hold=1
-/workspace/zu15-vpu/tests/timing_model_check.sv:14: $finish called at 5060000 (1fs)

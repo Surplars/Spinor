@@ -17,6 +17,7 @@
 | [上下文 helper](../software/context/README.md) | 576 字节镜像、保存恢复和回调所有权 |
 | [架构概览](architecture.md) | RAM 结构、指令/元素流水与宿主职责 |
 | [验证与时序](validation.md) | 当前证据、复现条件和器件时序边界 |
+| [报告导航](../reports/README.md)与[产物保留规则](artifacts.md) | 精简日志、压缩receipt、原始证据恢复 |
 
 ## 当前功能与验收
 

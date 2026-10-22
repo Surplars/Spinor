@@ -68,7 +68,7 @@ RamVectorFp 的 RAM 映射仍是 32×RAM64M8 与 5×RAM32M16，按完整单元�
 - 示例 LUT A1→O6 为 150 ps、FF CLK→Q 为 77 ps；只是家族表值，未校准 -2 等级或设计负载。
 - 有 Yosys/EDIF 导入和 RWRoute，可辅助物理实现；当前尚未把 VPU 打包和布局布线。
 - DSPTimingData 通常需要 Vivado 脚本导出的 DSP 延迟。当前无此数据，不能声称得到完整 FP 路径时序。
-- [实际探针结果](probe.json)、[输出日志](probe.log)、[用途、缺口及上游依据](../../docs/rapidwright.md)。
+- [实际探针结果](probe.json)、[输出日志](https://github.com/Surplars/Spinor/blob/63de85ede691ba438dcca9b34b0fd78d588f0878/archive/m4/reports/probe.log)、[用途、缺口及上游依据](../../docs/rapidwright.md)。
 
 ## 复现和边界
 

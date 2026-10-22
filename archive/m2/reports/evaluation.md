@@ -99,6 +99,6 @@ M1 的 32-bit 切分原型对应为 51/35/27/23 周期；M2 当前为单元素�
 
 - `make bootstrap`；`make verify-m2`；`make package-m2`。
 - [机器可读证据与源/产物 SHA-256](receipt.json)
-- [原始参考仿真结果](timing-reference.json)、[检查器故意违规对照](model-check.log)
+- [原始参考仿真结果](timing-reference.json)、[检查器故意违规对照](https://github.com/Surplars/Spinor/blob/63de85ede691ba438dcca9b34b0fd78d588f0878/archive/m2/reports/model-check.log)
 - [设计合同](../../docs/architecture.md)、[M1 原始报告](../../archive/m1/reports/evaluation.md)
 - 真实时序、最终 bitstream 仍需支持 XCZU15EG 的 AMD 实现工具；开源结果用于推进设计。

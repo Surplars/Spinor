@@ -1,2 +1,0 @@
-PASS divider checks=2894 flushes=270 cycles=470900
-/workspace/zu15-vpu/build/test/integer-divide-tb.sv:3197: $finish called at 4709270000000000000 (1ps)
