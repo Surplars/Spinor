@@ -84,5 +84,5 @@ with (OUT/(label+'-compile.log')).open('w') as log:
  subprocess.run([str(BIN/'iverilog'),'-g2012','-s','tb',*(['-s','glbl'] if args.mapped else []),'-o',str(OUT/label),str(tb),str(rtl),*extra],check=True,stdout=log,stderr=log)
 run=subprocess.run([str(BIN/'vvp'),str(OUT/label)],capture_output=True,text=True)
 (OUT/(label+'-simulation.log')).write_text(run.stdout+run.stderr);assert run.returncode==0,run.stdout+run.stderr
-d=dict(status='PASS',mapped=args.mapped,cycles=10000,stats=stats,scope='STANDALONE_SCHEDULER_NO_VPU_EXECUTION_INTEGRATION',sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/VectorIssueWindow.scala']})
+d=dict(status='PASS',mapped=args.mapped,cycles=10000,stats=stats,scope='STANDALONE_SCHEDULER_NO_VPU_EXECUTION_INTEGRATION',sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/experimental/VectorIssueWindow.scala']})
 (OUT/('results-'+label+'.json')).write_text(json.dumps(d,indent=2)+'\n');print(json.dumps(d,indent=2))

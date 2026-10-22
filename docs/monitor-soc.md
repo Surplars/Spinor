@@ -28,7 +28,7 @@ monitor 与 VPU 共用时钟/复位，无中断。跨时钟或其他总线协议
 | `0x180/188/190` | 同次快照 status/vtype/config |
 | `0x198/1a0/1a8/1b0` | 同次快照错误 cause+element/address/token低64/高16 |
 
-以生成 JSON 和当前 [VpuMonitor.scala](../src/main/scala/vpu/VpuMonitor.scala) 为准。caps bit5保留“部分ISA”标记；能力位不等同于完整 V/RVA23/Zvkt 合规。整数配置清除 FP32、FP64、单宽FP归约及宽化FP归约位。最小FP16转换/Zvbb等细分范围另见[ISA表](isa-coverage.md)，不能只由32个旧能力位推断。
+以生成 JSON 和当前 [VpuMonitor.scala](../src/main/scala/vpu/monitor/VpuMonitor.scala) 为准。caps bit5保留“部分ISA”标记；能力位不等同于完整 V/RVA23/Zvkt 合规。整数配置清除 FP32、FP64、单宽FP归约及宽化FP归约位。最小FP16转换/Zvbb等细分范围另见[ISA表](isa-coverage.md)，不能只由32个旧能力位推断。
 
 caps位0..31依次为：monitor、物理LSU、FP32、FP64、context、部分ISA、整数归约、mask逻辑、整数标量搬运、mask计数/首置位、prefix、iota/vid、整数slide、gather/EI16、compress、FP归约、宽化整数归约、宽化FP归约、整数扩展、窄化移位、宽化加减、宽化乘法、单宽乘加、宽化乘加、反减/大于比较、整组搬运、carry/borrow、饱和加减、平均加减、舍入右移、vsmul、vnclip。
 

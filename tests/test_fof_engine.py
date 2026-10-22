@@ -142,5 +142,5 @@ for i,model in models.items():
  assert actualRF[i]==dict(enumerate(rf)),(i,'RF state')
  assert trims.get(i,[])==([failure[0]] if model['trim'] else []),(i,'trim handshake',trims.get(i,[]))
 assert all(coverage.values()),coverage;assert len(encodings)==32,encodings
-inputs=[rtl,tb,ROOT/'tests/memory_engine_fixture.sv',Path(__file__).resolve(),ROOT/'src/main/scala/vpu/VectorMemoryEngine.scala']
+inputs=[rtl,tb,ROOT/'tests/memory_engine_fixture.sv',Path(__file__).resolve(),ROOT/'src/main/scala/vpu/memory/VectorMemoryEngine.scala']
 d=dict(status='PASS',cases=len(specs),encodings=sorted(encodings),coverage=coverage,case_specs=specs,performance=performance,summary=next(x for x in r.stdout.splitlines() if x.startswith('PASS fof-engine')),scope='FOF_UNIT_AND_SEGMENTS_1_TO_8; ATOMIC_VL_TRIM; ALL_64_RF_CHUNKS; INDEPENDENT_FIELD_PREFIX_ORACLE; FULL_64BIT_ADDRESSES; 8KIB_MODULO_MEMORY; NO_DEVICE_TIMING',sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs});(OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(d['summary'])

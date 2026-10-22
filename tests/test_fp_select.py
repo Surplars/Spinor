@@ -110,7 +110,7 @@ with (OUT/(label+'-compile.log')).open('w') as log:subprocess.run([BIN/'iverilog
 result=subprocess.run([BIN/'vvp',OUT/label],cwd=ROOT,capture_output=True,text=True,timeout=1800);(OUT/(label+'.log')).write_text(result.stdout+result.stderr)
 assert result.returncode==0,(result.stdout+result.stderr)[-3500:]
 d=dict(status='PASS',top=a.top,compact=a.compact,mapped=a.mapped,commands=commands,cases=len(specs),case_specs=specs,coverage=coverage,
-       source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__).resolve(),ROOT/'tests/test_vector.py',ROOT/'src/main/scala/vpu/RamVector.scala']},
+       source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__).resolve(),ROOT/'tests/test_vector.py',ROOT/'src/main/scala/vpu/core/RamVector.scala']},
        artifact_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [*files,OUT/(label+'.log'),OUT/(label+'-compile.log')]},
        summary=next(x for x in result.stdout.splitlines() if x.startswith('PASS fp-select')))
 (OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(label,d['summary'],flush=True)

@@ -1,0 +1,60 @@
+package vpu
+
+import chisel3._
+import circt.stage.ChiselStage
+import java.nio.file.{Files,Paths}
+
+/** Generate the direct-interface production top and its integration manifest.
+  * CLI options are explicit name/value pairs; SpinorParams rejects unsupported
+  * architectural sizes before elaboration. The manifest describes the selected
+  * implementation, while device timing requires a separate implementation run.
+  */
+object GenerateConfigured extends App {
+  // Validate the option set before applying overrides to a named preset.
+  require(args.length%2==0,"Use --option value pairs")
+  val pairs=args.grouped(2).map(x=>x(0)->x(1)).toSeq
+  require(pairs.map(_._1).distinct.size==pairs.size,"Duplicate option")
+  val opts=pairs.toMap
+  val allowed=Set("--fcsr-owner","--out","--name","--preset","--fp","--alu-stage-bits","--region-base","--region-bytes","--monitor-base","--vlen","--elen","--lanes")
+  require(opts.keySet.subsetOf(allowed),"Unknown option: "+(opts.keySet--allowed).mkString(","))
+  def number(s:String):BigInt=if(s.startsWith("0x"))BigInt(s.drop(2),16) else BigInt(s)
+  val preset=opts.getOrElse("--preset","standard")
+  val initial=SpinorParams.preset(preset)
+  val cfg=initial.copy(
+    hostFcsr=opts.get("--fcsr-owner").map {case "host"=>true;case "standalone"=>false;case _=>throw new IllegalArgumentException("--fcsr-owner must be host or standalone")}.getOrElse(false),
+    enableFp=opts.get("--fp").map {case "true"=>true;case "false"=>false;case _=>throw new IllegalArgumentException("--fp must be true or false")}.getOrElse(initial.enableFp),
+    aluStageBits=opts.get("--alu-stage-bits").map(_.toInt).getOrElse(initial.aluStageBits),
+    regionBase=opts.get("--region-base").map(number).getOrElse(initial.regionBase),
+    regionBytes=opts.get("--region-bytes").map(number).getOrElse(initial.regionBytes),
+    vlen=opts.get("--vlen").map(_.toInt).getOrElse(128),elen=opts.get("--elen").map(_.toInt).getOrElse(64),lanes=opts.get("--lanes").map(_.toInt).getOrElse(1))
+  // Physical RAM and monitor addresses belong to the generated integration.
+  // The public class and generated Verilog top name may be selected separately.
+  val base=opts.get("--monitor-base").map(number).getOrElse(BigInt(0))
+  require(base>=0 && base<(BigInt(1)<<64) && base%4096==0,"Monitor base must be aligned to 4 KiB")
+  val top=opts.getOrElse("--name","SpinorVpu")
+  require(top.matches("[A-Za-z_][A-Za-z0-9_]*"),"Invalid Verilog top name")
+  val out=Paths.get(opts.getOrElse("--out","build/configured"));Files.createDirectories(out)
+  val text=ChiselStage.emitSystemVerilog(new SpinorVpu(base,cfg) {override def desiredName=top},firtoolOpts=Array(
+    "-disable-all-randomization","-strip-debug-info","--lowering-options=disallowLocalVariables,disallowPackedArrays"))
+  // Chisel appends auxiliary layer files to the string result. Keep those
+  // files separate so their relative includes remain valid in downstream tools.
+  val marker="(?m)^// ----- 8< ----- FILE \"([^\"]+)\" ----- 8< -----\\r?\\n".r
+  val chunks=marker.findAllMatchIn(text).toSeq
+  Files.writeString(out.resolve(top+".sv"),text.take(chunks.headOption.map(_.start).getOrElse(text.length)))
+  for((m,i)<-chunks.zipWithIndex) {val p=out.resolve(m.group(1));Files.createDirectories(p.getParent);Files.writeString(p,text.substring(m.end,chunks.lift(i+1).map(_.start).getOrElse(text.length)))}
+  // Match the monitor capability bitmap without claiming ISA completeness
+  // or device timing from successful elaboration alone.
+  val caps=if(cfg.enableFp)BigInt("ffffffff",16) else BigInt("ffffffff",16).clearBit(2).clearBit(3).clearBit(15).clearBit(17)
+  Files.writeString(out.resolve(top+".json"),s"""{
+  "top":"$top", "preset":"$preset", "vlen":${cfg.vlen}, "elen":${cfg.elen}, "lanes":${cfg.lanes},
+  "instruction_capacity":1, "architectural_vrf_bytes":512, "vrf":"versioned-ram",
+  "alu_stage_bits":${cfg.aluStageBits}, "fp32_fp64":${cfg.enableFp}, "has_fp_csr_ports":${cfg.enableFp},
+  "physical_region_base":"0x${cfg.regionBase.toString(16)}", "physical_region_bytes":"0x${cfg.regionBytes.toString(16)}",
+  "fcsr_owner":"${if(cfg.hostFcsr)"host" else "standalone"}", "fflags_delta_port":${cfg.hostFcsr},
+  "zvbb":true,
+  "fp16_min_conversions":${cfg.enableFp},
+  "monitor_base":"0x${base.toString(16)}", "monitor_implementation":"${if(cfg.hostFcsr)"0x5602" else "0x5501"}", "monitor_abi":"1.0", "monitor_caps":"0x${caps.toString(16)}",
+  "device_timing_verified":false, "full_rvv":false
+}
+""")
+}

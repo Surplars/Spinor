@@ -186,5 +186,5 @@ for row in bench:row['cycles']=observed[row['id']]
 assert stats['illegal'] and stats['flushes']
 if fp:assert all(byop.values()) and all(stats.values()) and len(bytype)>=len(types)
 d=dict(status='PASS',scope='FP32_TO_FP64_REDUCTIONS_ORDERED_FOLD_NOT_FULL_RVV',top=args.top,mapped=args.mapped,commands=case+2,reference_anchors=ref.anchors,coverage=stats,by_operation=byop,by_type=bytype,performance=bench,
- summary=next(s for s in run.stdout.splitlines() if s.startswith('PASS fp-widening-reductions')),sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,tb,Path(__file__).resolve(),ROOT/'tests/reference_fp.py',ROOT/'tests/fp_reference.c',ROOT/'src/main/scala/vpu/RamVector.scala',ROOT/'docs/references/fp-widening-reductions-v1.0.txt']})
+ summary=next(s for s in run.stdout.splitlines() if s.startswith('PASS fp-widening-reductions')),sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,tb,Path(__file__).resolve(),ROOT/'tests/reference_fp.py',ROOT/'tests/fp_reference.c',ROOT/'src/main/scala/vpu/core/RamVector.scala',ROOT/'docs/references/fp-widening-reductions-v1.0.txt']})
 (OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(json.dumps({k:v for k,v in d.items() if k not in ['sha256','performance','by_type']},indent=2))

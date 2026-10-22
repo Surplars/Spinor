@@ -92,5 +92,5 @@ run=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],capt
 (OUT/(label+'.log')).write_text(run.stdout+run.stderr);assert run.returncode==0,run.stdout+run.stderr
 d=dict(status='PASS',commands=case,reserved_cases=len(cases)*3,coverage=coverage,top=a.top,mapped=a.mapped,
  summary=next(s for s in run.stdout.splitlines() if s.startswith('PASS mask-source-alias')),
- sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala']})
+ sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/core/RamVector.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(json.dumps(d,indent=2))

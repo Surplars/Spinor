@@ -54,5 +54,5 @@ r=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],captur
 trace=[x for x in r.stdout.splitlines() if x.startswith('F ')];lat=check(trace,rows)
 for line,row in zip(trace,rows,strict=True):
  if not row[-1]:assert int(line.split()[-1])<=18,(row,line)
-files=[rtl,tb,Path(__file__).resolve(),ROOT/'tests/reference_fp_estimate.py',ROOT/'tests/test_fp_lane.py',ROOT/'src/main/scala/vpu/FloatingPointEstimate.scala',ROOT/'docs/references/m42-estimates-v1.0.txt']
+files=[rtl,tb,Path(__file__).resolve(),ROOT/'tests/reference_fp_estimate.py',ROOT/'tests/test_fp_lane.py',ROOT/'src/main/scala/vpu/execute/fp/FloatingPointEstimate.scala',ROOT/'docs/references/m42-estimates-v1.0.txt']
 d=dict(status='PASS',vectors=len(rows),reference_anchors=len(ANCHORS),table_entries_independently_checked=256,flush_cases=cancels,latency=lat,summary=next(x for x in r.stdout.splitlines() if x.startswith('PASS fp-estimate')),sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files});(OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(d['summary'])

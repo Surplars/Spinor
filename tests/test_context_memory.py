@@ -229,7 +229,7 @@ def main():
  for ident,expected in expectedBus.items():assert actual.get(ident,[])==expected,(ident,actual.get(ident,[]),expected)
  if not args.mapped:
   for case in benchmarkCases:assert contextReads[case['case']]==(0 if case['eew']==64 and not case['write'] else 16),(case,contextReads[case['case']])
- result=dict(source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__).resolve(),ROOT/'tests/test_vector_memory.py',ROOT/'src/main/scala/vpu/VectorMemoryEngine.scala']},context_reads=contextReads,status='PASS',memory_cases=len(cases),stop_cases=len(stops),eew_emul_combinations=len(combinations),metrics=metrics,case_specs=cases,stop_specs=stops,benchmark_cases=benchmarkCases,
+ result=dict(source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [Path(__file__).resolve(),ROOT/'tests/test_vector_memory.py',ROOT/'src/main/scala/vpu/memory/VectorMemoryEngine.scala']},context_reads=contextReads,status='PASS',memory_cases=len(cases),stop_cases=len(stops),eew_emul_combinations=len(combinations),metrics=metrics,case_specs=cases,stop_specs=stops,benchmark_cases=benchmarkCases,
   register_check_scope='ALL_32' if not args.smoke else 'DATA_GROUP_V0_AND_GUARDS_16_23_31',assertions_enabled=not args.mapped,scope='physical normal RAM; registered memory model; no MMIO/PMP/VM/coherence',
   rtl_or_netlist_sha256=hashlib.sha256(rtl.read_bytes()).hexdigest(),testbench_sha256=hashlib.sha256(tb.read_bytes()).hexdigest(),
   summary=next(s for s in run.stdout.splitlines() if s.startswith('PASS context-memory')))

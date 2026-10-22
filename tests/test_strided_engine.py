@@ -118,5 +118,5 @@ for i,(stop,count,start) in stops.items():
  got=[x[0] for x in bus.get(i,[])];assert got[:len(addresses)]==addresses,(i,got,addresses)
  assert len(got)==1 and got[0]==spec['base'] if spec['fault_stop'] else len(got)==len(addresses) if spec['write'] else len(addresses)<=len(got)<=len(addresses)+1,(i,got,addresses)
 assert all(coverage.values()),coverage
-inputs=[rtl,tb,ROOT/'tests/memory_engine_fixture.sv',Path(__file__).resolve(),ROOT/'src/main/scala/vpu/VectorMemoryEngine.scala']
+inputs=[rtl,tb,ROOT/'tests/memory_engine_fixture.sv',Path(__file__).resolve(),ROOT/'src/main/scala/vpu/memory/VectorMemoryEngine.scala']
 result=dict(status='PASS',cases=len(cases),coverage=coverage,case_specs=cases,performance=performance,summary=next(x for x in r.stdout.splitlines() if x.startswith('PASS strided-engine')),scope='REGISTERED_8KIB_MODULO_BACKING_WITH_FULL_64BIT_ADDRESS_ORACLE; PHYSICAL_NORMAL_RAM_ONLY',sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs});(OUT/(label+'-results.json')).write_text(json.dumps(result,indent=2)+'\n');print(result['summary'])

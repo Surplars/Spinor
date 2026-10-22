@@ -47,6 +47,18 @@ make bootstrap
 
 它使用“预览→授权→发布确认”协议；[隔离接入指南](docs/m61-isolation.md)说明CPU迁移、停止和上下文规则。原`SpinorVpu`直接接口继续保留。
 
+## 源码与开发
+
+源码已按功能归类到 `top/`、`core/`、`execute/`、`memory/`、`bus/`、`monitor/` 等目录；生成器和实验模块有独立目录。阅读顺序见[源码导航](src/README.md)，注释要求见[开发规范](docs/development.md)。
+
+```bash
+make help
+make check
+make compile
+```
+
+根 Makefile 提供当前入口，历史里程碑配方保存在 `scripts/legacy.mk`。[工具导航](scripts/README.md)和[测试导航](tests/README.md)说明各入口的适用范围。目录整理的代码及RTL一致性结果见[整理报告](reports/repository-layout/evaluation.md)。
+
 ## 接入与使用
 
 - [接入指南](docs/integration.md)：选择配置、连接端口、提交/取消、浮点状态、上下文及首次联调。

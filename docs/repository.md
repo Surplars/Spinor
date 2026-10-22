@@ -1,6 +1,6 @@
 # 构建与仓库说明
 
-公开硬件入口为 `vpu.SpinorVpu`，工程使用 Mill；构建定义见 [build.mill](../build.mill)，固定工程工具见 [tools.lock.json](../tools.lock.json)。
+公开硬件入口为 `vpu.SpinorVpu` 和寄存隔离顶层 `vpu.SpinorIsolated`，工程使用 Mill；构建定义见 [build.mill](../build.mill)，固定工程工具见 [tools.lock.json](../tools.lock.json)。
 
 ## 开发环境
 
@@ -20,21 +20,21 @@ bootstrap下载并核验固定Mill和OSS CAD Suite；首次构建还会解析Mav
 ./mill Vpu.runMain vpu.GenerateHostBoundary build/configured/VpuHostBoundary.sv
 ```
 
-生成器可拆分辅助文件；将所选输出目录的相关SV一并加入工程，核对顶层名和JSON清单。`make rtl`是历史多顶层/验证层生成入口，普通接入优先使用上面的单配置入口。
+生成器可拆分辅助文件；将所选输出目录的相关SV一并加入工程，核对顶层名和JSON清单。`make -f scripts/legacy.mk rtl`是历史多顶层/验证层生成入口，普通接入优先使用上面的单配置入口。
 
 ## 目录
 
 | 路径 | 内容 |
 |---|---|
-| `src/main/scala/vpu/` | Chisel硬件、公共协议和RTL生成入口 |
+| `src/main/scala/vpu/` | 按功能分类的硬件、接口、生成器和实验模块；见[源码导航](../src/README.md) |
 | `third_party/` | 固定硬件依赖及许可证 |
 | `software/context/` | 可移植上下文镜像helper |
 | `software/monitor/` | MMIO定义、设备树示例和Linux UIO观测工具 |
 | `software/programs/` | C/intrinsics、汇编和链接示例 |
-| `tests/` | 独立参考、公共端口功能及程序测试 |
-| `scripts/` | 工具准备、验证、综合、条件时序和证据检查 |
+| `tests/` | 独立参考、公共端口功能及程序测试；见[测试导航](../tests/README.md) |
+| `scripts/` | 工具准备、验证、综合、条件时序；维护工具集中在`maintenance/`，见[工具导航](../scripts/README.md) |
 | `docs/` | [当前文档导航](README.md)和按版本保存的设计记录 |
-| `reports/m60/` | 最新功能验证报告和精确证据清单 |
+| `reports/m61/` / `reports/repository-layout/` | 最新硬件验证、源码整理报告和精确证据清单 |
 | `archive/` | 冻结的历史源码、文档及验证输入 |
 | `tools/` / `build/` | 本地工具、RTL、模型、日志与网表；不入Git |
 
@@ -44,7 +44,9 @@ Git保留源码、报告与指定历史输入，不包含安装后的工具、�
 
 M60验证依赖固定Spike、SoftFloat、既有公共端口GSim模型及历史基线，完整步骤和范围见[M60报告](../reports/m60/evaluation.md)。这些里程碑脚本属于相应源码快照；不要将`verify_m18.py`、`verify_m48.py`等旧入口当成“当前全功能测试”运行。
 
-当前文档整理未改硬件，也未重写历史receipt。运行文档检查与保留证据审计见[验证说明](validation.md)。需要原样复现M60入口时，在独立checkout中使用提交`0790a6e`及匹配的工具/build产物；本工作区保留的证据也可通过文档审计入口核对。
+根Makefile默认显示帮助；当前入口为`make compile`、`make rtl-direct`、`make rtl-isolated`和`make check`。原里程碑配方在`scripts/legacy.mk`，显式使用`make -f scripts/legacy.mk <target>`。
+
+本次目录与注释整理通过Scala token和8个完整RTL顶层对照，不重写历史receipt。原M61完整回归在提交`f8df80e`及匹配工具/build产物上复现；原M60使用`0790a6e`。已有工作区的保留证据可通过`make audit-evidence`核对，细节见[验证说明](validation.md)。
 
 ## 历史记录
 

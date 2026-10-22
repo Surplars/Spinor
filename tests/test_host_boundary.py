@@ -134,5 +134,5 @@ with (OUT/(label+'-compile.log')).open('w') as log:
 run=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],capture_output=True,text=True)
 (OUT/(label+'.log')).write_text(run.stdout+run.stderr);assert run.returncode==0,run.stdout+run.stderr
 d=dict(status='PASS',scope='SYNTHETIC_PEERS_NO_ACTUAL_CPU_INTEGRATION',mapped=args.mapped,raw_cause_combinations=128,summary=next(x for x in run.stdout.splitlines() if x.startswith('PASS host-boundary')),
- sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,path,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/VpuHostBoundary.scala']})
+ sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,path,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/interface/VpuHostBoundary.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(json.dumps(d,indent=2))

@@ -123,5 +123,5 @@ r=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],captur
 if not a.compact and not a.mapped:(OUT/label).unlink()
 observed={int(x.split()[1]):int(x.split()[2]) for x in r.stdout.splitlines() if x.startswith('PERF ')};assert len(observed)==len(performance)
 for row in performance:row['cycles']=observed[row['id']]
-files=[rtl,tb,Path(__file__).resolve(),ROOT/'tests/reference_fp_resize_m54.py',ROOT/'tests/fp_resize_reference_m54.c',ROOT/'tests/test_vector.py',ROOT/'src/main/scala/vpu/RamVector.scala',ROOT/'src/main/scala/vpu/FloatingPointLane.scala']
+files=[rtl,tb,Path(__file__).resolve(),ROOT/'tests/reference_fp_resize_m54.py',ROOT/'tests/fp_resize_reference_m54.c',ROOT/'tests/test_vector.py',ROOT/'src/main/scala/vpu/core/RamVector.scala',ROOT/'src/main/scala/vpu/execute/fp/FloatingPointLane.scala']
 d=dict(status='PASS',commands=commands,coverage=coverage,types=sorted(types),encodings=sorted(encodings),performance=performance,reference_anchors=ref.anchors,summary=next(x for x in r.stdout.splitlines() if x.startswith('PASS fp-resize')),sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files});(OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(d['summary'])

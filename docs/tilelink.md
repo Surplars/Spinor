@@ -6,7 +6,7 @@
 
 ## 数据主端参数
 
-采用工程内的 `VpuTileLinkMaster` / `VpuTLA` / `VpuTLD` 类型，定义于 [TileLinkReservation.scala](../src/main/scala/vpu/TileLinkReservation.scala)。这些是显式 Bundle，不提供 Diplomacy 节点或参数协商；接入其他总线库时需字段转换，接 AXI 等协议需另设桥。
+采用工程内的 `VpuTileLinkMaster` / `VpuTLA` / `VpuTLD` 类型，定义于 [TileLinkReservation.scala](../src/main/scala/vpu/bus/TileLinkReservation.scala)。这些是显式 Bundle，不提供 Diplomacy 节点或参数协商；接入其他总线库时需字段转换，接 AXI 等协议需另设桥。
 
 | 项目 | 当前公开顶层 |
 |---|---|

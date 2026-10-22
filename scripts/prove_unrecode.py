@@ -10,7 +10,7 @@ ys=OUT/'proof.ys';ys.write_text(f'read_verilog -sv {rtl}\nprep -top UnrecodeProo
 with (OUT/'proof.log').open('w') as log:
  subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/yosys'),'-T','-s',str(ys)],stdout=log,stderr=log,check=True)
 assert 'SUCCESS!' in (OUT/'proof.log').read_text()
-files=[Path(__file__).resolve(),ROOT/'src/main/scala/vpu/GenerateUnrecodeProof.scala',ROOT/'src/main/scala/vpu/StagedIeeeUnrecode.scala',ROOT/'third_party/berkeley-hardfloat/src/main/scala/fNFromRecFN.scala',ROOT/'third_party/berkeley-hardfloat/src/main/scala/rawFloatFromRecFN.scala',rtl,ys]
+files=[Path(__file__).resolve(),ROOT/'src/main/scala/vpu/generate/proof/GenerateUnrecodeProof.scala',ROOT/'src/main/scala/vpu/execute/fp/StagedIeeeUnrecode.scala',ROOT/'third_party/berkeley-hardfloat/src/main/scala/fNFromRecFN.scala',ROOT/'third_party/berkeley-hardfloat/src/main/scala/rawFloatFromRecFN.scala',rtl,ys]
 d=dict(status='PASS',scope='BOUNDED_4_STEPS_ALL_RECODED_BITS_AND_CAPTURE_HOLD_FP32_FP64_NOT_FULL_LANE_PROOF',
  input_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files})
 result.write_text(json.dumps(d,indent=2)+'\n');print('PASS staged IEEE decoder equivalence, both widths, all bits/captures/holds')

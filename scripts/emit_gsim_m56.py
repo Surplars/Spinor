@@ -26,7 +26,7 @@ def main():
     with (folder/'generate.log').open('w') as out:subprocess.run([ROOT/'tools/gsim-src/build/gsim/gsim','--threads=1','--dir='+str(folder),normalized],cwd=ROOT,stdout=out,stderr=out,check=True)
     generation_seconds=time.perf_counter()-start
     files=[raw,normalized,folder/(a.top+'.h'),*sorted(folder.glob(a.top+'[0-9]*.cpp'))]
-    sources=[Path(__file__).resolve(),ROOT/'src/main/scala/vpu/GenerateHostGsim.scala',ROOT/'third_party/gsim-reference.json',*sorted((ROOT/'src/main/scala/vpu').glob('*.scala'))]
+    sources=[Path(__file__).resolve(),ROOT/'src/main/scala/vpu/generate/sim/GenerateHostGsim.scala',ROOT/'third_party/gsim-reference.json',*sorted((ROOT/'src/main/scala/vpu').rglob('*.scala'))]
     result=dict(status='PASS',top=a.top,normalization='ALPHA_RENAME_ONLY',identifier='old',replacement='gsim_old',occurrences=count,elaboration_seconds=elaborate_seconds,generation_seconds=generation_seconds,
       reason='Pinned GSIM lexes old as a RAM read-under-write token',source_sha256={str(x.relative_to(ROOT)):sha(x) for x in sources},artifact_sha256={str(x.relative_to(ROOT)):sha(x) for x in files})
     (folder/'results.json').write_text(json.dumps(result,indent=2)+'\n');print('PASS GSIM production export',a.top,generation_seconds,'generation seconds')

@@ -13,6 +13,6 @@ script.write_text(f'read_verilog -sv {rtl}\nprep -top ClassifyProof -flatten\nsa
 with (OUT/'proof.log').open('w') as log:
     subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/yosys'),'-T','-s',str(script)],stdout=log,stderr=log,check=True)
 assert 'SUCCESS!' in (OUT/'proof.log').read_text()
-files=[ROOT/'scripts/prove_classify.py',ROOT/'src/main/scala/vpu/FloatingPointLane.scala',ROOT/'src/main/scala/vpu/GenerateClassifyProof.scala',rtl,script]
+files=[ROOT/'scripts/prove_classify.py',ROOT/'src/main/scala/vpu/execute/fp/FloatingPointLane.scala',ROOT/'src/main/scala/vpu/generate/proof/GenerateClassifyProof.scala',rtl,script]
 result.write_text(json.dumps(dict(status='PASS',scope='ALL_FP32_AND_FP64_ENCODINGS_VS_HARDFLOAT_CLASSIFY',input_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files}),indent=2)+'\n')
 print('PASS all-pattern FP32/FP64 IEEE classification')

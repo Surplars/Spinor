@@ -174,5 +174,5 @@ for row in bench:row['cycles']=observed[row['id']]
 assert all(byop.values()) and all(stats.values())
 result=dict(status='PASS',scope='MASK_LOGIC_AND_INTEGER_SCALAR_MOVES_NOT_FULL_RVV',top=args.top,mapped=args.mapped,commands=case,coverage=stats,by_operation=byop,types=sorted(types_seen),performance=bench,
  summary=next(s for s in run.stdout.splitlines() if s.startswith('PASS mask-scalar')),
- sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,tb,Path(__file__).resolve(),ROOT/('archive/m20/source/RamVector.scala' if args.baseline else 'src/main/scala/vpu/RamVector.scala')]})
+ sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,tb,Path(__file__).resolve(),ROOT/('archive/m20/source/RamVector.scala' if args.baseline else 'src/main/scala/vpu/core/RamVector.scala')]})
 (OUT/(label+'-results.json')).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['sha256','performance']},indent=2))

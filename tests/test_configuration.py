@@ -30,6 +30,6 @@ for preset,top in PROFILES.items():
  assert cfg['vlen']==128 and cfg['lanes']==1 and cfg['instruction_capacity']==1
 assert 'layers-RamVectorFpMemory-Verification.sv' in (ROOT/'build/rtl/verification/layers-LishiVpuMemory-Verification.sv').read_text()
 assert (ROOT/'build/rtl/SpinorStandard.sv').read_text().replace('SpinorStandard','SpinorVpu')==(ROOT/'build/rtl/SpinorVpu.sv').read_text()
-files=[Path(__file__).resolve(),ROOT/'src/main/scala/vpu/SpinorParams.scala',ROOT/'src/main/scala/vpu/GenerateConfigured.scala',ROOT/'scripts/generate_profiles.py']+[ROOT/f'build/rtl/{top}.{ext}' for top in PROFILES.values() for ext in ['sv','json']]+[p for p in PROFILE_ROOT.rglob('*') if p.is_file()]
+files=[Path(__file__).resolve(),ROOT/'src/main/scala/vpu/config/SpinorParams.scala',ROOT/'src/main/scala/vpu/generate/GenerateConfigured.scala',ROOT/'scripts/generate_profiles.py']+[ROOT/f'build/rtl/{top}.{ext}' for top in PROFILES.values() for ext in ['sv','json']]+[p for p in PROFILE_ROOT.rglob('*') if p.is_file()]
 r=dict(status='PASS',scope='CLI_REJECTION_AND_EMITTED_PRESET_CONSISTENCY',negative_cases=records,presets=list(PROFILES),sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files})
 (OUT/'results.json').write_text(json.dumps(r,indent=2)+'\n');print('PASS configuration rejection and four emitted hardware presets')

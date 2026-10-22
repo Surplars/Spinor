@@ -6,6 +6,8 @@
 
 | 文档 | 内容 |
 |---|---|
+| [源码导航](../src/README.md)与[开发规范](development.md) | 功能目录、阅读顺序、注释与评审规则 |
+| [工具导航](../scripts/README.md)与[测试导航](../tests/README.md) | 当前入口、参考模型和历史脚本范围 |
 | [构建与仓库](repository.md) | 工具、输出目录、新环境与历史验证产物 |
 | [接入指南](integration.md) | 配置、端口、CPU/作业执行器接入和首次联调 |
 | [寄存隔离顶层](m61-isolation.md) | 新工程的寄存边界、preview/grant/done和时序隔离证据 |
@@ -19,6 +21,7 @@
 ## 当前功能与验收
 
 - [当前进度](../CURRENT.md)、[ISA 覆盖](isa-coverage.md)、[RVV 验收计划](rvv-completion-plan.md)。
+- [源码整理验收](../reports/repository-layout/evaluation.md)：token对照、8个顶层RTL逐字节相同及历史证据审计。
 - [M61隔离顶层](m61-isolation.md)与[报告](../reports/m61/evaluation.md)。
 - [M60 重启分类](m60-classified-restart.md)与[报告](../reports/m60/evaluation.md)。
 - [M59 类型重叠](m59-overlap-restart.md)、[M58 策略与恢复](m58-semantics.md)。

@@ -35,7 +35,7 @@ def main():
  files['licenses/Apache-2.0.txt']=(ROOT/'third_party/rapidwright/LICENSE').read_bytes()
  files['licenses/berkeley-hardfloat.LICENSE']=(ROOT/'third_party/licenses/berkeley-hardfloat.LICENSE').read_bytes()
  notices=[]
- for src in [*(ROOT/'third_party/berkeley-hardfloat/src/main/scala').glob('*.scala'),*(ROOT/'src/main/scala/vpu').glob('Staged*.scala')]:
+ for src in [*(ROOT/'third_party/berkeley-hardfloat/src/main/scala').glob('*.scala'),*(ROOT/'src/main/scala/vpu').rglob('Staged*.scala')]:
   m=re.search(r'/\*={10,}.*?={10,}\*/',src.read_text(),re.S)
   if m and m[0] not in notices:notices.append(m[0])
  files['licenses/HardFloat-source-notices.txt']=('\n\n'.join(notices)+'\n').encode()

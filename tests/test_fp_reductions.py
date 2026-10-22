@@ -194,5 +194,5 @@ for row in bench:row['cycles']=observed[row['id']]
 assert stats['illegal'] and stats['flushes']
 if fp:assert all(byop.values()) and len(bytype)>=len(types) and stats['all_masked'] and stats['masked_vd0'] and stats['aliases']
 d=dict(status='PASS',scope='SINGLE_WIDTH_FP_REDUCTIONS_ORDERED_IMPLEMENTATION_NOT_FULL_RVV',top=args.top,mapped=args.mapped,commands=case+2,reference_anchors=ref.anchors,coverage=stats,by_operation=byop,by_type=bytype,performance=bench,
- summary=next(s for s in run.stdout.splitlines() if s.startswith('PASS fp-reductions')),sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,tb,Path(__file__).resolve(),ROOT/'tests/reference_fp.py',ROOT/'src/main/scala/vpu/RamVector.scala']})
+ summary=next(s for s in run.stdout.splitlines() if s.startswith('PASS fp-reductions')),sha256={str(f.relative_to(ROOT)):hashlib.sha256(f.read_bytes()).hexdigest() for f in [rtl,tb,Path(__file__).resolve(),ROOT/'tests/reference_fp.py',ROOT/'src/main/scala/vpu/core/RamVector.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(json.dumps({k:v for k,v in d.items() if k not in ['sha256','performance','by_type']},indent=2))

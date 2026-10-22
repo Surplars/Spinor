@@ -1,0 +1,229 @@
+
+/*============================================================================
+
+This Chisel source file is part of a pre-release version of the HardFloat IEEE
+Floating-Point Arithmetic Package, by John R. Hauser (with some contributions
+from Yunsup Lee and Andrew Waterman, mainly concerning testing).
+
+Copyright 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018 The Regents of
+the University of California.  All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+ 1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions, and the following disclaimer.
+
+ 2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions, and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+
+ 3. Neither the name of the University nor the names of its contributors may
+    be used to endorse or promote products derived from this software without
+    specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS "AS IS", AND ANY
+EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE, ARE
+DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+=============================================================================*/
+
+// Derived from pinned HardFloat RecFNToIN: registered alignment, decision,
+// and low/high rounding carry. Inputs held stable by capacity-one owner.
+// Only RISC-V rounding modes 0..4 used; round-odd is not exposed.
+package vpu
+
+import hardfloat._
+
+import chisel3._
+import chisel3.util._
+import chisel3.util.log2Up
+
+import scala.math._
+import consts._
+
+/** Staged recoded-float to integer conversion derived from HardFloat RecFNToIN.
+  * Pulse start only when no conversion is active; in, signedOut, roundingMode
+  * and optional narrow must stay stable until the owner consumes done.
+  * done remains asserted in reply until a new start or flush. flexible shares
+  * a 64-bit datapath with selected 16/32-bit bounds and zero-padded results.
+  * intExceptionFlags carries invalid, overflow, inexact; the caller maps these
+  * to architectural NV/NX rather than treating overflow as floating-point OF.
+  */
+class StagedFloatToInt(expWidth: Int, sigWidth: Int, intWidth: Int, flexible: Boolean=false) extends chisel3.Module
+{
+    require(!flexible || intWidth==64,"Flexible conversion shares the 64-bit rounding datapath")
+    override def desiredName = s"StagedFloatToInt_e${expWidth}_s${sigWidth}_i${intWidth}"+(if(flexible)"Flex" else "")
+    val io = IO(new Bundle {
+        val narrow=if(flexible)Some(Input(UInt(2.W))) else None
+        val start=Input(Bool());val flush=Input(Bool());val done=Output(Bool())
+        val in = Input(Bits((expWidth + sigWidth + 1).W))
+        val roundingMode = Input(UInt(3.W))
+        val signedOut = Input(Bool())
+        val out = Output(Bits(intWidth.W))
+        val intExceptionFlags = Output(Bits(3.W))
+    })
+
+    // Align the binary point, decide rounding/exception state, then apply the
+    // low and optional high carry words. Cancellation only invalidates state.
+    val Seq(idle,align,calculate,low,high,reply)=chisel3.util.Enum(6)
+    val state=RegInit(idle)
+    when(io.start) { state:=align }
+    when(state===align) { state:=calculate }
+    when(state===calculate) { state:=low }
+    when(state===low) { state:= (if(flexible) Mux(io.narrow.get=/=0.U,reply,high) else if(intWidth==64) high else reply) }
+    when(state===high) { state:=reply }
+    when(io.flush) { state:=idle }
+    io.done:=state===reply && !io.flush
+    val rawIn = rawFloatFromRecFN(expWidth, sigWidth, io.in)
+
+    val magGeOne = rawIn.sExp(expWidth)
+    val posExp = rawIn.sExp(expWidth - 1, 0)
+    val magJustBelowOne = !magGeOne && posExp.andR
+
+    // The calling converter supplies legal RISC-V modes and resolves explicit
+    // RTZ opcodes. This retained HardFloat decision also names round-odd.
+    val roundingMode_near_even   = (io.roundingMode === round_near_even)
+    val roundingMode_minMag      = (io.roundingMode === round_minMag)
+    val roundingMode_min         = (io.roundingMode === round_min)
+    val roundingMode_max         = (io.roundingMode === round_max)
+    val roundingMode_near_maxMag = (io.roundingMode === round_near_maxMag)
+    val roundingMode_odd         = (io.roundingMode === round_odd)
+
+    /*------------------------------------------------------------------------
+    | Assuming the input floating-point value is not a NaN, its magnitude is
+    | at least 1, and it is not obviously so large as to lead to overflow,
+    | convert its significand to fixed-point (i.e., with the binary point in a
+    | fixed location).  For a non-NaN input with a magnitude less than 1, this
+    | expression contrives to ensure that the integer bits of 'alignedSig'
+    | will all be zeros.
+    *------------------------------------------------------------------------*/
+    val shiftedSig =
+        (magGeOne ## rawIn.sig(sigWidth - 2, 0))<<
+            Mux(magGeOne,
+                rawIn.sExp(min(expWidth - 2, log2Up(intWidth) - 1), 0),
+                0.U
+            )
+    val alignedSigNext =
+        (shiftedSig>>(sigWidth - 2)) ## shiftedSig(sigWidth - 3, 0).orR
+    val alignedSig=Reg(chiselTypeOf(alignedSigNext))
+    when(state===align) { alignedSig:=alignedSigNext }
+    val unroundedInt = 0.U(intWidth.W) | alignedSig>>2
+
+    // Guard/sticky bits handle magnitudes >= 1; the just-below-one case needs
+    // its own tie decision because the aligned integer portion is zero.
+    val common_inexact = Mux(magGeOne, alignedSig(1, 0).orR, !rawIn.isZero)
+    val roundIncr_near_even =
+        (magGeOne       && (alignedSig(2, 1).andR || alignedSig(1, 0).andR)) ||
+        (magJustBelowOne && alignedSig(1, 0).orR)
+    val roundIncr_near_maxMag = (magGeOne && alignedSig(1)) || magJustBelowOne
+    val roundIncr =
+        (roundingMode_near_even   && roundIncr_near_even  ) ||
+        (roundingMode_near_maxMag && roundIncr_near_maxMag) ||
+        ((roundingMode_min || roundingMode_odd) &&
+             (rawIn.sign && common_inexact)) ||
+        (roundingMode_max && (!rawIn.sign && common_inexact))
+    val complement=Reg(UInt(intWidth.W));val increment=Reg(Bool())
+    // Register each byte's prefix with the sign-selected integer, before the
+    // existing low/high rounding stages. A local increment never propagates
+    // through more than eight data bits after this register boundary.
+    val roundingPrefix=Reg(Vec(intWidth/32,Vec(3,Bool())))
+    val complementNext=Mux(rawIn.sign,~unroundedInt,unroundedInt)
+    when(state===calculate) {
+      complement:=complementNext;increment:=roundIncr^rawIn.sign
+      for(word<-0 until intWidth/32;byte<-1 until 4) {
+        roundingPrefix(word)(byte-1):=complementNext(32*word+8*byte-1,32*word).andR
+      }
+    }
+    def incrementWord(word:Int,enable:Bool):UInt = Cat((0 until 4).reverse.map { byte =>
+      val carry=if(byte==0)enable else enable && roundingPrefix(word)(byte-1)
+      ParallelIncrement(complement(32*word+8*byte+7,32*word+8*byte),carry)
+    })
+    // Narrow destinations finish after the low word. Only a 64-bit result
+    // needs a second cycle to propagate carry into the upper word.
+    val roundedInt=Reg(UInt(intWidth.W));val carry=Reg(Bool())
+    when(state===low) {
+      roundedInt:=incrementWord(0,increment)
+      carry:=complement(31,0).andR && increment
+    }
+    if(intWidth==64) {
+      when(state===high) {
+        roundedInt:=Cat(incrementWord(1,carry),roundedInt(31,0))
+      }
+    }
+
+    // Overflow depends on destination width, signedness and a possible rounding
+    // carry at the boundary; negative unsigned results have separate handling.
+    val magGeOne_atOverflowEdge = (posExp === (intWidth - 1).U)
+    // Aligned integer bits include the rounding-boundary carry used below.
+    val roundCarryBut2 = unroundedInt(intWidth - 3, 0).andR && roundIncr
+    /** Select overflow rules at the effective destination width before packing. */
+    def overflowAt(width:Int):Bool = {
+      val magGeOne_atOverflowEdge = (posExp === (width - 1).U)
+      // Apply the same boundary test at the selected narrow destination width.
+      val roundCarryBut2 = unroundedInt(width - 3, 0).andR && roundIncr
+      val overflow =
+        Mux(magGeOne,
+            (posExp >= width.U) ||
+                Mux(io.signedOut,
+                    Mux(rawIn.sign,
+                        magGeOne_atOverflowEdge &&
+                            (unroundedInt(width - 2, 0).orR || roundIncr),
+                        magGeOne_atOverflowEdge ||
+                            ((posExp === (width - 2).U) && roundCarryBut2)
+                    ),
+                    rawIn.sign ||
+                        (magGeOne_atOverflowEdge &&
+                             unroundedInt(width - 2) && roundCarryBut2)
+                ),
+            !io.signedOut && rawIn.sign && roundIncr
+        )
+
+      overflow
+    }
+    val common_overflow = if(flexible) Mux(io.narrow.get===2.U,overflowAt(16),Mux(io.narrow.get===1.U,overflowAt(32),overflowAt(64))) else Mux(magGeOne,
+            (posExp >= intWidth.U) ||
+                Mux(io.signedOut,
+                    Mux(rawIn.sign,
+                        magGeOne_atOverflowEdge &&
+                            (unroundedInt(intWidth - 2, 0).orR || roundIncr),
+                        magGeOne_atOverflowEdge ||
+                            ((posExp === (intWidth - 2).U) && roundCarryBut2)
+                    ),
+                    rawIn.sign ||
+                        (magGeOne_atOverflowEdge &&
+                             unroundedInt(intWidth - 2) && roundCarryBut2)
+                ),
+            !io.signedOut && rawIn.sign && roundIncr
+        )
+    // Invalid suppresses ordinary overflow/inexact reporting. Exception values
+    // saturate to the destination's signed/unsigned limit using the input sign;
+    // NaNs select the positive limit regardless of their sign bit.
+    val invalidExc = rawIn.isNaN || rawIn.isInf
+    val overflow = !invalidExc && common_overflow
+    val inexact  = !invalidExc && !common_overflow && common_inexact
+
+    val excSign = !rawIn.isNaN && rawIn.sign
+    val excOutFull =
+        Mux((io.signedOut === excSign),
+            (BigInt(1)<<(intWidth - 1)).U,
+            0.U
+        ) |
+        Mux(!excSign, ((BigInt(1)<<(intWidth - 1)) - 1).U, 0.U)
+
+    /** Produce the width-specific saturated result in the shared 64-bit word. */
+    def exceptionAt(width:Int):UInt = (Mux(io.signedOut===excSign,(BigInt(1)<<(width-1)).U(width.W),0.U(width.W)) | Mux(!excSign,((BigInt(1)<<(width-1))-1).U(width.W),0.U(width.W))).pad(64)
+    val excOut=if(flexible) Mux(io.narrow.get===2.U,exceptionAt(16),Mux(io.narrow.get===1.U,exceptionAt(32),excOutFull)) else excOutFull
+    val packed=if(flexible) Mux(io.narrow.get===2.U,roundedInt(15,0).pad(64),Mux(io.narrow.get===1.U,roundedInt(31,0).pad(64),roundedInt)) else roundedInt
+    val bad=Reg(Bool());val exception=Reg(UInt(intWidth.W));val flags=Reg(UInt(3.W))
+    when(state===calculate) { bad:=invalidExc||common_overflow;exception:=excOut;flags:=invalidExc ## overflow ## inexact }
+    io.out := Mux(bad,exception,packed)
+    io.intExceptionFlags := flags
+}

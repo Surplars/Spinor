@@ -86,5 +86,5 @@ run=subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/vvp'),str(OUT/label)],capt
 assert coverage['sew']=={8,16,32,64} and len(coverage['encodings'])==8 and all(coverage.values())
 coverage={k:sorted(v) if isinstance(v,set) else v for k,v in coverage.items()}
 r=dict(status='PASS',mapped=args.mapped,commands=commands,mac_instructions=macs,flushes=flushes,coverage=coverage,summary=next(x for x in run.stdout.splitlines() if x.startswith('PASS integer-mac-netlist')),
- sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala',ROOT/'src/main/scala/vpu/PackedElementRead.scala']})
+ sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/core/RamVector.scala',ROOT/'src/main/scala/vpu/memory/PackedElementRead.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(r,indent=2)+'\n');print(json.dumps(r,indent=2))

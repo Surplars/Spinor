@@ -23,6 +23,6 @@ for label,opts,message in [('integer-host',['--preset','integer','--fcsr-owner',
     with log.open('w') as f:r=subprocess.run(list(map(str,cmd)),cwd=ROOT,stdout=f,stderr=f,timeout=180)
     assert r.returncode and message in log.read_text() and not list(folder.glob('*.sv'));negative[label]='REJECTED';artifacts.append(log)
 d=dict(status='PASS',configurations=rows,invalid_configurations=negative,architectural_fflags_register_removed_in_host=True,
-       source_sha256={str(p.relative_to(ROOT)):sha(p) for p in [Path(__file__).resolve(),ROOT/'src/main/scala/vpu/GenerateConfigured.scala',ROOT/'src/main/scala/vpu/SpinorParams.scala']},
+       source_sha256={str(p.relative_to(ROOT)):sha(p) for p in [Path(__file__).resolve(),ROOT/'src/main/scala/vpu/generate/GenerateConfigured.scala',ROOT/'src/main/scala/vpu/config/SpinorParams.scala']},
        artifact_sha256={str(p.relative_to(ROOT)):sha(p) for p in artifacts})
 (OUT/'results.json').write_text(json.dumps(d,indent=2)+'\n');print('PASS explicit FCSR ownership and no duplicate architectural fflags register')

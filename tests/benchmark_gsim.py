@@ -115,7 +115,7 @@ def main():
         times['gsim_sim_seconds'].append(float(m[3]))
     with (folder/'negative.log').open('w') as out:r=subprocess.run([folder/'run',folder/'negative.bin'],cwd=ROOT,env=env(),stdout=out,stderr=out,timeout=120)
     assert r.returncode==1 and 'port=io_core_contextResult_bits' in (folder/'negative.log').read_text()
-    sources=[ROOT/'scripts/bootstrap_gsim.py',ROOT/'scripts/emit_gsim.py',Path(__file__).resolve(),ROOT/'src/main/scala/vpu/GenerateGsim.scala',ROOT/'third_party/gsim-reference.json']
+    sources=[ROOT/'scripts/bootstrap_gsim.py',ROOT/'scripts/emit_gsim.py',Path(__file__).resolve(),ROOT/'src/main/scala/vpu/generate/sim/GenerateGsim.scala',ROOT/'third_party/gsim-reference.json']
     artifacts=[ROOT/'build/gsim-model/results.json',gdir/'results.json',folder/'trace_tb.sv',folder/'baseline_tb.sv',folder/'baseline_sim',folder/'trace_sim',base/'results.json',folder/'trace.bin',folder/'trace.json',folder/'negative.bin',folder/'negative.log',harness,folder/'run',gdir/(a.top+'.fir'),gdir/(a.top+'.h'),*sorted(gdir.glob(a.top+'[0-9]*.cpp')),*sorted(folder.glob('*.log'))]
     result=dict(status='PASS',kind='cycle replay of independently Spike-checked Icarus stimulus',top=a.top,suite=a.suite,commands=meta['commands'],cycles=meta['cycles'],output_checks=meta['output_checks'],times=times,gsim_cpp_compile_seconds=compile_seconds,
       median_wall_speedup=statistics.median(times['icarus_wall_seconds'])/statistics.median(times['gsim_wall_seconds']),negative_control='WRONG_RF_BIT_REJECTED',

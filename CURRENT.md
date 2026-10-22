@@ -1,4 +1,4 @@
-# 当前进度：M61
+# 当前进度：M61硬件与源码整理
 
 新增可选寄存隔离顶层 `SpinorIsolated`，原直接提交协议保留。隔离配置启用LSU分级和整数操作数分级；四种旧直接配置重新生成的RTL与已验收版本逐字节相同。
 
@@ -10,4 +10,6 @@ CPU在offer前完成本地队头/排空资格检查，preview不是完成；gran
 
 仍为VLEN128/ELEN64、单lane、单指令在途和版本化RAM。M60全部330算术编码的重启分类及历史访存证据保持；未声明完整V/RVA23/Zvkt或真实CPU/Linux集成。当前实际300MHz仍需Vivado器件结果，组合隔离和云端条件预算不能替代布局布线签核。
 
-当前验收入口：`python3 scripts/verify_m61.py`，`--check-only`核对精确输入与压缩证据。历史文档及M50至M60证据通过`python3 scripts/check_docs.py --evidence`按快照核对，不改写旧报告。
+当前源码按功能目录组织，56个文件补齐注释，公开类名和生成命令保留。见[源码导航](src/README.md)、[开发规范](docs/development.md)和[整理报告](reports/repository-layout/evaluation.md)。
+
+日常检查：`make check`；本次重构RTL对照：`make check-rtl`；保留M50–M61证据审计：`make audit-evidence`。原M61完整功能入口对应提交`f8df80e`及匹配工具/build产物，复现前先使用该源码快照。

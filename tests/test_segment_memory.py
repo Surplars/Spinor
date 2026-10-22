@@ -126,6 +126,6 @@ for ident,m in stopModels.items():
   candidates.append(actualRF[ident]==chunks and actualMem[ident]==bytesWant)
  assert any(candidates),(ident,end,count,'invalid field prefix')
 assert len(encodings)==56
-inputs=[Path(__file__).resolve(),ROOT/'tests/test_context_memory.py',ROOT/'tests/test_vector.py',ROOT/'src/main/scala/vpu/VectorMemoryEngine.scala']
+inputs=[Path(__file__).resolve(),ROOT/'tests/test_context_memory.py',ROOT/'tests/test_vector.py',ROOT/'src/main/scala/vpu/memory/VectorMemoryEngine.scala']
 d=dict(status='PASS',memory_cases=len(cases),stop_cases=len(stops),encodings=sorted(encodings),metrics=metrics,case_specs=cases,stop_specs=stops,register_check_scope='ALL_32' if not a.smoke else 'DATA_GROUPS_V0_AND_GUARDS_16_23_31; STOPS_ALL_32',assertions_enabled=not a.mapped,scope='ACTUAL_RAM_CORE_AND_TILELINK; UNIT_STRIDE_SEGMENTS; PARTIAL_FIELD_FAULT_RETRY_AND_STOPS; NO_CPU_OR_VM',rtl_or_netlist_sha256=hashlib.sha256(rtl.read_bytes()).hexdigest(),testbench_sha256=hashlib.sha256(tb.read_bytes()).hexdigest(),source_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs},summary=next(x for x in r.stdout.splitlines() if x.startswith('PASS segment-memory')))
 (OUT/(name+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(d['summary'])

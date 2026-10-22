@@ -136,5 +136,5 @@ for i,(end,count,start) in stops.items():
  got=[x[0] for x in bus.get(i,[])];assert got[:len(addresses)]==addresses,(i,end,got,addresses)
  assert len(got)==1 and got[0]==spec['base'] if spec['kind'] else len(got)==len(addresses) if spec['write'] else len(addresses)<=len(got)<=len(addresses)+1,(i,end,got)
 assert all(coverage.values()),coverage;assert len(encodings)==16
-inputs=[rtl,tb,ROOT/'tests/memory_engine_fixture.sv',Path(__file__).resolve(),ROOT/'src/main/scala/vpu/VectorMemoryEngine.scala']
+inputs=[rtl,tb,ROOT/'tests/memory_engine_fixture.sv',Path(__file__).resolve(),ROOT/'src/main/scala/vpu/memory/VectorMemoryEngine.scala']
 result=dict(status='PASS',cases=len(cases),encodings=sorted(encodings),geometries=sorted(geometries),coverage=coverage,case_specs=cases,performance=performance,summary=next(x for x in r.stdout.splitlines() if x.startswith('PASS indexed-engine')),scope='PHYSICAL_NORMAL_RAM; MODULO_8KIB_DATA_BACKING; INDEPENDENT_FULL_64BIT_ADDRESS_AND_RF_ORACLE; NO_DEVICE_TIMING',sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in inputs});(OUT/(label+'-results.json')).write_text(json.dumps(result,indent=2)+'\n');print(result['summary'])

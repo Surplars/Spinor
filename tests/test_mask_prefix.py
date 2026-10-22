@@ -147,5 +147,5 @@ observed={int(s.split()[1]):int(s.split()[2]) for s in run.stdout.splitlines() i
 for row in bench:row['cycles']=observed[row['id']]
 assert all(coverage.values());assert len(seen_types)==(4 if args.smoke else 22)
 d=dict(status='PASS',top=args.top,mapped=args.mapped,commands=case,coverage=coverage,types=sorted(seen_types),performance=bench,summary=next(s for s in run.stdout.splitlines() if s.startswith('PASS mask-prefix')),
- sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/RamVector.scala',ROOT/'src/main/scala/vpu/MaskPrefixByte.scala']})
+ sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [rtl,tb,Path(__file__).resolve(),ROOT/'src/main/scala/vpu/core/RamVector.scala',ROOT/'src/main/scala/vpu/execute/integer/MaskPrefixByte.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(d,indent=2)+'\n');print(json.dumps({k:v for k,v in d.items() if k not in ['sha256','performance']},indent=2))

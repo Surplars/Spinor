@@ -18,7 +18,7 @@ for mode,d,bits in [(0,False,32),(0,True,64),(1,True,32),(2,False,64),(5,False,1
     clz=bits-mag.bit_length();saving=(64-mag.bit_length())-(clz//8+clz%8) if mag else 0
     specs.append(dict(mode=mode,bits=bits,op=op,x=x,rounding=rm,saving=saving))
     lines.append(f"io_widthMode={mode};run({int(d)},{op},{rm},64'h{x:x},0,0,8'd{i%256},0);")
-lines.append('$display("PASS efficiency %0d",n);$finish;end endmodule');tb=OUT/'tb.sv';tb.write_text('\n'.join(lines));latencies={};inputs=[tb,Path(__file__).resolve(),ROOT/'tests/reference_fp_resize.py',ROOT/'tests/test_fp_lane.py',ROOT/'src/main/scala/vpu/FloatingPointConvertResize.scala']
+lines.append('$display("PASS efficiency %0d",n);$finish;end endmodule');tb=OUT/'tb.sv';tb.write_text('\n'.join(lines));latencies={};inputs=[tb,Path(__file__).resolve(),ROOT/'tests/reference_fp_resize.py',ROOT/'tests/test_fp_lane.py',ROOT/'src/main/scala/vpu/execute/fp/FloatingPointConvertResize.scala']
 for label,rtl in [('M41',ROOT/'archive/m41/rtl/FloatingPointConvertResize.sv'),('M42',ROOT/'build/rtl/FloatingPointConvertResize.sv')]:
  inputs.append(rtl)
  with (OUT/(label+'-compile.log')).open('w') as log:subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/iverilog'),'-g2012','-s','tb','-o',str(OUT/label),str(tb),str(rtl)],stdout=log,stderr=log,check=True)

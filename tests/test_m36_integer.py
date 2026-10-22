@@ -162,5 +162,5 @@ observed={int(s.split()[1]):int(s.split()[2]) for s in run.stdout.splitlines() i
 for row in bench:row['cycles']=observed[row['id']]
 assert all(v for k,v in coverage.items() if k!='all_masked' or not args.compact),coverage
 assert len(encodings)==17
-result=dict(status='PASS',commands=commands,coverage=coverage,types=sorted(types),encodings=sorted(encodings),performance=bench,summary=next(x for x in run.stdout.splitlines() if x.startswith('PASS m36-integer')),sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [rtl,tb,Path(__file__).resolve(),ROOT/'tests/test_vector.py',ROOT/'src/main/scala/vpu/RamVector.scala']})
+result=dict(status='PASS',commands=commands,coverage=coverage,types=sorted(types),encodings=sorted(encodings),performance=bench,summary=next(x for x in run.stdout.splitlines() if x.startswith('PASS m36-integer')),sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in [rtl,tb,Path(__file__).resolve(),ROOT/'tests/test_vector.py',ROOT/'src/main/scala/vpu/core/RamVector.scala']})
 (OUT/(label+'-results.json')).write_text(json.dumps(result,indent=2)+'\n');print(json.dumps({k:v for k,v in result.items() if k not in ['sha256','performance']},indent=2))

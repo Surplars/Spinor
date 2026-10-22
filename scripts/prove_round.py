@@ -10,7 +10,7 @@ ys=OUT/'proof.ys';ys.write_text(f'read_verilog -sv {rtl}\nprep -top RoundProof -
 with (OUT/'proof.log').open('w') as log:
  subprocess.run([str(ROOT/'tools/oss-cad-suite/bin/yosys'),'-T','-s',str(ys)],stdout=log,stderr=log,check=True)
 assert 'SUCCESS!' in (OUT/'proof.log').read_text()
-files=[Path(__file__).resolve(),ROOT/'src/main/scala/vpu/GenerateRoundProof.scala',ROOT/'src/main/scala/vpu/StagedRound.scala',ROOT/'third_party/berkeley-hardfloat/src/main/scala/RoundAnyRawFNToRecFN.scala',rtl,ys]
+files=[Path(__file__).resolve(),ROOT/'src/main/scala/vpu/generate/proof/GenerateRoundProof.scala',ROOT/'src/main/scala/vpu/execute/fp/StagedRound.scala',ROOT/'third_party/berkeley-hardfloat/src/main/scala/RoundAnyRawFNToRecFN.scala',rtl,ys]
 d=dict(status='PASS',scope='BOUNDED_10_STEPS_SINGLE_HELD_RAW_INPUT_4_FORMATS_ALL_RAW_BITS_AND_MODES_WITH_DONE_NONVACUITY_NOT_FULL_LANE_PROOF',
  input_sha256={str(p.relative_to(ROOT)):hashlib.sha256(p.read_bytes()).hexdigest() for p in files})
 result.write_text(json.dumps(d,indent=2)+'\n');print('PASS staged-round bounded equivalence, four formats, nonvacuous done')
